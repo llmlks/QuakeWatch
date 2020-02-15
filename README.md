@@ -1,5 +1,7 @@
 # QuakeWatch
 
+![PEP8-lint](https://github.com/llmlks/QuakeWatch/workflows/PEP8-lint/badge.svg?branch=master)
+
 ## Installation
 
 First clone the reporitory:
@@ -29,3 +31,5 @@ If you're using Visual Studio Code, you can enable PEP8 linting as follows:
 2) Open the Command Palette (```Ctrl+Shift+P```) and select the __Python: Select Linter__ command
 3) Select __pycodestyle__ and install the linter if asked to
 4) Now the code should be linted everytime you save a file
+
+Automatic PEP8 linting is done after every push by using Github Actions.
