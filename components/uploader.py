@@ -4,10 +4,8 @@ import dash_table
 from utils import dataparser
 
 
-def get_div():
-    """
-    Return the uploader component
-    """
+def get_component():
+    """Return the uploader component."""
     return html.Div([
         dcc.Upload(
             id='upload-data',
@@ -32,8 +30,12 @@ def get_div():
 
 def update_output(contents, filename):
     """
-    Update the data table on the page, or display error
+    Return an updated data table with uploaded data or an error
     message if parsing fails.
+
+    Keyword arguments:
+    contents -- The contents of the uploaded file as a binary string
+    filename -- Name of the uploaded file
     """
 
     if contents is not None:

@@ -8,7 +8,11 @@ HYPO_EXT = '.hypo'
 def parse_contents(contents, filename):
     """
     Parse the input into a dataframe using correct parser
-    depending on the file extension
+    depending on the file extension, returning the dataframe.
+
+    Keyword arguments:
+    contents -- The contents of the uploaded file as a binary string
+    filename -- Name of the uploaded file
     """
     content_type, content_string = contents.split(',')
 
@@ -20,7 +24,10 @@ def parse_contents(contents, filename):
 
 def qtm_parse(decoded_contents):
     """
-    Parse the QTM catalog
+    Return a dataframe containing tha parsed QTM catalog.
+
+    Keyword arguments:
+    decoded_contents -- Decoded contents of uploaded file
     """
     df = pd.read_table(
         io.StringIO(decoded_contents.decode('utf-8')),

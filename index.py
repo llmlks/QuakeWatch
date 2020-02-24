@@ -15,9 +15,7 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    """
-    Display correct view based on the URL
-    """
+    """Display correct view based on the URL."""
     if pathname == '/':
         return uploadapp.layout
     else:
