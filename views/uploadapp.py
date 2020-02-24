@@ -6,7 +6,7 @@ from app import app
 from components import uploader
 
 
-layout = uploader.get_div()
+layout = uploader.get_component()
 
 
 @app.callback(
