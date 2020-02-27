@@ -4,10 +4,12 @@ from dash.dependencies import Input, Output
 
 from app import app
 from views import uploadapp
+from components import sidebar
 
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
+    sidebar.get_component(),
     html.Div(id='page-content')
 ])
 
@@ -16,7 +18,7 @@ app.layout = html.Div([
               [Input('url', 'pathname')])
 def display_page(pathname):
     """Display correct view based on the URL."""
-    if pathname == '/':
+    if pathname in ['/', '/upload']:
         return uploadapp.layout
     else:
         return '404'
