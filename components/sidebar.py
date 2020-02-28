@@ -123,7 +123,7 @@ def toggle_active_links(pathname):
     [State("sidebar", "className")],
 )
 def toggle_classname(n, classname):
-    "Return a class for the sidebar based on the toggle state."
+    """Return a class for the sidebar based on the toggle state."""
     if n and classname == "":
         return "collapsed"
     return ""
@@ -135,5 +135,5 @@ def toggle_classname(n, classname):
     [State("collapse", "is_open")],
 )
 def toggle_collapse(n, is_open):
-    "Return True if the navbar should be collapsed, False otherwise."
+    """Return True if the navbar should be collapsed, False otherwise."""
     return not is_open
