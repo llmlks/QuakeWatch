@@ -4,6 +4,7 @@ from dash.dependencies import Input, Output
 
 from app import app
 from views import uploadapp
+from views import quake_map
 from components import sidebar
 
 
@@ -20,6 +21,8 @@ def display_page(pathname):
     """Display correct view based on the URL."""
     if pathname in ['/', '/upload']:
         return uploadapp.layout
+    if pathname == '/map':
+        return quake_map.layout
     else:
         return '404'
 
