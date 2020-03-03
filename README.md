@@ -14,6 +14,9 @@ Install the requirements:
 ```
 pip install -r requirements.txt
 ```
+
+Create a new file called ```config.py``` in the app root folder that contains the line ```THUNDERFOREST_API_KEY = '???'``` where ```???``` is replaced by a valid Thunderforest API key.
+
 Run the app:
 
 ```
