@@ -36,19 +36,10 @@ def get_component():
                 dbc.Nav(
                     [
                         dbc.NavLink(
-                            page_names[0],
-                            href=page_paths[0],
-                            id="page-0-link"),
-
-                        dbc.NavLink(
-                            page_names[1],
-                            href=page_paths[1],
-                            id="page-1-link"),
-
-                        dbc.NavLink(
-                            page_names[2],
-                            href=page_paths[2],
-                            id="page-2-link"),
+                            page_names[i],
+                            href=page_paths[i],
+                            id=f"page-{i}-link")
+                        for i in range(len(page_paths))
                     ],
                     vertical=True,
                     pills=True,
