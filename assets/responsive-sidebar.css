@@ -17,6 +17,7 @@ Code modified from https://github.com/facultyai/dash-bootstrap-components
 */
 
 #sidebar {
+  z-index: 1;
   text-align: center;
   padding: 2rem 1rem;
   background-color: #f8f9fa;
