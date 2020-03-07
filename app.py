@@ -10,6 +10,7 @@ app = dash.Dash(
     ]
 )
 
+app.server.config.from_object("config")
 app.config.suppress_callback_exceptions = True
 
 cache = Cache(app.server, config={

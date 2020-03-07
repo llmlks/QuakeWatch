@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output
 
 from app import app
 from views import uploadapp
+from views import quake_map
 from components import sidebar
 
 
@@ -36,7 +37,8 @@ def display_page(pathname, session_id):
     """
     if pathname in ['/', '/upload']:
         return uploadapp.get_layout(session_id)
-
+    if pathname == '/map':
+        return quake_map.layout
     else:
         return '404'
 
