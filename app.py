@@ -1,5 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
+from flask_caching import Cache
 
 app = dash.Dash(
     __name__,
@@ -10,3 +11,11 @@ app = dash.Dash(
 )
 
 app.config.suppress_callback_exceptions = True
+
+cache = Cache(app.server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': '.cache-directory',
+
+    # Maximum number of concurrent users. Modifiable
+    'CACHE_THRESHOLD': 50
+})
