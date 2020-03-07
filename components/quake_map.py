@@ -1,8 +1,12 @@
+from datetime import datetime, timedelta
+
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_leaflet as dl
+import pandas as pd
 
 from app import app
+from utils import earthquake_data
 
 
 api_url = 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?' \
@@ -15,17 +19,54 @@ attribution = """Maps &copy;
 OpenStreetMap contributors</a>"""
 
 
-def get_component():
+def get_component(min_time, max_time, time_step, slider_value, session_id):
     """
     Return the map component.
     """
-    return html.Div([
-        dl.Map(
-            center=[33.7, -117.3],
-            zoom=8,
-            children=[
-                dl.TileLayer(
-                    url=api_url,
-                    attribution=attribution)
-            ])
-    ])
+
+    return dl.Map(
+        id='quake-map',
+        center=[33.7, -117.3],
+        zoom=8,
+        children=[
+            dl.TileLayer(
+                url=api_url,
+                attribution=attribution),
+            html.Div(id='test-id', children=[
+                get_event_layer(
+                        min_time, max_time, time_step, slider_value, session_id
+                )])
+        ])
+
+
+def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
+    start_time = min_time + timedelta(seconds=slider_value*time_step)
+    end_time = start_time + timedelta(seconds=time_step)
+
+    data = earthquake_data.get_earthquake_data(session_id).data
+    datetimes = get_datetimes(data)
+    filtered_quakes = data[(datetimes > start_time) & (datetimes < end_time)]
+
+    quake_circles = [
+        dl.Circle(
+            center=[quake['LATITUDE'], quake['LONGITUDE']],
+            radius=100,
+            color='red',
+            fillOpacity=0.1,
+            weight=2
+        )
+        for _, quake in filtered_quakes.iterrows()]
+
+    return dl.LayerGroup(id='layer-id', children=quake_circles)
+
+
+def get_datetimes(df):
+    return df.apply(
+        lambda x: datetime(
+            int(x['YEAR']),
+            int(x['MONTH']),
+            int(x['DAY']),
+            int(x['HOUR']),
+            int(x['MINUTE']),
+            int(x['SECOND'])
+        ), axis=1)
