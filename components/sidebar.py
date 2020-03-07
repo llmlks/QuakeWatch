@@ -36,19 +36,10 @@ def get_component():
                 dbc.Nav(
                     [
                         dbc.NavLink(
-                            page_names[0],
-                            href=page_paths[0],
-                            id="page-0-link"),
-
-                        dbc.NavLink(
-                            page_names[1],
-                            href=page_paths[1],
-                            id="page-1-link"),
-
-                        dbc.NavLink(
-                            page_names[2],
-                            href=page_paths[2],
-                            id="page-2-link"),
+                            page_names[i],
+                            href=page_paths[i],
+                            id=f"page-{i}-link")
+                        for i in range(len(page_paths))
                     ],
                     vertical=True,
                     pills=True,
@@ -110,6 +101,9 @@ def toggle_active_links(pathname):
 
     The array contains one True value and n-1 False values where
     n is the number of links in the sidebar.
+
+    Keyword arguments:
+    pathname -- the path of the current URL
     """
     if pathname == "/":
         # Treat page 1 as the homepage / index
@@ -123,7 +117,13 @@ def toggle_active_links(pathname):
     [State("sidebar", "className")],
 )
 def toggle_classname(n, classname):
-    """Return a class for the sidebar based on the toggle state."""
+    """
+    Return a class for the sidebar based on the toggle state.
+
+    Keyword arguments:
+    n -- the number of clicks on the sidebar toggle
+    classname -- the class name of the sidebar element
+    """
     if n and classname == "":
         return "collapsed"
     return ""
@@ -135,5 +135,11 @@ def toggle_classname(n, classname):
     [State("collapse", "is_open")],
 )
 def toggle_collapse(n, is_open):
-    """Return True if the navbar should be collapsed, False otherwise."""
+    """
+    Return True if the navbar should be collapsed, False otherwise.
+
+    Keyword arguments:
+    n -- the number of clicks on the navbar toggle
+    is_open -- True if the navbar is open, False otherwise
+    """
     return not is_open
