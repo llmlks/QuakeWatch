@@ -5,8 +5,8 @@ import dash_leaflet as dl
 from app import app
 
 
-api_base_url = 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?'
-api_url = api_base_url + 'apikey=' + app.server.config['THUNDERFOREST_API_KEY']
+api_url = 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?' \
+    + 'apikey=' + app.server.config['THUNDERFOREST_API_KEY']
 
 attribution = """Maps &copy;
 <a href="http://www.thunderforest.com">Thunderforest</a>
