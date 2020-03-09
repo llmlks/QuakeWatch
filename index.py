@@ -9,7 +9,6 @@ from views import uploadapp
 from views import quake_map
 from components import sidebar
 
-
 def get_layout():
     """Create session ID and return page content."""
     session_id = str(uuid.uuid4())
