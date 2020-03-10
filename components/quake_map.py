@@ -20,8 +20,16 @@ OpenStreetMap contributors</a>"""
 
 
 def get_component(min_time, max_time, time_step, slider_value, session_id):
-    """
-    Return the map component.
+    """Return the map component with earthquakes represented as circles.
+
+    Keyword arguments:
+    min_time -- A datetime object representing the start of the time frame
+    max_time -- A datetime object representing the end of the time frame
+    time_step -- The time step as seconds. Earthquakes that happened within
+        the time window of this size are shown.
+    slider_value -- The value of the time slider. Controls the temporal
+        position of the time window for which earthquakes are shown.
+    session_id -- ID of the current session
     """
 
     return dl.Map(
@@ -40,6 +48,19 @@ def get_component(min_time, max_time, time_step, slider_value, session_id):
 
 
 def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
+    """Return a LayerGroup that contains earthquakes represented as circles.
+
+    The shown earthquake events are selected based on the argument values.
+
+    Keyword arguments:
+    min_time -- A datetime object representing the start of the time frame
+    max_time -- A datetime object representing the end of the time frame
+    time_step -- The time step as seconds. Earthquakes that happened within
+        the time window of this size are shown.
+    slider_value -- The value of the time slider. Controls the temporal
+        position of the time window for which earthquakes are shown.
+    session_id -- ID of the current session
+    """
     start_time = min_time + timedelta(seconds=slider_value*time_step)
     end_time = start_time + timedelta(seconds=time_step)
 
@@ -61,6 +82,15 @@ def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
 
 
 def get_datetimes(df):
+    """Extract datetimes from a DataFrame.
+
+    Returns a pandas Series object that contains datetimes
+    parsed from the given DataFrame.
+
+    Keyword arguments:
+    df -- A pandas DataFrame that contains the following columns:
+        YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
+    """
     return df.apply(
         lambda x: datetime(
             int(x['YEAR']),
