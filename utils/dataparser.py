@@ -1,8 +1,5 @@
 import base64
-import io
-import json
-
-import pandas as pd
+import re
 
 from app import cache
 from utils import earthquake_data
@@ -43,32 +40,33 @@ def parse_contents(contents, filename, session_id):
 
 
 def get_file_extension(filename):
-    """Return file extension based on the given filename or raise
-    an exception if the file type is not one of the accepted ones.
+    """Return file extension of the given file or raise an exception
+    if there is none.
 
     Keyword arguments:
-    filename -- Name of the file, including file extension
+    filename -- Name of the file
     """
-    if filename.endswith(HYPO_EXT):
-        return HYPO_EXT
-    elif filename.endswith(SCEDC_EXT):
-        return SCEDC_EXT
-    elif filename.endswith(CSV_EXT):
-        return CSV_EXT
-    elif filename.endswith(DAT_EXT):
-        return DAT_EXT
-    else:
-        print('Not a recognised file type:', filename)
-        raise Exception()
+    extension_regex = re.compile(r'[.]\w+')
+    matches = extension_regex.findall(filename)
+
+    if len(matches) == 0:
+        raise Exception('Not a recognised file type: {}'.format(filename))
+
+    return matches[-1]
 
 
 def get_parser(extension):
-    """Return correct parser based on given extension.
+    """Return parser based on given extension or raise exception if
+    no such parser exists for the given extension.
 
     Keyword arguments:
     extension -- Extension identifying the catalog type to parse
     """
-    return PARSERS.get(extension, None)
+    parser = PARSERS.get(extension, None)
+    if parser is None:
+        raise Exception('Could not parse file of type: {}'.format(extension))
+
+    return parser
 
 
 def save_uploaded_data(session_id, data, extension):
