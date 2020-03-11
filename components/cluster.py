@@ -3,7 +3,7 @@ import pandas as pd
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-
+import dash
 import dash_leaflet as dl
 
 from app import app
@@ -13,16 +13,9 @@ import math
 from numba import njit, jit
 import plotly.graph_objects as go
 import networkx as nx
+from datetime import datetime as dt
 
-def get_datetime(x):
-    millisec, second = math.modf(x.SECOND)
-    microsec = millisec * 1000000
-    minute = x.MINUTE
-    if minute >= 60:
-        minute = 59
-    if second >=60 :
-        second = 59
-    return datetime.datetime(int(x.YEAR), int(x.MONTH), int(x.DAY), int(x.HOUR), int(minute), int(second), int(microsec))
+
 
 def get_data( session_id ):
     eq_data = earthquake_data.get_earthquake_data(session_id)
@@ -31,12 +24,14 @@ def compute_edges( df ):
     # add needed columns
     if df.empty: 
         return []
-    df['DateTime'] = df.apply(lambda x: get_datetime(x), axis = 1)
-    df["TimeStamp"] = df.DateTime.values.astype(np.int64) / 10 ** 9
+    #df['DateTime'] = df.apply(lambda x: get_datetime(x), axis = 1)
+    #df["TimeStamp"] = df.DateTime.values.astype(np.int64) / 10 ** 9
 
     data = df[[ "TimeStamp" , "EVENTID" , "TimeStamp" , "MAGNITUDE" , "LATITUDE" , "LONGITUDE" ] ].values
     edges = compute_edges_numba( data )
     return edges
+
+
 @jit( nopython=True )
 def compute_edges_numba(  data  ):
     edges_numpy = np.zeros( (  len(data)  ,  3 )  )
@@ -66,20 +61,57 @@ def compute_edges_numba(  data  ):
 
 def get_component( session_id ):
     data = get_data(session_id)
-    edges = compute_edges( data.data )
+
+    #edges = compute_edges( data.data )
+    mindate , maxdate = data.get_daterange()
+    items = []
+    items.append( html.H1("Clustering" ) )
+    items.append( html.H3("Select a date range"))
+    items.append( 
+
+    html.Div([
+    dcc.DatePickerRange(
+        id='date-pick',
+        min_date_allowed=mindate,
+        max_date_allowed=maxdate,
+    ),
+    html.Div(id='intermediate-value', style={'display': 'none'} , children = [session_id
+    ] )  , 
+    html.Div(id='output-container-date-picker-range')
+])
+
+
+    )
+    return html.Div( items )
+
+@app.callback(
+    dash.dependencies.Output('output-container-date-picker-range', 'children'),
+    [dash.dependencies.Input('date-pick', 'start_date'),
+     dash.dependencies.Input('date-pick', 'end_date') , 
+     dash.dependencies.Input('session-id' , "children")
+      ]  )
+def update_output(start_date, end_date , session_id ):
+    
+    if start_date is None or end_date is None :
+        return "No Falafel for you"
+    
+    print( start_date , end_date)
+    data = get_data(session_id)
+    df = data.get_data_by_daterange( start_date , end_date )
+
+    edges = compute_edges( df )
     if edges == []: 
 
         figures = [ go.Figure() ]
     else:
         figures = get_figures( edges , data.data ) 
 
-    items = []
-    items.append( html.H1("Clustering" ) )
-
+    graphs = [ ]
     for  i , fig in  enumerate( figures ) :
-        items.append( dcc.Graph( id = "fig-{}".format(i) ,  figure = fig  )  )
-    
-    return html.Div( items )
+        graphs.append( dcc.Graph( id = "fig-{}".format(i) ,  figure = fig  ) )
+
+    return graphs 
+
 
 def get_figures( edges_np , df  ):
 
