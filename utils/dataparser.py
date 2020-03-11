@@ -6,8 +6,18 @@ import pandas as pd
 
 from app import cache
 from utils import earthquake_data
+from utils.parsers import qtm_parse, fm_parse, basel_parse, otaniemi_parse
 
 HYPO_EXT = '.hypo'
+SCEDC_EXT = '.scedc'
+CSV_EXT = '.csv'
+DAT_EXT = '.dat'
+PARSERS = {
+    HYPO_EXT: qtm_parse,
+    SCEDC_EXT: fm_parse,
+    CSV_EXT: otaniemi_parse,
+    DAT_EXT: basel_parse
+}
 
 
 def parse_contents(contents, filename, session_id):
@@ -23,25 +33,42 @@ def parse_contents(contents, filename, session_id):
 
     decoded = base64.b64decode(content_string)
 
-    if filename.endswith(HYPO_EXT):
-        eq_data = qtm_parse(decoded)
-        extension = HYPO_EXT
+    file_extension = get_file_extension(filename)
+    parser = get_parser(file_extension)
 
-    save_uploaded_data(session_id, eq_data, extension)
+    eq_data = parser(decoded)
+
+    save_uploaded_data(session_id, eq_data, file_extension)
     return eq_data
 
 
-def qtm_parse(decoded_contents):
-    """Return a dataframe containing tha parsed QTM catalog.
+def get_file_extension(filename):
+    """Return file extension based on the given filename or raise
+    an exception if the file type is not one of the accepted ones.
 
     Keyword arguments:
-    decoded_contents -- Decoded contents of uploaded file
+    filename -- Name of the file, including file extension
     """
-    df = pd.read_table(
-        io.StringIO(decoded_contents.decode('utf-8')),
-        sep=r'\s+'
-    )
-    return df
+    if filename.endswith(HYPO_EXT):
+        return HYPO_EXT
+    elif filename.endswith(SCEDC_EXT):
+        return SCEDC_EXT
+    elif filename.endswith(CSV_EXT):
+        return CSV_EXT
+    elif filename.endswith(DAT_EXT):
+        return DAT_EXT
+    else:
+        print('Not a recognised file type:', filename)
+        raise Exception()
+
+
+def get_parser(extension):
+    """Return correct parser based on given extension.
+
+    Keyword arguments:
+    extension -- Extension identifying the catalog type to parse
+    """
+    return PARSERS.get(extension, None)
 
 
 def save_uploaded_data(session_id, data, extension):
