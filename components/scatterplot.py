@@ -5,7 +5,7 @@ from utils import earthquake_data
 
 
 def get_graph(session_id):
-    """Returns an empty scatterplot graph, if data has been uploaded.
+    """Return an empty scatterplot graph, if data has been uploaded.
     Otherwise returns a text informing the user, that no data was found.
 
     Keywords arguments:
