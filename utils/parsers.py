@@ -65,6 +65,7 @@ def basel_parse(decoded_contents):
         names=[
             'SourceDateTime', 'LSrc', 'Lat', 'Lon', 'Dep', 'X', 'Y', 'Z',
             'Mwx', 'MwGEL', 'MwSED', 'MLSED', 'ID', 'TpID', 'GELID', 'SEDID'
-        ]
+        ],
+        na_values=['-.--', '-.-', '------']
     )
     return df
