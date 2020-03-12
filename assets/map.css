@@ -2,3 +2,9 @@
     height: 60vh;
     width: 50vw;
 }
+
+#time-slider {
+    width: 50vw;
+    padding: 0px !important;
+    padding-top: 10px !important;
+}

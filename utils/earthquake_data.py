@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 
 import pandas as pd
 from app import cache
@@ -42,3 +43,24 @@ def get_earthquake_data(session_id):
     except Exception as ex:
         print(os.path.basename(__file__), ':', ex)
         return EarthquakeData('', pd.DataFrame())
+
+
+def get_datetimes(df):
+    """Extract datetimes from a DataFrame.
+
+    Returns a pandas Series object that contains datetimes
+    parsed from the given DataFrame.
+
+    Keyword arguments:
+    df -- A pandas DataFrame that contains the following columns:
+        YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
+    """
+    return df.apply(
+        lambda x: datetime(
+            int(x['YEAR']),
+            int(x['MONTH']),
+            int(x['DAY']),
+            int(x['HOUR']),
+            int(x['MINUTE']),
+            int(x['SECOND'])
+        ), axis=1)
