@@ -3,13 +3,14 @@ import json
 
 import pandas as pd
 from app import cache
-import math 
-import datetime 
-import numpy as np 
+import math
+import datetime
+import numpy as np
 
 
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
+
 
 def get_datetime(x):
     millisec, second = math.modf(x.SECOND)
@@ -17,9 +18,10 @@ def get_datetime(x):
     minute = x.MINUTE
     if minute >= 60:
         minute = 59
-    if second >=60 :
+    if second >= 60:
         second = 59
     return datetime.datetime(int(x.YEAR), int(x.MONTH), int(x.DAY), int(x.HOUR), int(minute), int(second), int(microsec))
+
 
 class EarthquakeData:
     """Internal representation of uploaded catalog data."""
@@ -29,23 +31,22 @@ class EarthquakeData:
         self.data = data
         self.compute_datetime()
 
-    def compute_datetime( self ):
+    def compute_datetime(self):
         if not self.data.empty:
-            self.data["DateTime"] = self.data.apply(lambda x: get_datetime(x), axis = 1)
-            self.data["TimeStamp"] = self.data.DateTime.values.astype(np.int64) / 10 ** 9
+            self.data["DateTime"] = self.data.apply(lambda x: get_datetime(x), axis=1)
+            self.data["TimeStamp"] = self.data.DateTime.values.astype(np.int64)/10**9
 
-    def get_daterange( self ):
+    def get_daterange(self):
         mindate = self.data["DateTime"].min()
-        maxdate = self.data["DateTime"].max() + datetime.timedelta(days=1) 
+        maxdate = self.data["DateTime"].max() + datetime.timedelta(days=1)
 
-        return mindate , maxdate
+        return mindate, maxdate
 
-    def get_data_by_daterange(self , datemin , datemax ):
+    def get_data_by_daterange(self, datemin, datemax):
 
-        df = self.data[ self.data["DateTime"] <= datemax ]
-        df = df[ df["DateTime"] >= datemin]
-        return df 
-        
+        df = self.data[self.data["DateTime"] <= datemax]
+        df = df[df["DateTime"] >= datemin]
+        return df
 
 # Cache timeout set to 10 hours.
 @cache.memoize(timeout=36000)
