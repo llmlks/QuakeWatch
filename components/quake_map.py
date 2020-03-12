@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_leaflet as dl
-import pandas as pd
 
 from app import app
 from utils import earthquake_data
@@ -65,7 +64,7 @@ def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
     end_time = start_time + timedelta(seconds=time_step)
 
     data = earthquake_data.get_earthquake_data(session_id).data
-    datetimes = get_datetimes(data)
+    datetimes = earthquake_data.get_datetimes(data)
     filtered_quakes = data[(datetimes > start_time) & (datetimes < end_time)]
 
     quake_circles = [
@@ -79,24 +78,3 @@ def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
         for _, quake in filtered_quakes.iterrows()]
 
     return dl.LayerGroup(id='layer-id', children=quake_circles)
-
-
-def get_datetimes(df):
-    """Extract datetimes from a DataFrame.
-
-    Returns a pandas Series object that contains datetimes
-    parsed from the given DataFrame.
-
-    Keyword arguments:
-    df -- A pandas DataFrame that contains the following columns:
-        YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
-    """
-    return df.apply(
-        lambda x: datetime(
-            int(x['YEAR']),
-            int(x['MONTH']),
-            int(x['DAY']),
-            int(x['HOUR']),
-            int(x['MINUTE']),
-            int(x['SECOND'])
-        ), axis=1)
