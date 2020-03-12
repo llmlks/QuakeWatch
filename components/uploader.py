@@ -24,10 +24,11 @@ def get_table(session_id):
             ],
             style_table={
                 'overflow': 'auto',
-                'width': '98%',
-                'margin': '1%'
+                'padding': '1em'
             }
         )
+
+    return html.Div(id='output-data-upload')
 
 
 def get_component(session_id):
@@ -54,7 +55,7 @@ def get_component(session_id):
                 'margin': '2.5%'
             }
         ),
-        html.Div(id='output-data-upload'),
+        get_table(session_id),
     ])
 
 
