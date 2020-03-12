@@ -12,6 +12,7 @@ from views import scatterplot
 
 from components import sidebar
 
+
 def get_layout():
     """Create session ID and return page content."""
     session_id = str(uuid.uuid4())
@@ -42,7 +43,7 @@ def display_page(pathname, session_id):
     if pathname == '/map':
         return quake_map.layout
     if pathname == '/cluster':
-        return clusterview.get_layout( session_id )
+        return clusterview.get_layout(session_id)
     if pathname == '/scatter':
         return scatterplot.get_layout(session_id)
 
