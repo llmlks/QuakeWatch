@@ -8,6 +8,8 @@ from app import app
 from views import uploadapp
 from views import quake_map
 from views import clusterview
+from views import scatterplot
+
 from components import sidebar
 
 def get_layout():
@@ -41,6 +43,9 @@ def display_page(pathname, session_id):
         return quake_map.layout
     if pathname == '/cluster':
         return clusterview.get_layout( session_id )
+    if pathname == '/scatter':
+        return scatterplot.get_layout(session_id)
+
     else:
         return '404'
 
