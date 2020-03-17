@@ -3,12 +3,14 @@ import json
 from datetime import datetime
 
 import pandas as pd
+from pyproj import Proj
 from app import cache
 from utils.catalog_types import CatalogTypes
 from utils.dateutils import get_datetime
 
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
+PROJECTION = Proj(3879)
 
 
 class EarthquakeData:
@@ -24,15 +26,46 @@ class EarthquakeData:
         """
         return self.data['DATETIME']
 
+    def get_latitudes(self):
+        """Returns a pandas Series with the latitude for each of the
+        earthquakes in the uploaded data.
+        """
+        return self.data['LATITUDE']
+
+    def get_longitudes(self):
+        """Returns a pandas Series with the longitude for each of the
+        earthquakes in the uploaded data.
+        """
+        return self.data['LONGITUDE']
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
     """
 
     def __init__(self, data):
+        """Parse datetime string to datetime object and
+        transform UTM coordinates to latitudes and longitudes.
+        """
         data['TIME_UTC'] = data['TIME_UTC'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
         )
+
+        lat_longs = list(map(
+            lambda x: PROJECTION(x[0], x[1], inverse=True),
+            list(zip(
+                data['EASTING [m]'].apply(
+                    lambda y: float(y.replace(',', '.'))
+                ).to_numpy(),
+                data['NORTHING [m]'].apply(
+                    lambda y: float(y.replace(',', '.'))
+                ).to_numpy()
+            ))
+        ))
+
+        data['LATITUDE'] = pd.Series(list(map(lambda x: x[0], lat_longs)))
+        data['LONGITUDE'] = pd.Series(list(map(lambda x: x[1], lat_longs)))
+
         EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
 
     def get_datetimes(self):
@@ -51,6 +84,12 @@ class BaselEarthquakeData(EarthquakeData):
 
     def get_datetimes(self):
         return self.data['SourceDateTime']
+
+    def get_latitudes(self):
+        return self.data['Lat']
+
+    def get_longitudes(self):
+        return self.data['Lon']
 
 
 class FMEarthquakeData(EarthquakeData):
