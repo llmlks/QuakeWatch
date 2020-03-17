@@ -4,16 +4,13 @@ import re
 from app import cache
 from utils import earthquake_data
 from utils.parsers import qtm_parse, fm_parse, basel_parse, otaniemi_parse
+from utils.catalog_types import CatalogTypes
 
-HYPO_EXT = '.hypo'
-SCEDC_EXT = '.scedc'
-CSV_EXT = '.csv'
-DAT_EXT = '.dat'
 PARSERS = {
-    HYPO_EXT: qtm_parse,
-    SCEDC_EXT: fm_parse,
-    CSV_EXT: otaniemi_parse,
-    DAT_EXT: basel_parse
+    CatalogTypes.HYPO_EXT: qtm_parse,
+    CatalogTypes.SCEDC_EXT: fm_parse,
+    CatalogTypes.CSV_EXT: otaniemi_parse,
+    CatalogTypes.DAT_EXT: basel_parse
 }
 
 
