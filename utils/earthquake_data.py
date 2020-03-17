@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 from app import cache
 from utils.catalog_types import CatalogTypes
+from utils.dateutils import get_datetime
 
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
@@ -17,7 +18,7 @@ class EarthquakeData:
         self.catalog_type = catalog_type
         self.data = data
 
-    def get_datetime(self):
+    def get_datetimes(self):
         """Returns a pandas Series with the datetimes for each of the
         earthquakes in the uploaded data.
         """
@@ -29,9 +30,12 @@ class OtaniemiEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        EarthquakeData.__init__(CatalogTypes.CSV_EXT, data)
+        data['TIME_UTC'] = data['TIME_UTC'].apply(
+            lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
+        )
+        EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
 
-    def get_datetime(self):
+    def get_datetimes(self):
         return self.data['TIME_UTC']
 
 
@@ -40,9 +44,12 @@ class BaselEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        EarthquakeData.__init__(CatalogTypes.DAT_EXT, data)
+        data['SourceDateTime'] = data['SourceDateTime'].apply(
+            lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
+        )
+        EarthquakeData.__init__(self, CatalogTypes.DAT_EXT, data)
 
-    def get_datetime(self):
+    def get_datetimes(self):
         return self.data['SourceDateTime']
 
 
@@ -52,15 +59,15 @@ class FMEarthquakeData(EarthquakeData):
 
     def __init__(self, data):
         data['DATETIME'] = data.apply(
-            lambda x: datetime(
+            lambda x: get_datetime(
                 int(x['YEAR']),
                 int(x['MONTH']),
                 int(x['DAY']),
                 int(x['HOUR']),
                 int(x['MINUTE']),
-                int(x['SECOND'])
+                x['SECOND']
             ), axis=1)
-        EarthquakeData.__init__(CatalogTypes.SCEDC_EXT, data)
+        EarthquakeData.__init__(self, CatalogTypes.SCEDC_EXT, data)
 
 
 class QTMEarthquakeData(EarthquakeData):
@@ -69,15 +76,15 @@ class QTMEarthquakeData(EarthquakeData):
 
     def __init__(self, data):
         data['DATETIME'] = data.apply(
-            lambda x: datetime(
+            lambda x: get_datetime(
                 int(x['YEAR']),
                 int(x['MONTH']),
                 int(x['DAY']),
                 int(x['HOUR']),
                 int(x['MINUTE']),
-                int(x['SECOND'])
+                x['SECOND']
             ), axis=1)
-        EarthquakeData.__init__(CatalogTypes.HYPO_EXT, data)
+        EarthquakeData.__init__(self, CatalogTypes.HYPO_EXT, data)
 
 
 EXTENSIONS = {
@@ -116,24 +123,3 @@ def get_earthquake_data(session_id):
     except Exception as ex:
         print(os.path.basename(__file__), ':', ex)
         return EarthquakeData('', pd.DataFrame())
-
-
-def get_datetimes(df):
-    """Extract datetimes from a DataFrame.
-
-    Returns a pandas Series object that contains datetimes
-    parsed from the given DataFrame.
-
-    Keyword arguments:
-    df -- A pandas DataFrame that contains the following columns:
-        YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
-    """
-    return df.apply(
-        lambda x: datetime(
-            int(x['YEAR']),
-            int(x['MONTH']),
-            int(x['DAY']),
-            int(x['HOUR']),
-            int(x['MINUTE']),
-            int(x['SECOND'])
-        ), axis=1)

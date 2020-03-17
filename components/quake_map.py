@@ -63,9 +63,11 @@ def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
     start_time = min_time + timedelta(seconds=slider_value*time_step)
     end_time = start_time + timedelta(seconds=time_step)
 
-    data = earthquake_data.get_earthquake_data(session_id).data
-    datetimes = earthquake_data.get_datetimes(data)
-    filtered_quakes = data[(datetimes > start_time) & (datetimes < end_time)]
+    eq_data = earthquake_data.get_earthquake_data(session_id)
+    datetimes = eq_data.get_datetimes()
+    filtered_quakes = eq_data.data[
+        (datetimes > start_time) & (datetimes < end_time)
+    ]
 
     quake_circles = [
         dl.Circle(

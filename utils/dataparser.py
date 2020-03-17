@@ -59,7 +59,8 @@ def get_parser(extension):
     Keyword arguments:
     extension -- Extension identifying the catalog type to parse
     """
-    parser = PARSERS.get(extension, None)
+    catalog_type = CatalogTypes(extension)
+    parser = PARSERS.get(catalog_type, None)
     if parser is None:
         raise Exception('Could not parse file of type: {}'.format(extension))
 
