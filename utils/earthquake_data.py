@@ -44,6 +44,12 @@ class EarthquakeData:
         """
         return self.data['DEPTH'] * 1000
 
+    def get_magnitudes(self):
+        """Returns a pandas Series with the local magnitude for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['MAGNITUDE']
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
@@ -80,6 +86,9 @@ class OtaniemiEarthquakeData(EarthquakeData):
     def get_depths(self):
         return -self.data['ALTITUDE [m]']
 
+    def get_magnitudes(self):
+        return self.data['M_HEL']
+
 
 class BaselEarthquakeData(EarthquakeData):
     """Internal representation of the Basel catalog data.
@@ -102,6 +111,9 @@ class BaselEarthquakeData(EarthquakeData):
 
     def get_depths(self):
         return self.data['Dep']
+
+    def get_magnitudes(self):
+        return self.data['MLSED']
 
 
 class FMEarthquakeData(EarthquakeData):
