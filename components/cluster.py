@@ -1,3 +1,8 @@
+
+import datetime
+import math
+from datetime import datetime as dt
+
 import numpy as np
 import pandas as pd
 import dash_html_components as html
@@ -5,16 +10,13 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 import dash
 import dash_leaflet as dl
+from numba import njit, jit
+import networkx as nx
+import dash_bootstrap_components as dbc
 
 from app import app
-import datetime
 from utils import earthquake_data
-import math
-from numba import njit, jit
 import plotly.graph_objects as go
-import networkx as nx
-from datetime import datetime as dt
-import dash_bootstrap_components as dbc
 
 
 def get_data(session_id):
@@ -27,7 +29,7 @@ def compute_edges(df):
     if df.empty:
         return []
 
-    columns = ["TimeStamp", "EVENTID", "TimeStamp", "MAGNITUDE", "LATITUDE", "LONGITUDE"]
+    columns = ["TimeStamp", "EVENTID", "MAGNITUDE", "LATITUDE", "LONGITUDE"]
     data = df[columns].values
     edges = compute_edges_numba(data)
     return edges
@@ -37,6 +39,7 @@ def compute_edges(df):
 def compute_edges_numba(data):
     """Return the list of edges to be used to build the clustering graph.
     The edges are computed used numba compiler for infinite power
+
     Keyword arguments:
     data -- numpy array holding the data (columns specified in compute_edges)
     """
