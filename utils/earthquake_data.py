@@ -34,7 +34,7 @@ class EarthquakeData:
 
     def compute_datetime(self):
         if not self.data.empty:
-            self.data["DateTime"] = self.data.apply(lambda x: get_datetime(x), axis=1)
+            self.data["DateTime"] = self.data.apply(lambda x: get_datetimes(x), axis=1)
             self.data["TimeStamp"] = self.data.DateTime.values.astype(np.int64)/10**9
 
     def get_daterange(self):
