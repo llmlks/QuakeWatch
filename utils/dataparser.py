@@ -1,13 +1,17 @@
 import base64
-import io
-import json
-
-import pandas as pd
+import re
 
 from app import cache
 from utils import earthquake_data
+from utils.parsers import qtm_parse, fm_parse, basel_parse, otaniemi_parse
+from utils.catalog_types import CatalogTypes
 
-HYPO_EXT = '.hypo'
+PARSERS = {
+    CatalogTypes.HYPO_EXT: qtm_parse,
+    CatalogTypes.SCEDC_EXT: fm_parse,
+    CatalogTypes.CSV_EXT: otaniemi_parse,
+    CatalogTypes.DAT_EXT: basel_parse
+}
 
 
 def parse_contents(contents, filename, session_id):
@@ -23,25 +27,44 @@ def parse_contents(contents, filename, session_id):
 
     decoded = base64.b64decode(content_string)
 
-    if filename.endswith(HYPO_EXT):
-        eq_data = qtm_parse(decoded)
-        extension = HYPO_EXT
+    file_extension = get_file_extension(filename)
+    parser = get_parser(file_extension)
 
-    save_uploaded_data(session_id, eq_data, extension)
+    eq_data = parser(decoded)
+
+    save_uploaded_data(session_id, eq_data, file_extension)
     return eq_data
 
 
-def qtm_parse(decoded_contents):
-    """Return a dataframe containing tha parsed QTM catalog.
+def get_file_extension(filename):
+    """Return file extension of the given file or raise an exception
+    if there is none.
 
     Keyword arguments:
-    decoded_contents -- Decoded contents of uploaded file
+    filename -- Name of the file
     """
-    df = pd.read_table(
-        io.StringIO(decoded_contents.decode('utf-8')),
-        sep=r'\s+'
-    )
-    return df
+    extension_regex = re.compile(r'[.]\w+')
+    matches = extension_regex.findall(filename)
+
+    if len(matches) == 0:
+        raise Exception('Not a recognised file type: {}'.format(filename))
+
+    return matches[-1]
+
+
+def get_parser(extension):
+    """Return parser based on given extension or raise exception if
+    no such parser exists for the given extension.
+
+    Keyword arguments:
+    extension -- Extension identifying the catalog type to parse
+    """
+    catalog_type = CatalogTypes(extension)
+    parser = PARSERS.get(catalog_type, None)
+    if parser is None:
+        raise Exception('Could not parse file of type: {}'.format(extension))
+
+    return parser
 
 
 def save_uploaded_data(session_id, data, extension):

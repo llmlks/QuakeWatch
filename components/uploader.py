@@ -28,8 +28,6 @@ def get_table(session_id):
             }
         )
 
-    return html.Div(id='output-data-upload')
-
 
 def get_component(session_id):
     """Return the uploader component.
@@ -55,7 +53,7 @@ def get_component(session_id):
                 'margin': '2.5%'
             }
         ),
-        get_table(session_id),
+        html.Div(id='output-data-upload', children=get_table(session_id)),
     ])
 
 
