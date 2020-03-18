@@ -21,10 +21,10 @@ class EarthquakeData:
         self.data = data
 
     def get_datetimes(self):
-        """Returns a pandas Series with the datetimes for each of the
+        """Return a pandas Series with the datetimes for each of the
         earthquakes in the uploaded data.
         """
-        return self.data['DATETIME']
+        return self.dates
 
     def get_latitudes(self):
         """Returns a pandas Series with the latitude for each of the
@@ -33,22 +33,36 @@ class EarthquakeData:
         return self.data['LATITUDE']
 
     def get_longitudes(self):
-        """Returns a pandas Series with the longitude for each of the
+        """Return a pandas Series with the longitude for each of the
         earthquakes in the uploaded data.
         """
         return self.data['LONGITUDE']
 
     def get_depths(self):
-        """Returns a pandas Series with the depth for each of the
+        """Return a pandas Series with the depth for each of the
         earthquakes in the uploaded data. Unit is meters.
         """
         return self.data['DEPTH'] * 1000
 
     def get_magnitudes(self):
-        """Returns a pandas Series with the local magnitude for each of
+        """Return a pandas Series with the local magnitude for each of
         the earthquakes in the uploaded data.
         """
         return self.data['MAGNITUDE']
+
+    def get_daterange(self):
+        """Return minimum and maximum dates in the data."""
+        return self.dates.min(), self.dates.max() + datetime.timedelta(days=1)
+
+    def get_data_by_daterange(self, datemin, datemax):
+        """Return data filtered to contain only events that happened between
+        given dates, inclusive.
+
+        Keyword arguments:
+        datemin -- Datetime object for the start of the date range
+        datemax -- Datetime object for the end of the date range
+        """
+        return self.data[(self.dates <= datemax) & (self.dates >= datemin)]
 
 
 class OtaniemiEarthquakeData(EarthquakeData):
@@ -59,7 +73,7 @@ class OtaniemiEarthquakeData(EarthquakeData):
         """Parse datetime string to datetime object and
         transform UTM coordinates to latitudes and longitudes.
         """
-        data['TIME_UTC'] = data['TIME_UTC'].apply(
+        self.dates = data['TIME_UTC'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
         )
 
@@ -80,9 +94,6 @@ class OtaniemiEarthquakeData(EarthquakeData):
 
         EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
 
-    def get_datetimes(self):
-        return self.data['TIME_UTC']
-
     def get_depths(self):
         return -self.data['ALTITUDE [m]']
 
@@ -95,13 +106,10 @@ class BaselEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        data['SourceDateTime'] = data['SourceDateTime'].apply(
+        self.dates = data['SourceDateTime'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
         )
         EarthquakeData.__init__(self, CatalogTypes.DAT_EXT, data)
-
-    def get_datetimes(self):
-        return self.data['SourceDateTime']
 
     def get_latitudes(self):
         return self.data['Lat']
@@ -121,7 +129,7 @@ class FMEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        data['DATETIME'] = data.apply(
+        self.dates = data.apply(
             lambda x: get_datetime(
                 int(x['YEAR']),
                 int(x['MONTH']),
@@ -138,7 +146,7 @@ class QTMEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        data['DATETIME'] = data.apply(
+        self.dates = data.apply(
             lambda x: get_datetime(
                 int(x['YEAR']),
                 int(x['MONTH']),
