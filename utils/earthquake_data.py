@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 from pyproj import Proj
@@ -19,6 +19,7 @@ class EarthquakeData:
     def __init__(self, catalog_type, data):
         self.catalog_type = catalog_type
         self.data = data
+        self.dates = pd.Series(dtype='datetime64[ns]')
 
     def get_datetimes(self):
         """Return a pandas Series with the datetimes for each of the
@@ -51,8 +52,8 @@ class EarthquakeData:
         return self.data['MAGNITUDE']
 
     def get_daterange(self):
-        """Return minimum and maximum dates in the data."""
-        return self.dates.min(), self.dates.max() + datetime.timedelta(days=1)
+        """Return minimum and maximum dates in the data as timestamps."""
+        return self.dates.min(), self.dates.max()
 
     def get_data_by_daterange(self, datemin, datemax):
         """Return data filtered to contain only events that happened between
@@ -73,10 +74,6 @@ class OtaniemiEarthquakeData(EarthquakeData):
         """Parse datetime string to datetime object and
         transform UTM coordinates to latitudes and longitudes.
         """
-        self.dates = data['TIME_UTC'].apply(
-            lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
-        )
-
         lat_longs = list(map(
             lambda x: PROJECTION(x[0], x[1], inverse=True),
             list(zip(
@@ -94,6 +91,10 @@ class OtaniemiEarthquakeData(EarthquakeData):
 
         EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
 
+        self.dates = data['TIME_UTC'].apply(
+            lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
+        )
+
     def get_depths(self):
         return -self.data['ALTITUDE [m]']
 
@@ -106,10 +107,10 @@ class BaselEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.DAT_EXT, data)
         self.dates = data['SourceDateTime'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
         )
-        EarthquakeData.__init__(self, CatalogTypes.DAT_EXT, data)
 
     def get_latitudes(self):
         return self.data['Lat']
@@ -129,6 +130,7 @@ class FMEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.SCEDC_EXT, data)
         self.dates = data.apply(
             lambda x: get_datetime(
                 int(x['YEAR']),
@@ -138,7 +140,6 @@ class FMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
-        EarthquakeData.__init__(self, CatalogTypes.SCEDC_EXT, data)
 
 
 class QTMEarthquakeData(EarthquakeData):
@@ -146,6 +147,7 @@ class QTMEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.HYPO_EXT, data)
         self.dates = data.apply(
             lambda x: get_datetime(
                 int(x['YEAR']),
@@ -155,7 +157,6 @@ class QTMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
-        EarthquakeData.__init__(self, CatalogTypes.HYPO_EXT, data)
 
 
 EXTENSIONS = {
