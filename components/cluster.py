@@ -1,4 +1,3 @@
-
 import datetime
 import math
 from datetime import datetime as dt
@@ -13,10 +12,10 @@ import dash_leaflet as dl
 from numba import njit, jit
 import networkx as nx
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
-import plotly.graph_objects as go
 
 
 def get_data(session_id):
@@ -143,9 +142,11 @@ def get_figures(edges_np, df):
 
     G = nx.DiGraph()
     G.add_edges_from(edges)
-
+    # this threshold value is experimental and subject to changes.
     th = 1e3
     to_remove = []
+    # this loop will remove the weak edges. weak edges are the ones
+    # with a distance above the threshold  defined above as th.
     for e in G.edges:
         w = G.edges[e]["w"]
         if w >= th:
@@ -155,7 +156,7 @@ def get_figures(edges_np, df):
     position_dict = compute_pos(df, G.nodes())
 
     UG = G.to_undirected()
-    # extract subgraph
+    # extract the list of disjoint subgraphs
     sub_graphs = [UG.subgraph(c) for c in nx.connected_components(UG)]
 
     figures = get_plots(sub_graphs, position_dict)
