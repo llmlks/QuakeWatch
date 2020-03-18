@@ -13,10 +13,10 @@ import dash_leaflet as dl
 from numba import njit, jit
 import networkx as nx
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
-import plotly.graph_objects as go
 
 
 def get_data(session_id):
