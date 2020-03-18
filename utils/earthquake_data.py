@@ -21,7 +21,12 @@ def get_datetime(x):
         minute = 59
     if second >= 60:
         second = 59
-    return datetime.datetime(int(x.YEAR), int(x.MONTH), int(x.DAY), int(x.HOUR), int(minute), int(second), int(microsec))
+    return datetime.datetime(
+                            int(x.YEAR),
+                            int(x.MONTH), int(x.DAY),
+                            int(x.HOUR), int(minute),
+                            int(second),
+                            int(microsec))
 
 
 class EarthquakeData:
@@ -34,7 +39,9 @@ class EarthquakeData:
 
     def compute_datetime(self):
         if not self.data.empty:
-            self.data["DateTime"] = self.data.apply(lambda x: get_datetimes(x), axis=1)
+            self.data["DateTime"] = self.data.apply(
+                lambda x: get_datetime(x), axis=1)
+
             self.data["TimeStamp"] = self.data.DateTime.values.astype(np.int64)/10**9
 
     def get_daterange(self):
