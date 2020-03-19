@@ -23,15 +23,43 @@ def get_data(session_id):
     return eq_data
 
 
-def compute_edges(df):
-    """Return the list of edges to be used to build the clustering graph."""
+def compute_edges(data, df):
+    """Return the list of edges to be used to build the clustering graph.
+
+    Keyword arguments:
+    data -- numpy array holding the data (columns specified in compute_edges)
+    """
     if df.empty:
         return []
 
-    columns = ["TimeStamp", "EVENTID", "MAGNITUDE", "LATITUDE", "LONGITUDE"]
-    data = df[columns].values
-    edges = compute_edges_numba(data)
-    return edges
+    # the data representation somehow deattach the dates and the data and
+    # in order to work the algothim need all the information in one array
+    # a bit of mannuvering was required to get the data together in an array
+    # and later a dataframe that is used to compute the positions
+    mindate, maxdate = data.get_daterange()
+
+    mag = data.get_magnitudes().values
+    lat = data.get_latitudes().values
+    lon = data.get_longitudes().values
+    ids = data.data["EVENTID"].values
+    dates = data.get_datetimes()
+    dates = dates[(dates <= maxdate) & (dates >= mindate)]  # .values
+
+    print("nice")
+    vals = np.zeros((5, len(dates)))
+    vals[0, :] = dates
+    vals[1, :] = ids
+    vals[2, :] = mag
+    vals[3, :] = lat
+    vals[4, :] = lon
+    vals = vals.T
+
+    new_df = pd.DataFrame(vals)
+    new_df.columns = ["DateTime", "EVENTID",
+                      "MAGNITUDE", "LATITUDE", "LONGITUDE"]
+
+    edges = compute_edges_numba(vals)
+    return edges, new_df
 
 
 @jit(nopython=True)
@@ -73,21 +101,23 @@ def get_component(session_id):
    """
     data = get_data(session_id)
     mindate, maxdate = data.get_daterange()
+    if maxdate - mindate <= datetime.timedelta(days=1):
+        maxdate = maxdate + datetime.timedelta(days=1)
     items = []
     items.append(html.H1("Clustering"))
     items.append(html.H3("Select a date range"))
     items.append(
         html.Div([dcc.DatePickerRange(
-                id='date-pick',
-                min_date_allowed=mindate,
-                max_date_allowed=maxdate,
-            ),
-                html.Div(
-                    id='intermediate-value',
-                    style={'display': 'none'},
-                    children=[session_id]
-                    ),
-                html.Div(id='output-container-date-picker-range')
+            id='date-pick',
+            min_date_allowed=mindate,
+            max_date_allowed=maxdate,
+        ),
+            html.Div(
+            id='intermediate-value',
+            style={'display': 'none'},
+            children=[session_id]
+        ),
+            html.Div(id='output-container-date-picker-range')
         ])
     )
     return html.Div(items)
@@ -96,10 +126,10 @@ def get_component(session_id):
 @app.callback(
     dash.dependencies.Output('output-container-date-picker-range', 'children'),
     [
-     dash.dependencies.Input('date-pick', 'start_date'),
-     dash.dependencies.Input('date-pick', 'end_date'),
-     dash.dependencies.Input('session-id', "children")
-      ])
+        dash.dependencies.Input('date-pick', 'start_date'),
+        dash.dependencies.Input('date-pick', 'end_date'),
+        dash.dependencies.Input('session-id', "children")
+    ])
 def update_output(start_date, end_date, session_id):
     """Return the list of graphs.This is a callback function
 
@@ -113,13 +143,12 @@ def update_output(start_date, end_date, session_id):
 
     data = get_data(session_id)
     df = data.get_data_by_daterange(start_date, end_date)
-
-    edges = compute_edges(df)
+    edges, df = compute_edges(data, df)
     if edges == []:
 
         figures = [go.Figure()]
     else:
-        figures = get_figures(edges, data.data)
+        figures = get_figures(edges, df)
 
     graphs = []
     for i, fig in enumerate(figures):
@@ -176,7 +205,7 @@ def compute_pos(df, nodes):
     pos = {}
     for n in nodes:
         row = df[df["EVENTID"] == int(n)]
-        x = str(row["DateTime"].values[0])
+        x = row["DateTime"].values[0]
         y = row["MAGNITUDE"].values[0]
         pos[n] = (x, y)
     return pos
@@ -208,29 +237,30 @@ def get_plot(graph, positions):
     Xe = []
     Ye = []
     for n in graph:
-        Xe.append(str(positions[n][0]))
+        # we convert the time stamp to a human readeable format
+        Xe.append(dt.fromtimestamp(positions[n][0]//10**9))
         Ye.append(positions[n][1])
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-                x=Xe,
-                y=Ye,
-                mode='lines',
-                line=dict(color='rgb(210,210,210)', width=3),
-                hoverinfo='none', name=""
-                    ))
+        x=Xe,
+        y=Ye,
+        mode='lines',
+        line=dict(color='rgb(210,210,210)', width=3),
+        hoverinfo='none', name=""
+    ))
 
     fig.add_trace(go.Scatter(
-                x=Xe,
-                y=Ye,
-                mode='markers',
-                name='Earthquake',
-                marker=dict(
-                    symbol='circle-dot',
-                    size=18,
-                    color='#6175c1',
-                    line=dict(color='rgb(50,50,50)', width=1)
-                    )
-                    ))
+        x=Xe,
+        y=Ye,
+        mode='markers',
+        name='Earthquake',
+        marker=dict(
+            symbol='circle-dot',
+            size=18,
+            color='#6175c1',
+            line=dict(color='rgb(50,50,50)', width=1)
+        )
+    ))
 
     return fig

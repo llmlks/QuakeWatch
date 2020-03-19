@@ -5,3 +5,4 @@ dash-leaflet>=0.0.3
 Flask-Caching>=1.8.0
 numba
 networkx
+pyproj>=2.5.0

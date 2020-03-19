@@ -1,32 +1,16 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
+from pyproj import Proj
 from app import cache
-import math
-import datetime
-import numpy as np
-
+from utils.catalog_types import CatalogTypes
+from utils.dateutils import get_datetime
 
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
-
-
-def get_datetime(x):
-    millisec, second = math.modf(x.SECOND)
-    microsec = millisec * 1000000
-    minute = x.MINUTE
-    if minute >= 60:
-        minute = 59
-    if second >= 60:
-        second = 59
-    return datetime.datetime(
-                            int(x.YEAR),
-                            int(x.MONTH), int(x.DAY),
-                            int(x.HOUR), int(minute),
-                            int(second),
-                            int(microsec))
+PROJECTION = Proj(3879)
 
 
 class EarthquakeData:
@@ -35,26 +19,153 @@ class EarthquakeData:
     def __init__(self, catalog_type, data):
         self.catalog_type = catalog_type
         self.data = data
-        self.compute_datetime()
+        self.dates = pd.Series(dtype='datetime64[ns]')
 
-    def compute_datetime(self):
-        if not self.data.empty:
-            self.data["DateTime"] = self.data.apply(
-                lambda x: get_datetime(x), axis=1)
+    def get_datetimes(self):
+        """Return a pandas Series with the datetimes for each of the
+        earthquakes in the uploaded data.
+        """
+        return self.dates
 
-            self.data["TimeStamp"] = self.data.DateTime.values.astype(np.int64)/10**9
+    def get_latitudes(self):
+        """Returns a pandas Series with the latitude for each of the
+        earthquakes in the uploaded data.
+        """
+        return self.data['LATITUDE']
+
+    def get_longitudes(self):
+        """Return a pandas Series with the longitude for each of the
+        earthquakes in the uploaded data.
+        """
+        return self.data['LONGITUDE']
+
+    def get_depths(self):
+        """Return a pandas Series with the depth for each of the
+        earthquakes in the uploaded data. Unit is meters.
+        """
+        return self.data['DEPTH'] * 1000
+
+    def get_magnitudes(self):
+        """Return a pandas Series with the local magnitude for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['MAGNITUDE']
 
     def get_daterange(self):
-        mindate = self.data["DateTime"].min()
-        maxdate = self.data["DateTime"].max() + datetime.timedelta(days=1)
-
-        return mindate, maxdate
+        """Return minimum and maximum dates in the data as timestamps."""
+        return self.dates.min(), self.dates.max()
 
     def get_data_by_daterange(self, datemin, datemax):
+        """Return data filtered to contain only events that happened between
+        given dates, inclusive.
 
-        df = self.data[self.data["DateTime"] <= datemax]
-        df = df[df["DateTime"] >= datemin]
-        return df
+        Keyword arguments:
+        datemin -- Datetime object for the start of the date range
+        datemax -- Datetime object for the end of the date range
+        """
+        return self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+
+
+class OtaniemiEarthquakeData(EarthquakeData):
+    """Internal representation of the Otaniemi catalog data.
+    """
+
+    def __init__(self, data):
+        """Parse datetime string to datetime object and
+        transform UTM coordinates to latitudes and longitudes.
+        """
+        lat_longs = list(map(
+            lambda x: PROJECTION(x[0], x[1], inverse=True),
+            list(zip(
+                data['EASTING [m]'].apply(
+                    lambda y: float(y.replace(',', '.'))
+                ).to_numpy(),
+                data['NORTHING [m]'].apply(
+                    lambda y: float(y.replace(',', '.'))
+                ).to_numpy()
+            ))
+        ))
+
+        data['LATITUDE'] = pd.Series(list(map(lambda x: x[0], lat_longs)))
+        data['LONGITUDE'] = pd.Series(list(map(lambda x: x[1], lat_longs)))
+
+        EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
+
+        self.dates = data['TIME_UTC'].apply(
+            lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
+        )
+
+    def get_depths(self):
+        return -self.data['ALTITUDE [m]']
+
+    def get_magnitudes(self):
+        return self.data['M_HEL']
+
+
+class BaselEarthquakeData(EarthquakeData):
+    """Internal representation of the Basel catalog data.
+    """
+
+    def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.DAT_EXT, data)
+        self.dates = data['SourceDateTime'].apply(
+            lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
+        )
+
+    def get_latitudes(self):
+        return self.data['Lat']
+
+    def get_longitudes(self):
+        return self.data['Lon']
+
+    def get_depths(self):
+        return self.data['Dep']
+
+    def get_magnitudes(self):
+        return self.data['MLSED']
+
+
+class FMEarthquakeData(EarthquakeData):
+    """Internal representation of the FM catalog data.
+    """
+
+    def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.SCEDC_EXT, data)
+        self.dates = data.apply(
+            lambda x: get_datetime(
+                int(x['YEAR']),
+                int(x['MONTH']),
+                int(x['DAY']),
+                int(x['HOUR']),
+                int(x['MINUTE']),
+                x['SECOND']
+            ), axis=1)
+
+
+class QTMEarthquakeData(EarthquakeData):
+    """Internal representation of the QTM catalog data.
+    """
+
+    def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.HYPO_EXT, data)
+        self.dates = data.apply(
+            lambda x: get_datetime(
+                int(x['YEAR']),
+                int(x['MONTH']),
+                int(x['DAY']),
+                int(x['HOUR']),
+                int(x['MINUTE']),
+                x['SECOND']
+            ), axis=1)
+
+
+EXTENSIONS = {
+    CatalogTypes.CSV_EXT: OtaniemiEarthquakeData,
+    CatalogTypes.DAT_EXT: BaselEarthquakeData,
+    CatalogTypes.HYPO_EXT: QTMEarthquakeData,
+    CatalogTypes.SCEDC_EXT: FMEarthquakeData
+}
+
 
 # Cache timeout set to 10 hours.
 @cache.memoize(timeout=36000)
@@ -75,31 +186,12 @@ def get_earthquake_data(session_id):
             os.remove(TEMP_FILE_DF % session_id)
             os.remove(TEMP_FILE_EXT % session_id)
 
-            return EarthquakeData(extension, data)
+            catalog_type = CatalogTypes(extension)
+            data_wrapper = EXTENSIONS[catalog_type]
+            return data_wrapper(data)
 
         return EarthquakeData('', pd.DataFrame())
 
     except Exception as ex:
         print(os.path.basename(__file__), ':', ex)
         return EarthquakeData('', pd.DataFrame())
-
-
-def get_datetimes(df):
-    """Extract datetimes from a DataFrame.
-
-    Returns a pandas Series object that contains datetimes
-    parsed from the given DataFrame.
-
-    Keyword arguments:
-    df -- A pandas DataFrame that contains the following columns:
-        YEAR, MONTH, DAY, HOUR, MINUTE, SECOND
-    """
-    return df.apply(
-        lambda x: datetime(
-            int(x['YEAR']),
-            int(x['MONTH']),
-            int(x['DAY']),
-            int(x['HOUR']),
-            int(x['MINUTE']),
-            int(x['SECOND'])
-        ), axis=1)
