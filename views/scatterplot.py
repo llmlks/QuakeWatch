@@ -15,10 +15,10 @@ def get_layout(session_id):
     # TODO: Get these from user configuration
     min_time = datetime(2008, 1, 1, 0, 4)
     max_time = datetime(2008, 1, 9, 5)
-    x_axis = eq_data.get_datetimes()
-    y_axis = eq_data.get_depths()
+    x_axis = eq_data.get_datetimes()[:1000]
+    y_axis = eq_data.get_depths()[:1000]
     color = 'red'
-    size = eq_data.get_magnitudes()
+    size = eq_data.get_magnitudes()[:1000]
 
     return scatterplot.get_component(
         session_id, min_time, max_time, x_axis, y_axis, color, size
@@ -38,10 +38,10 @@ def update_output(session_id, time_frame, xaxis, yaxis, color, size):
     min_time = datetime(2008, 1, 1, 0, 4)
     max_time = datetime(2008, 1, 9, 5)
     eq_data = earthquake_data.get_earthquake_data(session_id)
-    x_axis = eq_data.get_datetimes()
-    y_axis = eq_data.get_magnitudes()
+    x_axis = eq_data.get_datetimes()[:1000]
+    y_axis = eq_data.get_depths()[:1000]
     color = 'red'
-    size = eq_data.get_depths()
+    size = eq_data.get_magnitudes()[:1000]
     return scatterplot.update_output(
         session_id, min_time, max_time, x_axis, y_axis, color, size
     )
