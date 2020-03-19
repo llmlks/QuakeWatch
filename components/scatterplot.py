@@ -4,32 +4,51 @@ import dash_core_components as dcc
 from utils import earthquake_data
 
 
-def get_graph(session_id):
-    """Return an empty scatterplot graph, if data has been uploaded.
-    Otherwise return a text informing the user, that no data was found.
+def get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size):
+    """Return a scatterplot with example points.
 
     Keywords arguments:
     session_id -- ID of the current session
+    min_time -- A datetime object representing the start of the time frame
+    max_time -- A datetime object representing the end of the time frame
+    x_axis -- A pandas Series of the x-axis values
+    y_axis -- A pandas Series of the y-axis values
+    color -- A pandas Series of the marker color values
+    size -- A pandas Series of the marker sizes
     """
-    eq_data = earthquake_data.get_earthquake_data(session_id)
+    return dcc.Graph(
+        # The size is 10 times to make points visible for this example
+        figure={
+            'data': [
+                {'x': x_axis, 'y': y_axis, 'mode': 'markers',
+                    'marker': {'size': size*10, 'color': color}}
+            ],
+            'layout': {
+                'title': 'Scatterplot'
+            }
+        }
+    )
 
-    if eq_data is not None and eq_data.data.shape != (0, 0):
-        df = eq_data.data
-        return dcc.Graph()
-    return html.Div(["Uploaded data not found."], id='output-scatterplot')
 
-
-def get_component(session_id):
+def get_component(session_id, min_time, max_time, x_axis, y_axis, color, size):
     """
     Return the scatterplot component.
 
-    Keyword arguments:
+    Keywords arguments:
     session_id -- ID of the current session
+    min_time -- A datetime object representing the start of the time frame
+    max_time -- A datetime object representing the end of the time frame
+    x_axis -- A pandas Series of the x-axis values
+    y_axis -- A pandas Series of the y-axis values
+    color -- A pandas Series of the marker color values
+    size -- A pandas Series of the marker sizes
     """
     return html.Div([
-        get_graph(session_id)
+        get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size)
     ])
 
 
-def update_output(session_id):
-    return get_graph(session_id)
+def update_output(session_id, min_time, max_time, x_axis, y_axis, color, size):
+    return get_graph(
+        session_id, min_time, max_time, x_axis, y_axis, color, size
+    )
