@@ -7,7 +7,7 @@ from utils import earthquake_data
 def get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size):
     """Return a scatterplot with example points.
 
-    Keywords arguments:
+    Keyword arguments:
     session_id -- ID of the current session
     min_time -- A datetime object representing the start of the time frame
     max_time -- A datetime object representing the end of the time frame
@@ -41,7 +41,7 @@ def get_component(session_id, min_time, max_time, x_axis, y_axis, color, size):
     """
     Return the scatterplot component.
 
-    Keywords arguments:
+    Keyword arguments:
     session_id -- ID of the current session
     min_time -- A datetime object representing the start of the time frame
     max_time -- A datetime object representing the end of the time frame
