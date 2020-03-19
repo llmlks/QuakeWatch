@@ -10,7 +10,7 @@ def get_layout(session_id):
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
     if eq_data is None or eq_data.data.shape == (0, 0):
-        return 'No data found'
+        return 'No uploaded data found'
 
     # TODO: Get these from user configuration
     min_time = datetime(2008, 1, 1, 0, 4)
