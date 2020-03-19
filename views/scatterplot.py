@@ -17,7 +17,7 @@ def get_layout(session_id):
     max_time = datetime(2008, 1, 9, 5)
     x_axis = eq_data.get_datetimes()
     y_axis = eq_data.get_depths()
-    color = eq_data.get_latitudes()
+    color = 'red'
     size = eq_data.get_magnitudes()
 
     return scatterplot.get_component(

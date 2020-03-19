@@ -16,6 +16,7 @@ def get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size):
     color -- A pandas Series of the marker color values
     size -- A pandas Series of the marker sizes
     """
+
     return dcc.Graph(
         # The size is 10 times to make points visible for this example
         figure={
@@ -24,7 +25,13 @@ def get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size):
                     'marker': {'size': size*10, 'color': color}}
             ],
             'layout': {
-                'title': 'Scatterplot'
+                'title': 'Scatterplot',
+                'xaxis': {
+                    'title': 'Date'
+                },
+                'yaxis': {
+                    'title': 'Depth'
+                }
             }
         }
     )
