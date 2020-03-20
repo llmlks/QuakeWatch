@@ -51,6 +51,12 @@ class EarthquakeData:
         """
         return self.data['MAGNITUDE']
 
+    def get_eventids(self):
+        """Return a pandas Series with the event IDs for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['EVENTID']
+
     def get_daterange(self):
         """Return minimum and maximum dates in the data as timestamps."""
         return self.dates.min(), self.dates.max()
@@ -101,6 +107,9 @@ class OtaniemiEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['M_HEL']
 
+    def get_eventids(self):
+        return self.data['ID']
+
 
 class BaselEarthquakeData(EarthquakeData):
     """Internal representation of the Basel catalog data.
@@ -123,6 +132,9 @@ class BaselEarthquakeData(EarthquakeData):
 
     def get_magnitudes(self):
         return self.data['MLSED']
+
+    def get_eventids(self):
+        return self.data['ID']
 
 
 class FMEarthquakeData(EarthquakeData):

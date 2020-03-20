@@ -41,7 +41,7 @@ def compute_edges(data, df):
     mag = data.get_magnitudes().values
     lat = data.get_latitudes().values
     lon = data.get_longitudes().values
-    ids = data.data["EVENTID"].values
+    ids = data.get_eventids().values
     dates = data.get_datetimes()
     dates = dates[(dates <= maxdate) & (dates >= mindate)]  # .values
 
