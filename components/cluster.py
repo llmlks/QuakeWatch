@@ -30,22 +30,17 @@ def compute_edges(data, df):
     data -- numpy array holding the data (columns specified in compute_edges)
     """
     if df.empty:
-        return []
-
+        return [], pd.DataFrame()
     # the data representation somehow deattach the dates and the data and
     # in order to work the algothim need all the information in one array
     # a bit of mannuvering was required to get the data together in an array
     # and later a dataframe that is used to compute the positions
-    mindate, maxdate = data.get_daterange()
-
     mag = data.get_magnitudes().values
     lat = data.get_latitudes().values
     lon = data.get_longitudes().values
     ids = data.get_eventids().values
     dates = data.get_datetimes()
-    dates = dates[(dates <= maxdate) & (dates >= mindate)]  # .values
 
-    print("nice")
     vals = np.zeros((5, len(dates)))
     vals[0, :] = dates
     vals[1, :] = ids
@@ -139,10 +134,15 @@ def update_output(start_date, end_date, session_id):
     end_date -- datetime , from the calendar component
    """
     if start_date is None or end_date is None:
-        return "No Falafel for you"
+        return "No Data"
+    print("Computing clusters...")
+    start_date = dt.strptime(start_date,  "%Y-%m-%d")
+    end_date = dt.strptime(end_date,  "%Y-%m-%d")
 
     data = get_data(session_id)
-    df = data.get_data_by_daterange(start_date, end_date)
+    data = data.filter_by_dates(start_date, end_date)
+
+    df = data.data
     edges, df = compute_edges(data, df)
     if edges == []:
 
@@ -153,7 +153,7 @@ def update_output(start_date, end_date, session_id):
     graphs = []
     for i, fig in enumerate(figures):
         graphs.append(dcc.Graph(id="fig-{}".format(i),  figure=fig))
-
+    print("Done!")
     return graphs
 
 
@@ -179,7 +179,6 @@ def get_figures(edges_np, df):
     for e in G.edges:
         w = G.edges[e]["w"]
         if w >= th:
-            print("remove")
             to_remove.append((e[0], e[1]))
     G.remove_edges_from(to_remove)
     position_dict = compute_pos(df, G.nodes())

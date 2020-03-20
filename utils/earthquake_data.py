@@ -51,6 +51,12 @@ class EarthquakeData:
         """
         return self.data['MAGNITUDE']
 
+    def get_eventids(self):
+        """Return a pandas Series with the event IDs for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['EVENTID']
+
     def get_daterange(self):
         """Return minimum and maximum dates in the data as timestamps."""
         return self.dates.min(), self.dates.max()
@@ -66,7 +72,8 @@ class EarthquakeData:
         return self.data[(self.dates <= datemax) & (self.dates >= datemin)]
 
     def filter_by_dates(self, datemin, datemax):
-        """Return a new EarthquakeData object filtered to contain only events that
+        """Return a new EarthquakeData object filtered to contain only events
+        that
         happened between given dates, inclusive.
 
         Keyword arguments:
