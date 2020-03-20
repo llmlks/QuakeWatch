@@ -65,6 +65,19 @@ class EarthquakeData:
         """
         return self.data[(self.dates <= datemax) & (self.dates >= datemin)]
 
+    def filter_by_dates(self, datemin, datemax):
+        """Return a new EarthquakeData object filtered to contain only events that
+        happened between given dates, inclusive.
+
+        Keyword arguments:
+        datemin -- Datetime object for the start of the date range
+        datemax -- Datetime object for the end of the date range
+        """
+        return EarthquakeData(
+            self.catalog_type,
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
@@ -101,6 +114,11 @@ class OtaniemiEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['M_HEL']
 
+    def filter_by_dates(self, datemin, datemax):
+        return OtaniemiEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
 
 class BaselEarthquakeData(EarthquakeData):
     """Internal representation of the Basel catalog data.
@@ -124,6 +142,11 @@ class BaselEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['MLSED']
 
+    def filter_by_dates(self, datemin, datemax):
+        return BaselEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
 
 class FMEarthquakeData(EarthquakeData):
     """Internal representation of the FM catalog data.
@@ -141,6 +164,11 @@ class FMEarthquakeData(EarthquakeData):
                 x['SECOND']
             ), axis=1)
 
+    def filter_by_dates(self, datemin, datemax):
+        return FMEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
 
 class QTMEarthquakeData(EarthquakeData):
     """Internal representation of the QTM catalog data.
@@ -157,6 +185,11 @@ class QTMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
+
+    def filter_by_dates(self, datemin, datemax):
+        return QTMEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
 
 
 EXTENSIONS = {
