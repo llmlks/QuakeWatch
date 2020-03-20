@@ -6,9 +6,9 @@ from components.config import date_picker
 from components.config import timestep_picker
 
 
-def get_component(min_date, max_date):
+def get_component(min_date, max_date, default_end_date):
     return html.Div([
-        date_picker.get_component(min_date, max_date),
+        date_picker.get_component(min_date, max_date, default_end_date),
         timestep_picker.get_component(),
         dbc.Button("Apply", id='apply', outline=True,
                     color="success")

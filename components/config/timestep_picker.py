@@ -2,6 +2,8 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
+DEFAULT_TIMESTEP = 24*60*60
+
 
 def get_component():
     return html.Div(children=[
@@ -18,6 +20,6 @@ def get_component():
               {'label': 'Days', 'value': 24*60*60},
               {'label': 'Weeks', 'value': 7*24*60*60},
             ],
-            value=60*60
+            value=DEFAULT_TIMESTEP
         )
     ])
