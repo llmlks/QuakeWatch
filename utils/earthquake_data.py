@@ -114,6 +114,9 @@ class OtaniemiEarthquakeData(EarthquakeData):
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
         )
 
+    def get_eventids(self):
+        return self.data['ID']
+
     def get_depths(self):
         return -self.data['ALTITUDE [m]']
 
@@ -135,6 +138,9 @@ class BaselEarthquakeData(EarthquakeData):
         self.dates = data['SourceDateTime'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
         )
+
+    def get_eventids(self):
+        return self.data['ID']
 
     def get_latitudes(self):
         return self.data['Lat']
