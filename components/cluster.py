@@ -23,14 +23,12 @@ def get_data(session_id):
     return eq_data
 
 
-def compute_edges(data, df):
+def compute_edges(data):
     """Return the list of edges to be used to build the clustering graph.
 
     Keyword arguments:
     data -- numpy array holding the data (columns specified in compute_edges)
     """
-    if df.empty:
-        return [], pd.DataFrame()
     # the data representation somehow deattach the dates and the data and
     # in order to work the algothim need all the information in one array
     # a bit of mannuvering was required to get the data together in an array
@@ -143,9 +141,11 @@ def update_output(start_date, end_date, session_id):
     data = data.filter_by_dates(start_date, end_date)
 
     df = data.data
-    edges, df = compute_edges(data, df)
-    if edges == []:
+    edges = []
+    if not df.empty:
+        edges, df = compute_edges(data)
 
+    if edges == []:
         figures = [go.Figure()]
     else:
         figures = get_figures(edges, df)
