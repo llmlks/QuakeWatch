@@ -1,0 +1,27 @@
+.config-label {
+    margin: 10px;
+    margin-left: 0px;
+}
+
+#timestep-value, #timestep-unit {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#timestep-value {
+    width: calc(278px * 0.3);
+    margin-right: 5px;
+}
+
+#timestep-unit {
+    width: calc(278px * 0.7);
+    margin-left: 5px;
+}
+
+#timestep-unit .Select-control {
+    height: 39px;
+}
+
+#apply {
+    margin-top: 15px;
+}
