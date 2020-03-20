@@ -73,8 +73,7 @@ class EarthquakeData:
 
     def filter_by_dates(self, datemin, datemax):
         """Return a new EarthquakeData object filtered to contain only events
-        that
-        happened between given dates, inclusive.
+        that happened between given dates, inclusive.
 
         Keyword arguments:
         datemin -- Datetime object for the start of the date range
