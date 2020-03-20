@@ -141,13 +141,10 @@ def update_output(start_date, end_date, session_id):
     data = data.filter_by_dates(start_date, end_date)
 
     df = data.data
-    edges = []
-    if not df.empty:
-        edges, df = compute_edges(data)
-
-    if edges == []:
+    if df.empty:
         figures = [go.Figure()]
     else:
+        edges, df = compute_edges(data)
         figures = get_figures(edges, df)
 
     graphs = []
