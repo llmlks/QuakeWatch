@@ -48,14 +48,18 @@ def get_layout(session_id):
      Input('apply', 'n_clicks'),
      Input('session-id', 'children')],
     [State('date-pick', 'start_date'),
-     State('date-pick', 'end_date')])
-def update_map(slider_value, apply_clicks, session_id, start_date, end_date):
+     State('date-pick', 'end_date'),
+     State('timestep-value', 'value'),
+     State('timestep-unit', 'value')])
+def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
+               timestep_value, timestep_seconds):
     if apply_clicks is None:
         raise PreventUpdate
+    timestep = timestep_seconds * timestep_value
     start_date = datetime.fromisoformat(start_date)
     end_date = datetime.fromisoformat(end_date)
     return quake_map.get_component(
-        start_date, end_date, time_step, slider_value, session_id
+        start_date, end_date, timestep, slider_value, session_id
     )
 
 
@@ -64,12 +68,16 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date):
     [Input('apply', 'n_clicks'),
      Input('session-id', 'children')],
     [State('date-pick', 'start_date'),
-     State('date-pick', 'end_date')])
-def update_time_slider(apply_clicks, session_id, start_date, end_date):
+     State('date-pick', 'end_date'),
+     State('timestep-value', 'value'),
+     State('timestep-unit', 'value')])
+def update_time_slider(apply_clicks, session_id, start_date, end_date,
+                       timestep_value, timestep_seconds):
     if apply_clicks is None:
         raise PreventUpdate
     start_date = datetime.fromisoformat(start_date)
     end_date = datetime.fromisoformat(end_date)
+    timestep = timestep_seconds * timestep_value
     return time_slider.get_component(
-        start_date, end_date, time_step
+        start_date, end_date, timestep
     )

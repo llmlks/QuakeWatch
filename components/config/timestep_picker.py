@@ -14,7 +14,10 @@ def get_component():
             options=[
               {'label': 'Seconds', 'value': 1},
               {'label': 'Minutes', 'value': 60},
+              {'label': 'Hours', 'value': 60*60},
+              {'label': 'Days', 'value': 24*60*60},
+              {'label': 'Weeks', 'value': 7*24*60*60},
             ],
-            value=1
+            value=60*60
         )
     ])
