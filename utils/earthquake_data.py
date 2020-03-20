@@ -51,6 +51,12 @@ class EarthquakeData:
         """
         return self.data['MAGNITUDE']
 
+    def get_eventids(self):
+        """Return a pandas Series with the event IDs for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['EVENTID']
+
     def get_daterange(self):
         """Return minimum and maximum dates in the data as timestamps."""
         return self.dates.min(), self.dates.max()
@@ -66,8 +72,8 @@ class EarthquakeData:
         return self.data[(self.dates <= datemax) & (self.dates >= datemin)]
 
     def filter_by_dates(self, datemin, datemax):
-        """Return a new EarthquakeData object filtered to contain only events that
-        happened between given dates, inclusive.
+        """Return a new EarthquakeData object filtered to contain only events
+        that happened between given dates, inclusive.
 
         Keyword arguments:
         datemin -- Datetime object for the start of the date range
@@ -108,6 +114,9 @@ class OtaniemiEarthquakeData(EarthquakeData):
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
         )
 
+    def get_eventids(self):
+        return self.data['ID']
+
     def get_depths(self):
         return -self.data['ALTITUDE [m]']
 
@@ -129,6 +138,9 @@ class BaselEarthquakeData(EarthquakeData):
         self.dates = data['SourceDateTime'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
         )
+
+    def get_eventids(self):
+        return self.data['ID']
 
     def get_latitudes(self):
         return self.data['Lat']
