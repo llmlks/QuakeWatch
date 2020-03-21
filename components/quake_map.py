@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_leaflet as dl
@@ -18,17 +16,11 @@ attribution = """Maps &copy;
 OpenStreetMap contributors</a>"""
 
 
-def get_component(min_time, max_time, time_step, slider_value, session_id):
+def get_component(eq_data):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
-    time_step -- The time step as seconds. Earthquakes that happened within
-        the time window of this size are shown.
-    slider_value -- The value of the time slider. Controls the temporal
-        position of the time window for which earthquakes are shown.
-    session_id -- ID of the current session
+    eq_data -- EarthquakeData object containing the quakes to be drawn.
     """
 
     return dl.Map(
@@ -41,33 +33,17 @@ def get_component(min_time, max_time, time_step, slider_value, session_id):
                 attribution=attribution),
             html.Div(id='test-id', children=[
                 get_event_layer(
-                        min_time, max_time, time_step, slider_value, session_id
+                        eq_data
                 )])
         ])
 
 
-def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
+def get_event_layer(eq_data):
     """Return a LayerGroup that contains earthquakes represented as circles.
 
-    The shown earthquake events are selected based on the argument values.
-
     Keyword arguments:
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
-    time_step -- The time step as seconds. Earthquakes that happened within
-        the time window of this size are shown.
-    slider_value -- The value of the time slider. Controls the temporal
-        position of the time window for which earthquakes are shown.
-    session_id -- ID of the current session
+    eq_data -- EarthquakeData object containing the quakes to be drawn.
     """
-    start_time = min_time + timedelta(seconds=slider_value*time_step)
-    end_time = start_time + timedelta(seconds=time_step)
-
-    eq_data = earthquake_data.get_earthquake_data(session_id)
-    datetimes = eq_data.get_datetimes()
-    filtered_quakes = eq_data.data[
-        (datetimes > start_time) & (datetimes < end_time)
-    ]
 
     quake_circles = [
         dl.Circle(
@@ -77,6 +53,6 @@ def get_event_layer(min_time, max_time, time_step, slider_value, session_id):
             fillOpacity=0.1,
             weight=2
         )
-        for _, quake in filtered_quakes.iterrows()]
+        for _, quake in eq_data.data.iterrows()]
 
     return dl.LayerGroup(id='layer-id', children=quake_circles)
