@@ -17,15 +17,10 @@ from utils import earthquake_data
 def get_layout(session_id):
     """Return map layout with interactive map, time slider and configuration.
 
-    By default shows earthquakes during the first week of the data.
+    This method draws the earthquakes that happened during the first week of
+    the data. To update the map, use method `update_map`.
 
     Keyword arguments:
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
-    time_step -- The time step as seconds. Earthquakes that happened within
-        the time window of this size are shown.
-    slider_value -- The value of the time slider. Controls the temporal
-        position of the time window for which earthquakes are shown.
     session_id -- ID of the current session
     """
 
@@ -61,6 +56,16 @@ def get_layout(session_id):
 
 
 def filter_data(eq_data, start_date, timestep, slider_value):
+    """Filter data based on the given arguments.
+
+    Keyword arguments:
+    eq_data -- EarthquakeData object that contains the unfiltered data.
+    start_date --  Datetime object representing the start of the time frame
+    timestep -- The timestep as seconds. Earthquakes that happened within
+        a time window of this size are returned.
+    slider_value -- The value of the time slider. Controls the temporal
+        position of the time window for which earthquakes are shown.
+    """
     start_time = start_date + timedelta(seconds=slider_value*timestep)
     end_time = start_time + timedelta(seconds=timestep)
 
@@ -88,8 +93,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         Between 0 and steps-1.
     apply_clicks -- The number of clicks on the apply button.
     session_id -- ID of the current session
-    start_date -- A string from the date picker representing the start date
-    end_date -- A string from the date picker representing the end date
+    start_date -- String from the date picker representing the start date
+    end_date -- String from the date picker representing the end date
     timestep_value -- The time step in some time unit. Earthquakes that
         happened within the time window of this size are shown.
     timestep_seconds -- The number of seconds the selected time unit is
@@ -123,8 +128,8 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
     Keyword arguments:
     apply_clicks -- The number of clicks on the apply button.
     session_id -- ID of the current session
-    start_date -- A string from the date picker representing the start date
-    end_date -- A string from the date picker representing the end date
+    start_date -- String from the date picker representing the start date
+    end_date -- String from the date picker representing the end date
     timestep_value -- The time step in some time unit. Earthquakes that
         happened within the time window of this size are shown.
     timestep_seconds -- The number of seconds the selected time unit is
@@ -132,9 +137,11 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
     """
     if apply_clicks is None:
         raise PreventUpdate
+
+    timestep = timestep_seconds * timestep_value
     start_date = datetime.fromisoformat(start_date)
     end_date = datetime.fromisoformat(end_date)
-    timestep = timestep_seconds * timestep_value
+
     return time_slider.get_component(
         start_date, end_date, timestep
     )

@@ -6,6 +6,8 @@ DEFAULT_TIMESTEP = 24*60*60
 
 
 def get_component():
+    """Return the timestep picker component."""
+
     return html.Div(children=[
         html.Div(className='config-label', children='Timestep'),
         dbc.Input(id='timestep-value', type='number', min=1, step=1, value=1),

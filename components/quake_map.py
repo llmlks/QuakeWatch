@@ -20,13 +20,7 @@ def get_component(eq_data):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
-    time_step -- The time step as seconds. Earthquakes that happened within
-        the time window of this size are shown.
-    slider_value -- The value of the time slider. Controls the temporal
-        position of the time window for which earthquakes are shown.
-    session_id -- ID of the current session
+    eq_data -- EarthquakeData object containing the quakes to be drawn.
     """
 
     return dl.Map(
@@ -47,16 +41,8 @@ def get_component(eq_data):
 def get_event_layer(eq_data):
     """Return a LayerGroup that contains earthquakes represented as circles.
 
-    The shown earthquake events are selected based on the argument values.
-
     Keyword arguments:
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
-    time_step -- The time step as seconds. Earthquakes that happened within
-        the time window of this size are shown.
-    slider_value -- The value of the time slider. Controls the temporal
-        position of the time window for which earthquakes are shown.
-    session_id -- ID of the current session
+    eq_data -- EarthquakeData object containing the quakes to be drawn.
     """
 
     quake_circles = [
