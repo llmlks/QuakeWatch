@@ -17,7 +17,7 @@ def get_component(min_date, max_date, default_end_date):
             id='date-pick',
             min_date_allowed=min_date,
             max_date_allowed=max_date,
-            start_date=min_date,
-            end_date=default_end_date
+            start_date=min_date.date(),
+            end_date=default_end_date.date()
         )
     ])

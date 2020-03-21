@@ -102,8 +102,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     """
 
     timestep = timestep_seconds * timestep_value
-    start_date = datetime.fromisoformat(start_date)
-    end_date = datetime.fromisoformat(end_date)
+    start_date = get_datetime_from_str(start_date)
+    end_date = get_datetime_from_str(end_date)
 
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = filter_data(eq_data, start_date, timestep, slider_value)
@@ -139,9 +139,18 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
         raise PreventUpdate
 
     timestep = timestep_seconds * timestep_value
-    start_date = datetime.fromisoformat(start_date)
-    end_date = datetime.fromisoformat(end_date)
+    start_date = get_datetime_from_str(start_date)
+    end_date = get_datetime_from_str(end_date)
 
     return time_slider.get_component(
         start_date, end_date, timestep
     )
+
+
+def get_datetime_from_str(date_str):
+    """Parse the given date string to a datetime object.
+
+    Keyword arguments:
+    date_str -- String in the format YYYY-MM-DD
+    """
+    return datetime(*map(int, date_str.split('-')))
