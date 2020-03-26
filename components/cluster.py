@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
+from components.config import date_picker
 
 
 def get_data(session_id):
@@ -100,16 +101,13 @@ def get_component(session_id):
     items.append(html.H1("Clustering"))
     items.append(html.H3("Select a date range"))
     items.append(
-        html.Div([dcc.DatePickerRange(
-            id='date-pick',
-            min_date_allowed=mindate,
-            max_date_allowed=maxdate,
-        ),
+        html.Div([
+            date_picker.get_component(mindate, maxdate, None),
             html.Div(
-            id='intermediate-value',
-            style={'display': 'none'},
-            children=[session_id]
-        ),
+                id='intermediate-value',
+                style={'display': 'none'},
+                children=[session_id]
+            ),
             html.Div(id='output-container-date-picker-range')
         ])
     )
