@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gunicorn --workers=5 index:app
+gunicorn --workers=5 index:server
