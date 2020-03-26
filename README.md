@@ -17,12 +17,18 @@ pip install -r requirements.txt
 
 Create a new file called ```config.py``` in the app root folder that contains the line ```THUNDERFOREST_API_KEY = '???'``` where ```???``` is replaced by a valid Thunderforest API key.
 
-Run the app:
+Run the development server:
 
 ```
 python index.py
 ```
 You can access the app on your browser at http://127.0.0.1:8050
+
+__OR__ Run the production server (Starts Gunicorn):
+```
+chmod +x run.sh
+./run.sh
+```
 
 ## Linting
 

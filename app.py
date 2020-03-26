@@ -9,11 +9,12 @@ app = dash.Dash(
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ]
 )
+server = app.server
 
-app.server.config.from_object("config")
+server.config.from_object("config")
 app.config.suppress_callback_exceptions = True
 
-cache = Cache(app.server, config={
+cache = Cache(server, config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': '.cache-directory',
 
