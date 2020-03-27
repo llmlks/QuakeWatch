@@ -51,7 +51,10 @@ def compute_edges(data):
     new_df.columns = ["DateTime", "EVENTID",
                       "MAGNITUDE", "LATITUDE", "LONGITUDE"]
 
+    print(vals[:5, :])
     edges = compute_edges_numba(vals)
+    print("edges")
+    print(edges[:5, :])
     return edges, new_df
 
 
@@ -73,10 +76,10 @@ def compute_edges_numba(data):
         time_diff = timestamp - data2[:, 0]
         dist = np.zeros((len(data2)))
         for k in range(len(data2)):
-            d = (data[i][4] - data2[k][4])**2 + (data[i][5] - data2[k][5])**2
+            d = (data[i][3] - data2[k][3])**2 + (data[i][4] - data2[k][4])**2
             dist[k] = d
         dist = np.sqrt(dist)
-        x = time_diff*dist**(1.6)*(10**(-data[i][3]))
+        x = time_diff*dist**(1.6)*(10**(-data[i][2]))
         indx = np.argmin(x)
         edges_numpy[i][0] = data2[indx][1]
         edges_numpy[i][1] = data[i][1]
@@ -169,13 +172,13 @@ def get_figures(edges_np, df):
     G = nx.DiGraph()
     G.add_edges_from(edges)
     # this threshold value is experimental and subject to changes.
-    th = 1e3
+    th = 1e-5
     to_remove = []
     # this loop will remove the weak edges. weak edges are the ones
     # with a distance above the threshold  defined above as th.
     for e in G.edges:
         w = G.edges[e]["w"]
-        if w >= th:
+        if 1.0/w >= th:
             to_remove.append((e[0], e[1]))
     G.remove_edges_from(to_remove)
     position_dict = compute_pos(df, G.nodes())
@@ -183,6 +186,11 @@ def get_figures(edges_np, df):
     UG = G.to_undirected()
     # extract the list of disjoint subgraphs
     sub_graphs = [UG.subgraph(c) for c in nx.connected_components(UG)]
+
+    sub_graphs = [(g, len(g)) for g in sub_graphs]
+    sub_graphs = sorted_by_second = sorted(
+        sub_graphs, key=lambda tup: tup[1], reverse=True)
+    sub_graphs = [x[0] for x in sub_graphs]
 
     figures = get_plots(sub_graphs, position_dict)
     return figures
@@ -202,6 +210,7 @@ def compute_pos(df, nodes):
     for n in nodes:
         row = df[df["EVENTID"] == int(n)]
         x = row["DateTime"].values[0]
+        x = dt.fromtimestamp(x//10**9)
         y = row["MAGNITUDE"].values[0]
         pos[n] = (x, y)
     return pos
@@ -234,7 +243,7 @@ def get_plot(graph, positions):
     Ye = []
     for n in graph:
         # we convert the time stamp to a human readeable format
-        Xe.append(dt.fromtimestamp(positions[n][0]//10**9))
+        Xe.append(positions[n][0]  )
         Ye.append(positions[n][1])
 
     fig = go.Figure()
