@@ -241,11 +241,40 @@ def get_plot(graph, positions):
    """
     Xe = []
     Ye = []
+
+    X_foreshocks = []
+    Y_foreshocks = []
+
+    X_aftershocks = []
+    Y_aftershocks = []
+
+    max_magnitude = -1000
+    max_time = 0.0
     for n in graph:
         # we convert the time stamp to a human readeable format
-        Xe.append(positions[n][0]  )
+        mag = positions[n][1]
+        Xe.append(positions[n][0])
         Ye.append(positions[n][1])
 
+        if mag >= max_magnitude:
+            max_magnitude = mag
+            max_time = positions[n][0]
+
+    for n in graph:
+        mag = positions[n][1]
+        if mag == max_magnitude:
+            # cont
+            continue
+        if positions[n][0] < max_time:
+            # foreshock
+            X_foreshocks.append(positions[n][0])
+            Y_foreshocks.append(positions[n][1])
+        else:
+            # aftershocks
+            X_aftershocks.append(positions[n][0])
+            Y_aftershocks.append(positions[n][1])
+        # Xe.append(positions[n][0]  )
+        # Ye.append(positions[n][1])
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=Xe,
@@ -256,14 +285,38 @@ def get_plot(graph, positions):
     ))
 
     fig.add_trace(go.Scatter(
-        x=Xe,
-        y=Ye,
+        x=X_foreshocks,
+        y=Y_foreshocks,
         mode='markers',
-        name='Earthquake',
+        name='Foreshocks',
         marker=dict(
             symbol='circle-dot',
             size=18,
-            color='#6175c1',
+            color='#ffd400',
+            line=dict(color='rgb(50,50,50)', width=1)
+        )
+    ))
+    fig.add_trace(go.Scatter(
+        x=X_aftershocks,
+        y=Y_aftershocks,
+        mode='markers',
+        name='Aftershocks',
+        marker=dict(
+            symbol='circle-dot',
+            size=18,
+            color='#0055ff',
+            line=dict(color='rgb(50,50,50)', width=1)
+        )
+    ))
+    fig.add_trace(go.Scatter(
+        x=[max_time],
+        y=[max_magnitude],
+        mode='markers',
+        name='Mainshock',
+        marker=dict(
+            symbol='circle-dot',
+            size=18,
+            color='#ba0000',
             line=dict(color='rgb(50,50,50)', width=1)
         )
     ))
