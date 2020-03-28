@@ -1,6 +1,8 @@
 from math import ceil
+import datetime
 
 import dash_core_components as dcc
+import dash_html_components as html
 
 
 def get_component(min_time, max_time, time_step):
@@ -17,9 +19,40 @@ def get_component(min_time, max_time, time_step):
     seconds = (max_time - min_time).total_seconds()
     steps = ceil(seconds / time_step)
 
-    return dcc.Slider(
-        id='time-slider',
-        min=0,
-        max=steps-1,
-        value=0,
-        step=1)
+    return html.Div([
+        dcc.Slider(
+            id='time-slider',
+            min=0,
+            max=steps-1,
+            value=0,
+            step=1),
+        html.Div(
+            [get_time_string(min_time, time_step)],
+            id='output-container-range-slider'
+        )
+    ])
+
+
+def get_time_string(time, timestep):
+    """Return a string representation of the given datetime
+    object with end time calculated using the timestep.
+
+    Keyword arguments:
+    time -- A datetime object to be converted into a string
+    timestep -- Unit of the timestep in seconds
+    """
+    end_time = time + datetime.timedelta(seconds=timestep)
+    return '{}.{}.{} {}:{}:{} - {}.{}.{} {}:{}:{}'.format(
+        str(time.day).zfill(2),
+        str(time.month).zfill(2),
+        time.year,
+        str(time.hour).zfill(2),
+        str(time.minute).zfill(2),
+        str(time.second).zfill(2),
+        str(end_time.day).zfill(2),
+        str(end_time.month).zfill(2),
+        end_time.year,
+        str(end_time.hour).zfill(2),
+        str(end_time.minute).zfill(2),
+        str(end_time.second).zfill(2)
+    )
