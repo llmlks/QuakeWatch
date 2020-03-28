@@ -4,6 +4,8 @@ import dash_leaflet as dl
 
 from app import app
 from utils import earthquake_data
+from components.config.size_picker import get_sizes
+from components.config.color_picker import get_colors
 
 
 api_url = 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?' \
@@ -16,11 +18,13 @@ attribution = """Maps &copy;
 OpenStreetMap contributors</a>"""
 
 
-def get_component(eq_data):
+def get_component(eq_data, size_column=None, color_column=None):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
+    size_column -- The column for computing the size of each data point
+    color_column -- The column for computing the color of each data point
     """
 
     return dl.Map(
@@ -33,26 +37,31 @@ def get_component(eq_data):
                 attribution=attribution),
             html.Div(id='test-id', children=[
                 get_event_layer(
-                        eq_data
+                    eq_data, size_column, color_column
                 )])
         ])
 
 
-def get_event_layer(eq_data):
+def get_event_layer(eq_data, size_column=None, color_column=None):
     """Return a LayerGroup that contains earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
+    size_column -- The column for computing the size of each data point
+    color_column -- The column for computing the color of each data point
     """
+
+    sizes = get_sizes(eq_data.data, size_column)
+    colors = get_colors(eq_data.data, color_column)
 
     quake_circles = [
         dl.Circle(
             center=[quake['LATITUDE'], quake['LONGITUDE']],
-            radius=100,
-            color='red',
-            fillOpacity=0.1,
+            radius=sizes[idx],
+            color=colors[idx],
+            fillOpacity=0.3,
             weight=2
         )
-        for _, quake in eq_data.data.iterrows()]
+        for idx, quake in eq_data.data.iterrows()]
 
     return dl.LayerGroup(id='layer-id', children=quake_circles)

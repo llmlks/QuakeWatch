@@ -39,8 +39,11 @@ def get_layout(session_id):
                         children=[quake_map.get_component(filtered_data)]
                     )),
                     dbc.Col(map_config.get_component(
-                        start_date, end_date, default_end_date)
-                    )
+                        start_date, end_date, default_end_date,
+                        filtered_data.data.select_dtypes(
+                            include='number'
+                        ).columns
+                    ))
                 ]
             ),
             dbc.Row(
@@ -83,9 +86,11 @@ def filter_data(eq_data, start_date, timestep, slider_value):
     [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
-     State('timestep-unit', 'value')])
+     State('timestep-unit', 'value'),
+     State('size-column', 'value'),
+     State('color-column', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
-               timestep_value, timestep_seconds):
+               timestep_value, timestep_seconds, size_column, color_column):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -102,6 +107,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         happened within the time window of this size are shown.
     timestep_seconds -- The number of seconds the selected time unit is
         equal to
+    size_column -- The column for computing the size of each data point
+    color_column -- The column for computing the color of each data point
     """
 
     timestep = timestep_seconds * timestep_value
@@ -111,7 +118,7 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = filter_data(eq_data, start_date, timestep, slider_value)
 
-    return quake_map.get_component(filtered_data)
+    return quake_map.get_component(filtered_data, size_column, color_column)
 
 
 @app.callback(
