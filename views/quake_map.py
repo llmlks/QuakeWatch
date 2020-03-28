@@ -25,34 +25,37 @@ def get_layout(session_id):
     """
 
     eq_data = earthquake_data.get_earthquake_data(session_id)
-    start_date, end_date = eq_data.get_daterange()
-    default_end_date = start_date + timedelta(weeks=1)
+    if eq_data.data.shape[0] != 0:
+        start_date, end_date = eq_data.get_daterange()
+        default_end_date = start_date + timedelta(weeks=1)
 
-    filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
+        filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
 
-    return html.Div([
-        dbc.Row(
-            [
-                dbc.Col(html.Div(
-                    id='map-wrapper',
-                    children=[quake_map.get_component(filtered_data)]
-                )),
-                dbc.Col(map_config.get_component(
-                    start_date, end_date, default_end_date)
-                )
-            ]
-        ),
-        dbc.Row(
-            [
-                dbc.Col(html.Div(
-                    id='slider-wrapper',
-                    children=[time_slider.get_component(
-                        start_date, default_end_date, DEFAULT_TIMESTEP
-                    )]))
-            ]
-        )
+        return html.Div([
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        id='map-wrapper',
+                        children=[quake_map.get_component(filtered_data)]
+                    )),
+                    dbc.Col(map_config.get_component(
+                        start_date, end_date, default_end_date)
+                    )
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        id='slider-wrapper',
+                        children=[time_slider.get_component(
+                            start_date, default_end_date, DEFAULT_TIMESTEP
+                        )]))
+                ]
+            )
 
-    ])
+        ])
+
+    return 'No uploaded data found'
 
 
 def filter_data(eq_data, start_date, timestep, slider_value):
