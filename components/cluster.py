@@ -51,10 +51,7 @@ def compute_edges(data):
     new_df.columns = ["DateTime", "EVENTID",
                       "MAGNITUDE", "LATITUDE", "LONGITUDE"]
 
-    print(vals[:5, :])
     edges = compute_edges_numba(vals)
-    print("edges")
-    print(edges[:5, :])
     return edges, new_df
 
 
@@ -101,29 +98,78 @@ def get_component(session_id):
         maxdate = maxdate + datetime.timedelta(days=1)
     items = []
     items.append(html.H1("Clustering"))
-    items.append(html.H3("Select a date range"))
+    items.append(html.H4("Compare clusters"))
+    tab1 = build_cluster_component(mindate, maxdate, session_id, "1")
+    tab2 = build_cluster_component(mindate, maxdate, session_id, "2")
     items.append(
-        html.Div([dcc.DatePickerRange(
-            id='date-pick',
-            min_date_allowed=mindate,
-            max_date_allowed=maxdate,
-        ),
-            html.Div(
-            id='intermediate-value',
-            style={'display': 'none'},
-            children=[session_id]
-        ),
-            html.Div(id='output-container-date-picker-range')
+        dcc.Tabs([
+            dcc.Tab(label='Time 1', children=[tab1]),
+            dcc.Tab(label="Time 2", children=[tab2])
+
         ])
     )
     return html.Div(items)
 
 
+def build_cluster_component(mindate, maxdate, session_id, id="1"):
+
+    return html.Div([dcc.DatePickerRange(
+        id='date-pick-'+id,
+        min_date_allowed=mindate,
+        max_date_allowed=maxdate,
+    ),
+        html.Div(
+        id='intermediate-value',
+        style={'display': 'none'},
+        children=[session_id]
+    ),
+        html.Div(id='output-clustering-'+id)
+    ])
+
+
 @app.callback(
-    dash.dependencies.Output('output-container-date-picker-range', 'children'),
+    dash.dependencies.Output('output-clustering-1', 'children'),
     [
-        dash.dependencies.Input('date-pick', 'start_date'),
-        dash.dependencies.Input('date-pick', 'end_date'),
+        dash.dependencies.Input('date-pick-1', 'start_date'),
+        dash.dependencies.Input('date-pick-1', 'end_date'),
+        dash.dependencies.Input('session-id', "children")
+    ])
+def update_output(start_date, end_date, session_id):
+    """Return the list of graphs.This is a callback function
+
+    Keyword arguments:
+
+    start_date -- datetime, from the calendar component
+    end_date -- datetime , from the calendar component
+   """
+    if start_date is None or end_date is None:
+        return "No Data"
+    print("Computing clusters...")
+    start_date = dt.strptime(start_date,  "%Y-%m-%d")
+    end_date = dt.strptime(end_date,  "%Y-%m-%d")
+
+    data = get_data(session_id)
+    data = data.filter_by_dates(start_date, end_date)
+
+    df = data.data
+    if df.empty:
+        figures = [go.Figure()]
+    else:
+        edges, df = compute_edges(data)
+        figures = get_figures(edges, df)
+
+    graphs = []
+    for i, fig in enumerate(figures):
+        graphs.append(dcc.Graph(id="fig-{}".format(i),  figure=fig))
+    print("Done!")
+    return graphs
+
+
+@app.callback(
+    dash.dependencies.Output('output-clustering-2', 'children'),
+    [
+        dash.dependencies.Input('date-pick-2', 'start_date'),
+        dash.dependencies.Input('date-pick-2', 'end_date'),
         dash.dependencies.Input('session-id', "children")
     ])
 def update_output(start_date, end_date, session_id):
