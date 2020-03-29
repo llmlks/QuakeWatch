@@ -1,5 +1,6 @@
 import dash_core_components as dcc
 import dash_html_components as html
+import numpy as np
 
 
 def get_component(columns):
@@ -35,11 +36,11 @@ def get_sizes(data, size_column):
         or None for default values
     """
     if size_column is None:
-        sizes = np.repeat(100, data.shape[0])
+        sizes = np.repeat(200, data.shape[0])
     else:
         sizes = data[size_column]
         if sizes.min() <= 0:
-            sizes -= sizes.min()
+            sizes += 1 - sizes.min()
 
         while sizes.min() < 100:
             sizes *= 10

@@ -27,6 +27,9 @@ def get_component(eq_data, size_column=None, color_column=None):
     color_column -- The column for computing the color of each data point
     """
 
+    sizes = get_sizes(eq_data.data, size_column)
+    colors, color_domain = get_colors(eq_data.data, color_column)
+
     return dl.Map(
         id='quake-map',
         center=[33.7, -117.3],
@@ -36,23 +39,28 @@ def get_component(eq_data, size_column=None, color_column=None):
                 url=api_url,
                 attribution=attribution),
             html.Div(id='test-id', children=[
-                get_event_layer(
-                    eq_data, size_column, color_column
-                )])
+                get_event_layer(eq_data, sizes, colors)
+            ]),
+            (color_domain is not None and dl.Colorbar(
+                width=200,
+                height=20,
+                **color_domain,
+                style={
+                    'color': 'black',
+                    'font-weight': 'bold'
+                }
+            ))
         ])
 
 
-def get_event_layer(eq_data, size_column=None, color_column=None):
+def get_event_layer(eq_data, sizes, colors):
     """Return a LayerGroup that contains earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
-    size_column -- The column for computing the size of each data point
-    color_column -- The column for computing the color of each data point
+    sizes -- An array containing a size for each data point
+    colors -- An array containing a color for each data point
     """
-
-    sizes = get_sizes(eq_data.data, size_column)
-    colors = get_colors(eq_data.data, color_column)
 
     quake_circles = [
         dl.Circle(
@@ -62,6 +70,6 @@ def get_event_layer(eq_data, size_column=None, color_column=None):
             fillOpacity=0.3,
             weight=2
         )
-        for idx, quake in eq_data.data.iterrows()]
+        for idx, quake in eq_data.data.reset_index().iterrows()]
 
     return dl.LayerGroup(id='layer-id', children=quake_circles)
