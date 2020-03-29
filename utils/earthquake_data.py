@@ -90,23 +90,34 @@ class OtaniemiEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        """Parse datetime string to datetime object and
-        transform UTM coordinates to latitudes and longitudes.
+        """Parse datetime string to datetime object,
+        transform UTM coordinates to latitudes and longitudes,
+        and cast strings to floats, where applicable.
         """
-        lat_longs = list(map(
-            lambda x: PROJECTION(x[0], x[1], inverse=True),
-            list(zip(
-                data['EASTING [m]'].apply(
-                    lambda y: float(y.replace(',', '.'))
-                ).to_numpy(),
-                data['NORTHING [m]'].apply(
-                    lambda y: float(y.replace(',', '.'))
-                ).to_numpy()
+        if 'LONGITUDE' not in data.columns:
+            lat_longs = list(map(
+                lambda x: PROJECTION(x[0], x[1], inverse=True),
+                list(zip(
+                    data['EASTING [m]'].apply(
+                        lambda y: float(str(y).replace(',', '.'))
+                    ).to_numpy(),
+                    data['NORTHING [m]'].apply(
+                        lambda y: float(str(y).replace(',', '.'))
+                    ).to_numpy()
+                ))
             ))
-        ))
 
-        data['LATITUDE'] = pd.Series(list(map(lambda x: x[0], lat_longs)))
-        data['LONGITUDE'] = pd.Series(list(map(lambda x: x[1], lat_longs)))
+            data = data.assign(
+                LONGITUDE=pd.Series(list(map(lambda x: x[0], lat_longs))),
+                LATITUDE=pd.Series(list(map(lambda x: x[1], lat_longs)))
+            )
+
+        data.M_HEL = data.M_HEL.apply(
+            lambda x: float(str(x).replace(',', '.'))
+        )
+        data.M_W = data.M_W.apply(
+            lambda x: float(str(x).replace(',', '.'))
+        )
 
         EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
 
@@ -134,6 +145,8 @@ class BaselEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
+        data = data[data.LATITUDE.notnull() & data.Mwx.notnull()]
+
         EarthquakeData.__init__(self, CatalogTypes.DAT_EXT, data)
         self.dates = data['SourceDateTime'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%f')
@@ -142,17 +155,11 @@ class BaselEarthquakeData(EarthquakeData):
     def get_eventids(self):
         return self.data['ID']
 
-    def get_latitudes(self):
-        return self.data['Lat']
-
-    def get_longitudes(self):
-        return self.data['Lon']
-
     def get_depths(self):
         return self.data['Dep']
 
     def get_magnitudes(self):
-        return self.data['MLSED']
+        return self.data['Mwx']
 
     def filter_by_dates(self, datemin, datemax):
         return BaselEarthquakeData(
