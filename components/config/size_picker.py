@@ -38,7 +38,7 @@ def get_sizes(data, size_column):
     if size_column is None:
         sizes = np.repeat(200, data.shape[0])
     else:
-        sizes = data[size_column]
+        sizes = data[size_column].to_numpy()
         if sizes.min() <= 0:
             sizes += 1 - sizes.min()
 
