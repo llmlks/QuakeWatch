@@ -4,10 +4,8 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.colors as clrs
 import matplotlib.pyplot as plt
-import plotly.express as px
 
 color_map = cm.get_cmap('brg')
-cmap = px.colors.cyclical.hsv
 
 
 def get_component(columns):
@@ -33,7 +31,8 @@ def get_component(columns):
 
 
 def get_colors(data, color_column):
-    """Return an array of colors, one for each row of data.
+    """Return an array of colors, one for each row of data, and
+    a dictionary for building a colorbar.
     If the color column argument is None, default color 'red' is
     used instead.
 
@@ -46,10 +45,20 @@ def get_colors(data, color_column):
     color_column -- Column to use for calculating the colors,
         or None for default values
     """
+
     if color_column is None:
-        colors = np.repeat('red', eq_data.data.shape[0])
+        colors = np.repeat('red', data.shape[0])
+        color_domain = None
     else:
-        colors = eq_data.data[color_column]
+        colors = data[color_column]
+        color_domain = dict(
+            domainMin=colors.min(),
+            domainMax=colors.max(),
+            colorscale=[
+                clrs.to_hex(color_map(c)) for c in [0, 0.25, 0.5, 0.75, 0.99]
+            ]
+        )
+
         if colors.min() <= 0:
             colors -= colors.min()
 
@@ -58,4 +67,4 @@ def get_colors(data, color_column):
 
         colors = [clrs.to_hex(color_map(c)) for c in colors]
 
-    return colors
+    return colors, color_domain
