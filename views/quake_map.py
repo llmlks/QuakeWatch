@@ -25,34 +25,37 @@ def get_layout(session_id):
     """
 
     eq_data = earthquake_data.get_earthquake_data(session_id)
-    start_date, end_date = eq_data.get_daterange()
-    default_end_date = start_date + timedelta(weeks=1)
+    if eq_data.data.shape[0] != 0:
+        start_date, end_date = eq_data.get_daterange()
+        default_end_date = start_date + timedelta(weeks=1)
 
-    filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
+        filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
 
-    return html.Div([
-        dbc.Row(
-            [
-                dbc.Col(html.Div(
-                    id='map-wrapper',
-                    children=[quake_map.get_component(filtered_data)]
-                )),
-                dbc.Col(map_config.get_component(
-                    start_date, end_date, default_end_date)
-                )
-            ]
-        ),
-        dbc.Row(
-            [
-                dbc.Col(html.Div(
-                    id='slider-wrapper',
-                    children=[time_slider.get_component(
-                        start_date, default_end_date, DEFAULT_TIMESTEP
-                    )]))
-            ]
-        )
+        return html.Div([
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        id='map-wrapper',
+                        children=[quake_map.get_component(filtered_data)]
+                    )),
+                    dbc.Col(map_config.get_component(
+                        start_date, end_date, default_end_date)
+                    )
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(
+                        id='slider-wrapper',
+                        children=[time_slider.get_component(
+                            start_date, default_end_date, DEFAULT_TIMESTEP
+                        )]))
+                ]
+            )
 
-    ])
+        ])
+
+    return 'No uploaded data found'
 
 
 def filter_data(eq_data, start_date, timestep, slider_value):
@@ -145,6 +148,34 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
     return time_slider.get_component(
         start_date, end_date, timestep
     )
+
+
+@app.callback(
+    Output('output-container-range-slider', 'children'),
+    [Input('time-slider', 'value')],
+    [State('date-pick', 'start_date'),
+     State('timestep-value', 'value'),
+     State('timestep-unit', 'value')])
+def update_time_slider_value(slider_value, start_date, timestep_value,
+                             timestep_seconds):
+    """Update the time slider value to represent the selected date and
+    time.
+
+    This is a callback function invoked by changes to either the time slider
+    or the configuration.
+
+    Keyword arguments:
+    slider_value -- Current value of the time slider
+    start_date -- A datetime object corresponding to the lowest value
+        on the slider
+    timestep_value -- The number of time units one timestep contains
+    timestep_seconds -- The unit of the timestep in seconds
+    """
+    timestep = timestep_seconds * timestep_value
+    start_date = get_datetime_from_str(start_date)
+    slider_time = start_date + timedelta(seconds=slider_value*timestep)
+
+    return time_slider.get_time_string(slider_time, timestep_seconds)
 
 
 def get_datetime_from_str(date_str):

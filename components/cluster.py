@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
+from components.config import date_picker
 
 
 def get_data(session_id):
@@ -105,7 +106,6 @@ def get_component(session_id):
         dcc.Tabs([
             dcc.Tab(label='Date 1', children=[tab1]),
             dcc.Tab(label="Date 2", children=[tab2])
-
         ])
     )
     return html.Div(items)
