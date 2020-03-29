@@ -103,8 +103,8 @@ def get_component(session_id):
     tab2 = build_cluster_component(mindate, maxdate, session_id, "2")
     items.append(
         dcc.Tabs([
-            dcc.Tab(label='Time 1', children=[tab1]),
-            dcc.Tab(label="Time 2", children=[tab2])
+            dcc.Tab(label='Date 1', children=[tab1]),
+            dcc.Tab(label="Date 2", children=[tab2])
 
         ])
     )
@@ -258,7 +258,9 @@ def compute_pos(df, nodes):
         x = row["DateTime"].values[0]
         x = dt.fromtimestamp(x//10**9)
         y = row["MAGNITUDE"].values[0]
-        pos[n] = (x, y)
+        lat = row["LATITUDE"].values[0]
+        lon = row["LONGITUDE"].values[0]
+        pos[n] = (x, y, lat, lon)
     return pos
 
 
@@ -290,9 +292,11 @@ def get_plot(graph, positions):
 
     X_foreshocks = []
     Y_foreshocks = []
+    Hover_foreshocks = []
 
     X_aftershocks = []
     Y_aftershocks = []
+    Hover_aftershocks = []
 
     max_magnitude = -1000
     max_time = 0.0
@@ -311,14 +315,17 @@ def get_plot(graph, positions):
         if mag == max_magnitude:
             # cont
             continue
+        text = "Pos:({},{})".format(positions[n][2], positions[n][3])
         if positions[n][0] < max_time:
             # foreshock
             X_foreshocks.append(positions[n][0])
             Y_foreshocks.append(positions[n][1])
+            Hover_foreshocks.append(text)
         else:
             # aftershocks
             X_aftershocks.append(positions[n][0])
             Y_aftershocks.append(positions[n][1])
+            Hover_aftershocks.append(text)
         # Xe.append(positions[n][0]  )
         # Ye.append(positions[n][1])
     fig = go.Figure()
@@ -333,6 +340,8 @@ def get_plot(graph, positions):
     fig.add_trace(go.Scatter(
         x=X_foreshocks,
         y=Y_foreshocks,
+        hovertext=Hover_foreshocks,
+        hoverinfo="text",
         mode='markers',
         name='Foreshocks',
         marker=dict(
@@ -347,6 +356,8 @@ def get_plot(graph, positions):
         y=Y_aftershocks,
         mode='markers',
         name='Aftershocks',
+        hovertext=Hover_aftershocks,
+        hoverinfo="text",
         marker=dict(
             symbol='circle-dot',
             size=18,
