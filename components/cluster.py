@@ -123,7 +123,9 @@ def build_cluster_component(mindate, maxdate, session_id, id="1"):
         style={'display': 'none'},
         children=[session_id]
     ),
+
         html.Div(id='output-clustering-'+id)
+
     ])
 
 
@@ -160,7 +162,8 @@ def update_output(start_date, end_date, session_id):
 
     graphs = []
     for i, fig in enumerate(figures):
-        graphs.append(dcc.Graph(id="fig-{}".format(i),  figure=fig))
+        c = dcc.Graph(id="fig-{}".format(i),  figure=fig)
+        graphs.append(c)
     print("Done!")
     return graphs
 
