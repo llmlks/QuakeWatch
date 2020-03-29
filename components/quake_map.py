@@ -1,6 +1,7 @@
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_leaflet as dl
+import geopandas as gpd
 
 from app import app
 from utils import earthquake_data
@@ -14,6 +15,9 @@ attribution = """Maps &copy;
 , Data &copy;
 <a href="http://www.openstreetmap.org/copyright">
 OpenStreetMap contributors</a>"""
+
+faults_blind = './shapefiles/CFM52_preferred_traces_blind.shp'
+faults_nonblind = './shapefiles/CFM52_preferred_traces_nonblind.shp'
 
 
 def get_component(eq_data):
@@ -32,6 +36,7 @@ def get_component(eq_data):
                 url=api_url,
                 attribution=attribution),
             html.Div(id='test-id', children=[
+                get_fault_layer(),
                 get_event_layer(
                         eq_data
                 )])
@@ -56,3 +61,41 @@ def get_event_layer(eq_data):
         for _, quake in eq_data.data.iterrows()]
 
     return dl.LayerGroup(id='layer-id', children=quake_circles)
+
+
+def get_fault_layer():
+    """Return a LayerGroup that contains the Southern California
+    fault lines as PolyLines.
+
+    Blind faults are represented by dashed, dark grey lines and
+    non-blind faults by solid, black lines.
+    """
+    blind_faults = gpd.read_file(faults_blind)
+    nonblind_faults = gpd.read_file(faults_nonblind)
+
+    faults = [
+        dl.Polyline(
+            color='#404040',
+            weight=1.25,
+            dashArray='2, 3',
+            positions=[
+                [coord[1], coord[0]]
+                for coord in zip(list(fault.xy[0]), list(fault.xy[1]))
+            ]
+        )
+        for _, fault in blind_faults['geometry'].iteritems()
+    ]
+
+    faults += [
+        dl.Polyline(
+            color='black',
+            weight=1,
+            positions=[
+                [coord[1], coord[0]]
+                for coord in zip(list(fault.xy[0]), list(fault.xy[1]))
+            ]
+        )
+        for _, fault in nonblind_faults['geometry'].iteritems()
+    ]
+
+    return dl.LayerGroup(id='fault-layer', children=faults)
