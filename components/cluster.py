@@ -350,10 +350,6 @@ def get_plot(graph, positions):
 
     return fig
 
-# '#0055ff' aftershocks
-# '#ba0000' mainshock
-#  '#0055ff' foreshocks
-
 
 def get_figure(x, y, hovertext, name, color):
     """Return a plotly figure given the x,y and hover information

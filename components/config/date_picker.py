@@ -2,7 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 
-def get_component(min_date, max_date, default_end_date , id ):
+def get_component(min_date, max_date, default_end_date, id):
     """Return the datepicker component.
 
     Keyword arguments:
