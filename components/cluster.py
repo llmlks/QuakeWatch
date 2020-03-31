@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
+from components.config import date_picker
 
 
 def get_data(session_id):
@@ -111,30 +112,29 @@ def get_component(session_id):
     return html.Div(items)
 
 
-def build_cluster_component(mindate, maxdate, session_id, id="1"):
-
-    return html.Div([dcc.DatePickerRange(
-        id='date-pick-'+id,
-        min_date_allowed=mindate,
-        max_date_allowed=maxdate,
-    ),
+def build_cluster_component(mindate, maxdate, session_id, idd="1"):
+    id_component = "date-pick-{}".format(idd)
+    date_component = date_picker.get_component(
+        mindate, maxdate, mindate + datetime.timedelta(days=1), id_component)
+    return html.Div([
+        date_component,
         html.Div(
-        id='intermediate-value',
-        style={'display': 'none'},
-        children=[session_id]
-    ),
+            id='intermediate-value',
+            style={'display': 'none'},
+            children=[session_id]
+        ),
 
-        html.Div(id='output-clustering-'+id)
+        html.Div(id='output-clustering-'+idd)
 
     ])
 
 
 @app.callback(
-    dash.dependencies.Output('output-clustering-1', 'children'),
+    Output('output-clustering-1', 'children'),
     [
-        dash.dependencies.Input('date-pick-1', 'start_date'),
-        dash.dependencies.Input('date-pick-1', 'end_date'),
-        dash.dependencies.Input('session-id', "children")
+        Input('date-pick-1', 'start_date'),
+        Input('date-pick-1', 'end_date'),
+        Input('session-id', "children")
     ])
 def update_output(start_date, end_date, session_id):
     """Return the list of graphs.This is a callback function
@@ -169,11 +169,11 @@ def update_output(start_date, end_date, session_id):
 
 
 @app.callback(
-    dash.dependencies.Output('output-clustering-2', 'children'),
+    Output('output-clustering-2', 'children'),
     [
-        dash.dependencies.Input('date-pick-2', 'start_date'),
-        dash.dependencies.Input('date-pick-2', 'end_date'),
-        dash.dependencies.Input('session-id', "children")
+        Input('date-pick-2', 'start_date'),
+        Input('date-pick-2', 'end_date'),
+        Input('session-id', "children")
     ])
 def update_output(start_date, end_date, session_id):
     """Return the list of graphs.This is a callback function
@@ -303,8 +303,8 @@ def get_plot(graph, positions):
 
     max_magnitude = -1000
     max_time = 0.0
+    hovermainshock = 0, 0
     for n in graph:
-        # we convert the time stamp to a human readeable format
         mag = positions[n][1]
         Xe.append(positions[n][0])
         Ye.append(positions[n][1])
@@ -312,13 +312,15 @@ def get_plot(graph, positions):
         if mag >= max_magnitude:
             max_magnitude = mag
             max_time = positions[n][0]
+            hovermainshock = "Location:({},{})".format(
+                positions[n][2], positions[n][3])
 
     for n in graph:
         mag = positions[n][1]
         if mag == max_magnitude:
             # cont
             continue
-        text = "Pos:({},{})".format(positions[n][2], positions[n][3])
+        text = "Location:({},{})".format(positions[n][2], positions[n][3])
         if positions[n][0] < max_time:
             # foreshock
             X_foreshocks.append(positions[n][0])
@@ -331,6 +333,7 @@ def get_plot(graph, positions):
             Hover_aftershocks.append(text)
         # Xe.append(positions[n][0]  )
         # Ye.append(positions[n][1])
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=Xe,
@@ -339,46 +342,41 @@ def get_plot(graph, positions):
         line=dict(color='rgb(210,210,210)', width=3),
         hoverinfo='none', name=""
     ))
-
-    fig.add_trace(go.Scatter(
-        x=X_foreshocks,
-        y=Y_foreshocks,
-        hovertext=Hover_foreshocks,
-        hoverinfo="text",
-        mode='markers',
-        name='Foreshocks',
-        marker=dict(
-            symbol='circle-dot',
-            size=18,
-            color='#ffd400',
-            line=dict(color='rgb(50,50,50)', width=1)
-        )
-    ))
-    fig.add_trace(go.Scatter(
-        x=X_aftershocks,
-        y=Y_aftershocks,
-        mode='markers',
-        name='Aftershocks',
-        hovertext=Hover_aftershocks,
-        hoverinfo="text",
-        marker=dict(
-            symbol='circle-dot',
-            size=18,
-            color='#0055ff',
-            line=dict(color='rgb(50,50,50)', width=1)
-        )
-    ))
-    fig.add_trace(go.Scatter(
-        x=[max_time],
-        y=[max_magnitude],
-        mode='markers',
-        name='Mainshock',
-        marker=dict(
-            symbol='circle-dot',
-            size=18,
-            color='#ba0000',
-            line=dict(color='rgb(50,50,50)', width=1)
-        )
-    ))
+    fig.add_trace(get_figure(X_foreshocks, Y_foreshocks,
+                             Hover_foreshocks, "Foreshocks", '#ffe100'))
+    fig.add_trace(get_figure(X_aftershocks, Y_aftershocks,
+                             Hover_aftershocks, "Aftershocks", '#0d35a5'))
+    fig.add_trace(get_figure([max_time], [max_magnitude], [
+                  hovermainshock], "Mainshock", '#ba0000'))
 
     return fig
+
+# '#0055ff' aftershocks
+# '#ba0000' mainshock
+#  '#0055ff' foreshocks
+
+
+def get_figure(x, y, hovertext, name, color):
+    """Return a plotly figure given the x,y and hover information
+
+    Keyword arguments:
+
+    x -- list x-coordinate
+    y -- list y-coordinate
+    name -- string  name to be displayed
+    color -- string hexcolor code
+    """
+    return go.Scatter(
+        x=x,
+        y=y,
+        mode='markers',
+        name=name,
+        hovertext=hovertext,
+        hoverinfo="text",
+        marker=dict(
+            symbol='circle-dot',
+            size=18,
+            color=color,
+            line=dict(color='rgb(50,50,50)', width=1)
+        )
+    )
