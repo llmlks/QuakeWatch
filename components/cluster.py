@@ -114,7 +114,7 @@ def get_component(session_id):
 def build_cluster_component(mindate, maxdate, session_id, idd="1"):
     id_component = "date-pick-{}".format(idd)
     date_component = date_picker.get_component(
-        mindate, maxdate, mindate + datetime.timedelta(days=1), id_component)
+        mindate, maxdate, None, id_component)
     return html.Div([
         date_component,
         html.Div(
@@ -226,7 +226,7 @@ def get_figures(edges_np, df):
     # with a distance above the threshold  defined above as th.
     for e in G.edges:
         w = G.edges[e]["w"]
-        if 1.0/w >= th:
+        if 1.0/(w + 1e-10) >= th:
             to_remove.append((e[0], e[1]))
     G.remove_edges_from(to_remove)
     position_dict = compute_pos(df, G.nodes())
