@@ -64,9 +64,13 @@ def basel_parse(decoded_contents):
         io.StringIO('\n'.join(rows)),
         sep=r'\s+',
         names=[
-            'SourceDateTime', 'LSrc', 'Lat', 'Lon', 'Dep', 'X', 'Y', 'Z',
-            'Mwx', 'MwGEL', 'MwSED', 'MLSED', 'ID', 'TpID', 'GELID', 'SEDID'
+            'SourceDateTime', 'LSrc', 'LATITUDE', 'LONGITUDE', 'Dep', 'X', 'Y',
+            'Z', 'Mwx', 'MwGEL', 'MwSED', 'MLSED', 'ID', 'TpID', 'GELID',
+            'SEDID'
         ],
-        na_values=['-.--', '-.-', '------']
+        na_values=[
+            '-.--', '-.-', '------', '--.-----', '-.-----',
+            '---', '---------', '------'
+        ]
     )
     return df
