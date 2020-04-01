@@ -74,10 +74,10 @@ def compute_edges_numba(data):
         time_diff = timestamp - data2[:, 0]
         dist = np.zeros((len(data2)))
         for k in range(len(data2)):
-            d = (data[i][4] - data2[k][4])**2 + (data[i][5] - data2[k][5])**2
+            d = (data[i][3] - data2[k][3])**2 + (data[i][4] - data2[k][4])**2
             dist[k] = d
         dist = np.sqrt(dist)
-        x = time_diff*dist**(1.6)*(10**(-data[i][3]))
+        x = time_diff*dist**(1.6)*(10**(-data[i][2]))
         indx = np.argmin(x)
         edges_numpy[i][0] = data2[indx][1]
         edges_numpy[i][1] = data[i][1]
@@ -99,27 +99,80 @@ def get_component(session_id):
         maxdate = maxdate + datetime.timedelta(days=1)
     items = []
     items.append(html.H1("Clustering"))
-    items.append(html.H3("Select a date range"))
+    items.append(html.H4("Compare clusters"))
+    tab1 = build_cluster_component(mindate, maxdate, session_id, "1")
+    tab2 = build_cluster_component(mindate, maxdate, session_id, "2")
     items.append(
-        html.Div([
-            date_picker.get_component(mindate, maxdate, None),
-            html.Div(
-                id='intermediate-value',
-                style={'display': 'none'},
-                children=[session_id]
-            ),
-            html.Div(id='output-container-date-picker-range')
+        dcc.Tabs([
+            dcc.Tab(label='Date 1', children=[tab1]),
+            dcc.Tab(label="Date 2", children=[tab2])
         ])
     )
     return html.Div(items)
 
 
+def build_cluster_component(mindate, maxdate, session_id, idd="1"):
+    id_component = "date-pick-{}".format(idd)
+    date_component = date_picker.get_component(
+        mindate, maxdate, None, id_component)
+    return html.Div([
+        date_component,
+        html.Div(
+            id='intermediate-value',
+            style={'display': 'none'},
+            children=[session_id]
+        ),
+
+        html.Div(id='output-clustering-'+idd)
+
+    ])
+
+
 @app.callback(
-    dash.dependencies.Output('output-container-date-picker-range', 'children'),
+    Output('output-clustering-1', 'children'),
     [
-        dash.dependencies.Input('date-pick', 'start_date'),
-        dash.dependencies.Input('date-pick', 'end_date'),
-        dash.dependencies.Input('session-id', "children")
+        Input('date-pick-1', 'start_date'),
+        Input('date-pick-1', 'end_date'),
+        Input('session-id', "children")
+    ])
+def update_output(start_date, end_date, session_id):
+    """Return the list of graphs.This is a callback function
+
+    Keyword arguments:
+
+    start_date -- datetime, from the calendar component
+    end_date -- datetime , from the calendar component
+   """
+    if start_date is None or end_date is None:
+        return "No Data"
+    print("Computing clusters...")
+    start_date = dt.strptime(start_date,  "%Y-%m-%d")
+    end_date = dt.strptime(end_date,  "%Y-%m-%d")
+
+    data = get_data(session_id)
+    data = data.filter_by_dates(start_date, end_date)
+
+    df = data.data
+    if df.empty:
+        figures = [go.Figure()]
+    else:
+        edges, df = compute_edges(data)
+        figures = get_figures(edges, df)
+
+    graphs = []
+    for i, fig in enumerate(figures):
+        c = dcc.Graph(id="fig-{}".format(i),  figure=fig)
+        graphs.append(c)
+    print("Done!")
+    return graphs
+
+
+@app.callback(
+    Output('output-clustering-2', 'children'),
+    [
+        Input('date-pick-2', 'start_date'),
+        Input('date-pick-2', 'end_date'),
+        Input('session-id', "children")
     ])
 def update_output(start_date, end_date, session_id):
     """Return the list of graphs.This is a callback function
@@ -167,13 +220,13 @@ def get_figures(edges_np, df):
     G = nx.DiGraph()
     G.add_edges_from(edges)
     # this threshold value is experimental and subject to changes.
-    th = 1e3
+    th = 1e-5
     to_remove = []
     # this loop will remove the weak edges. weak edges are the ones
     # with a distance above the threshold  defined above as th.
     for e in G.edges:
         w = G.edges[e]["w"]
-        if w >= th:
+        if 1.0/(w + 1e-10) >= th:
             to_remove.append((e[0], e[1]))
     G.remove_edges_from(to_remove)
     position_dict = compute_pos(df, G.nodes())
@@ -181,6 +234,11 @@ def get_figures(edges_np, df):
     UG = G.to_undirected()
     # extract the list of disjoint subgraphs
     sub_graphs = [UG.subgraph(c) for c in nx.connected_components(UG)]
+
+    sub_graphs = [(g, len(g)) for g in sub_graphs]
+    sub_graphs = sorted_by_second = sorted(
+        sub_graphs, key=lambda tup: tup[1], reverse=True)
+    sub_graphs = [x[0] for x in sub_graphs]
 
     figures = get_plots(sub_graphs, position_dict)
     return figures
@@ -200,8 +258,11 @@ def compute_pos(df, nodes):
     for n in nodes:
         row = df[df["EVENTID"] == int(n)]
         x = row["DateTime"].values[0]
+        x = dt.fromtimestamp(x//10**9)
         y = row["MAGNITUDE"].values[0]
-        pos[n] = (x, y)
+        lat = row["LATITUDE"].values[0]
+        lon = row["LONGITUDE"].values[0]
+        pos[n] = (x, y, lat, lon)
     return pos
 
 
@@ -230,10 +291,47 @@ def get_plot(graph, positions):
    """
     Xe = []
     Ye = []
+
+    X_foreshocks = []
+    Y_foreshocks = []
+    Hover_foreshocks = []
+
+    X_aftershocks = []
+    Y_aftershocks = []
+    Hover_aftershocks = []
+
+    max_magnitude = -1000
+    max_time = 0.0
+    hovermainshock = 0, 0
     for n in graph:
-        # we convert the time stamp to a human readeable format
-        Xe.append(dt.fromtimestamp(positions[n][0]//10**9))
+        mag = positions[n][1]
+        Xe.append(positions[n][0])
         Ye.append(positions[n][1])
+
+        if mag >= max_magnitude:
+            max_magnitude = mag
+            max_time = positions[n][0]
+            hovermainshock = "Location:({},{})".format(
+                positions[n][2], positions[n][3])
+
+    for n in graph:
+        mag = positions[n][1]
+        if mag == max_magnitude:
+            # cont
+            continue
+        text = "Location:({},{})".format(positions[n][2], positions[n][3])
+        if positions[n][0] < max_time:
+            # foreshock
+            X_foreshocks.append(positions[n][0])
+            Y_foreshocks.append(positions[n][1])
+            Hover_foreshocks.append(text)
+        else:
+            # aftershocks
+            X_aftershocks.append(positions[n][0])
+            Y_aftershocks.append(positions[n][1])
+            Hover_aftershocks.append(text)
+        # Xe.append(positions[n][0]  )
+        # Ye.append(positions[n][1])
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -243,18 +341,37 @@ def get_plot(graph, positions):
         line=dict(color='rgb(210,210,210)', width=3),
         hoverinfo='none', name=""
     ))
+    fig.add_trace(get_figure(X_foreshocks, Y_foreshocks,
+                             Hover_foreshocks, "Foreshocks", '#ffe100'))
+    fig.add_trace(get_figure(X_aftershocks, Y_aftershocks,
+                             Hover_aftershocks, "Aftershocks", '#0d35a5'))
+    fig.add_trace(get_figure([max_time], [max_magnitude], [
+                  hovermainshock], "Mainshock", '#ba0000'))
 
-    fig.add_trace(go.Scatter(
-        x=Xe,
-        y=Ye,
+    return fig
+
+
+def get_figure(x, y, hovertext, name, color):
+    """Return a plotly figure given the x,y and hover information
+
+    Keyword arguments:
+
+    x -- list x-coordinate
+    y -- list y-coordinate
+    name -- string  name to be displayed
+    color -- string hexcolor code
+    """
+    return go.Scatter(
+        x=x,
+        y=y,
         mode='markers',
-        name='Earthquake',
+        name=name,
+        hovertext=hovertext,
+        hoverinfo="text",
         marker=dict(
             symbol='circle-dot',
             size=18,
-            color='#6175c1',
+            color=color,
             line=dict(color='rgb(50,50,50)', width=1)
         )
-    ))
-
-    return fig
+    )
