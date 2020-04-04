@@ -11,6 +11,7 @@ from components import quake_map
 from components import time_slider
 from components.config import map_config
 from components.config.timestep_picker import DEFAULT_TIMESTEP
+from components.config.size_picker import get_sizes
 from utils import earthquake_data
 
 
@@ -30,13 +31,16 @@ def get_layout(session_id):
         default_end_date = start_date + timedelta(weeks=1)
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
+        sizes = get_sizes(filtered_data.data)
 
         return html.Div([
             dbc.Row(
                 [
                     dbc.Col(html.Div(
                         id='map-wrapper',
-                        children=[quake_map.get_component(filtered_data)]
+                        children=[
+                            quake_map.get_component(filtered_data, sizes)
+                        ]
                     )),
                     dbc.Col(map_config.get_component(
                         start_date, end_date, default_end_date,
@@ -118,7 +122,12 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = filter_data(eq_data, start_date, timestep, slider_value)
 
-    return quake_map.get_component(filtered_data, size_column, color_column)
+    sizes = get_sizes(
+        filtered_data.data,
+        eq_data.get_normalized_column(size_column)
+    )
+
+    return quake_map.get_component(filtered_data, sizes, color_column)
 
 
 @app.callback(

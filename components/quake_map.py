@@ -4,7 +4,6 @@ import dash_leaflet as dl
 
 from app import app
 from utils import earthquake_data
-from components.config.size_picker import get_sizes
 from components.config.color_picker import get_colors
 
 
@@ -18,7 +17,7 @@ attribution = """Maps &copy;
 OpenStreetMap contributors</a>"""
 
 
-def get_component(eq_data, size_column=None, color_column=None):
+def get_component(eq_data, sizes, color_column=None):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
@@ -27,7 +26,6 @@ def get_component(eq_data, size_column=None, color_column=None):
     color_column -- The column for computing the color of each data point
     """
 
-    sizes = get_sizes(eq_data.data, size_column)
     colors, color_domain = get_colors(eq_data.data, color_column)
 
     return dl.Map(

@@ -2,6 +2,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
 
+HALF_MAX_SIZE = 1000
+
 
 def get_component(columns):
     """Return size picker component.
@@ -25,27 +27,25 @@ def get_component(columns):
     ])
 
 
-def get_sizes(data, size_column):
+def get_sizes(data, normalized_sizes=None):
     """Return an array of sizes, one for each row of data.
-    If the size column argument is None, default size is
-    used instead.
+
+    Select correct values from normalized sizes using the
+    index values from the data frame. Add 0.1 to the values
+    before multiplying to get the final sizes to ensure non-
+    zero sizes, as the values are given in the range [0, 1].
+    If the normalized sizes array is None, return an array
+    filled with default values.
 
     Keyword arguments:
-    data -- Dataframe object
-    size_column -- Column to use for calculating the sizes,
-        or None for default values
+    data -- Dataframe object containing the filtered data
+    normalized_sizes -- A numpy array containing normalized
+        values to use for sizes
     """
-    if size_column is None:
-        sizes = np.repeat(200, data.shape[0])
-    else:
-        sizes = data[size_column].to_numpy()
-        if sizes.min() <= 0:
-            sizes += 1 - sizes.min()
+    if normalized_sizes is None:
+        return np.repeat(200, data.shape[0])
 
-        while sizes.min() < 100:
-            sizes *= 10
+    sizes = np.take(normalized_sizes, data.index.to_numpy())
+    sizes += 0.1
 
-        while sizes.min() > 2000:
-            sizes /= 5
-
-    return sizes
+    return sizes * HALF_MAX_SIZE
