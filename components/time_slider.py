@@ -39,7 +39,8 @@ def get_time_string(time, timestep):
 
     Keyword arguments:
     time -- A datetime object to be converted into a string
-    timestep -- Unit of the timestep in seconds
+    timestep -- The time step as seconds. One slider step represents
+        a time window of this size.
     """
     end_time = time + datetime.timedelta(seconds=timestep)
     return '{}.{}.{} {}:{}:{} - {}.{}.{} {}:{}:{}'.format(
