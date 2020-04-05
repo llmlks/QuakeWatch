@@ -1,6 +1,7 @@
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_leaflet as dl
+import dash_table
 
 from app import app
 from utils import earthquake_data
@@ -51,7 +52,16 @@ def get_event_layer(eq_data):
             radius=100,
             color='red',
             fillOpacity=0.1,
-            weight=2
+            weight=2,
+            children=[dl.Popup(
+                dcc.Markdown(
+                    list(map(
+                        lambda x: '**{}**: {}  '.format(x, quake[x]),
+                        quake.keys()
+                    ))
+                ),
+                className='earthquake-popup'
+            )]
         )
         for _, quake in eq_data.data.iterrows()]
 
