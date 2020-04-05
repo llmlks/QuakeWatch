@@ -57,6 +57,12 @@ class EarthquakeData:
         """
         return self.data['EVENTID']
 
+    def get_templateids(self):
+        """Return a pandas Series with the template IDs for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['TEMPLATEID']
+
     def get_daterange(self):
         """Return minimum and maximum dates in the data as timestamps."""
         return self.dates.min(), self.dates.max()
@@ -82,6 +88,18 @@ class EarthquakeData:
         return EarthquakeData(
             self.catalog_type,
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        """Return a new EarthquakeData object filtered to contain only events
+        that have the given template.
+
+        Keyword arguments:
+        template -- The template ID to use for filtering
+        """
+        return EarthquakeData(
+            self.catalog_type,
+            self.data[self.data['TEMPLATEID'] == template]
         )
 
 
@@ -134,10 +152,16 @@ class OtaniemiEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['M_HEL']
 
+    def get_templateids(self):
+        return None
+
     def filter_by_dates(self, datemin, datemax):
         return OtaniemiEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
+
+    def filter_by_template_id(self, template):
+        return None
 
 
 class BaselEarthquakeData(EarthquakeData):
@@ -161,9 +185,17 @@ class BaselEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['Mwx']
 
+    def get_templateids(self):
+        return self.data['TpID']
+
     def filter_by_dates(self, datemin, datemax):
         return BaselEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return BaselEarthquakeData(
+            self.data[self.data['TpID'] == template]
         )
 
 
@@ -188,6 +220,11 @@ class FMEarthquakeData(EarthquakeData):
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
 
+    def filter_by_template_id(self, template):
+        return FMEarthquakeData(
+            self.data[self.data['TEMPLATEID'] == template]
+        )
+
 
 class QTMEarthquakeData(EarthquakeData):
     """Internal representation of the QTM catalog data.
@@ -208,6 +245,11 @@ class QTMEarthquakeData(EarthquakeData):
     def filter_by_dates(self, datemin, datemax):
         return QTMEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return QTMEarthquakeData(
+            self.data[self.data['TEMPLATEID'] == template]
         )
 
 
