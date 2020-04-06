@@ -25,3 +25,7 @@
 #apply {
     margin-top: 15px;
 }
+
+#color-column, #size-column {
+    width: 288px
+}
