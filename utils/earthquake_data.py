@@ -122,7 +122,6 @@ class OtaniemiEarthquakeData(EarthquakeData):
         transform UTM coordinates to latitudes and longitudes,
         and cast strings to floats, where applicable.
         """
-<<<<<<< HEAD
         if 'LONGITUDE' not in data.columns:
             lat_longs = list(map(
                 lambda x: PROJECTION(x[0], x[1], inverse=True),
@@ -130,13 +129,6 @@ class OtaniemiEarthquakeData(EarthquakeData):
                     data['EASTING [m]'].to_numpy(),
                     data['NORTHING [m]'].to_numpy()
                 ))
-=======
-        lat_longs = list(map(
-            lambda x: PROJECTION(x[0], x[1], inverse=True),
-            list(zip(
-                data['EASTING [m]'].to_numpy(),
-                data['NORTHING [m]'].to_numpy()
->>>>>>> 626e8a9c21372bc43af17be4fc318696f992547f
             ))
 
             data = data.assign(
