@@ -43,7 +43,13 @@ def otaniemi_parse(decoded_contents):
     """
     df = pd.read_csv(
         io.StringIO(decoded_contents.decode('utf-8')),
-        sep=';'
+        sep=';',
+        converters={
+            'EASTING [m]': convert_to_float,
+            'NORTHING [m]': convert_to_float,
+            'M_HEL': convert_to_float,
+            'M_W': convert_to_float
+        }
     )
     return df
 
@@ -70,3 +76,8 @@ def basel_parse(decoded_contents):
         na_values=['-.--', '-.-', '------']
     )
     return df
+
+
+def convert_to_float(x):
+    """Convert a string to float, replacing commas with points."""
+    return float(x.replace(',', '.'))

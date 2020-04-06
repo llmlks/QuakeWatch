@@ -94,7 +94,7 @@ class EarthquakeData:
         numeric.
 
         Keyword arguments:
-        column_name -- Column to normalise
+        column_name -- Column to normalize
         """
         if column_name is None or column_name not in self.data.columns:
             return None
@@ -124,12 +124,8 @@ class OtaniemiEarthquakeData(EarthquakeData):
         lat_longs = list(map(
             lambda x: PROJECTION(x[0], x[1], inverse=True),
             list(zip(
-                data['EASTING [m]'].apply(
-                    lambda y: float(y.replace(',', '.'))
-                ).to_numpy(),
-                data['NORTHING [m]'].apply(
-                    lambda y: float(y.replace(',', '.'))
-                ).to_numpy()
+                data['EASTING [m]'].to_numpy(),
+                data['NORTHING [m]'].to_numpy()
             ))
         ))
 
