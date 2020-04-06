@@ -22,7 +22,7 @@ def get_component(eq_data, sizes, color_column=None):
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
-    size_column -- The column for computing the size of each data point
+    sizes -- An array containing a size for each data point
     color_column -- The column for computing the color of each data point
     """
 
