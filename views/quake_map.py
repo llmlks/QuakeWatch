@@ -92,9 +92,11 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
      State('size-column', 'value'),
-     State('color-column', 'value')])
+     State('color-column', 'value')
+     State('uncertainty-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
-               timestep_value, timestep_seconds, size_column, color_column):
+               timestep_value, timestep_seconds, size_column, color_column,
+               show_uncertainties):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -113,6 +115,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         equal to
     size_column -- The column for computing the size of each data point
     color_column -- The column for computing the color of each data point
+    show_uncertainties -- An array with length one if the toggle for
+        showing location uncertainties is on, and zero if not
     """
 
     timestep = timestep_seconds * timestep_value
@@ -127,7 +131,9 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         eq_data.get_normalized_column(size_column)
     )
 
-    return quake_map.get_component(filtered_data, sizes, color_column)
+    return quake_map.get_component(
+        filtered_data, sizes, color_column, len(show_uncertainties) == 1
+    )
 
 
 @app.callback(

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 from pyproj import Proj
+from pyproj import Geod
 from app import cache
 from utils.catalog_types import CatalogTypes
 from utils.dateutils import get_datetime
@@ -112,6 +113,10 @@ class EarthquakeData:
 
         return column
 
+    def get_location_uncertainties(self):
+        """Return the uncertainty in location for each data point."""
+        return 500
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
@@ -162,6 +167,31 @@ class OtaniemiEarthquakeData(EarthquakeData):
         return OtaniemiEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
+
+    def get_location_uncertainties(self):
+        geod = Geod(ellps='clrk66')
+        error_coordinates = [
+            geod.fwd(
+                self.data['LATITUDE'].to_numpy(),
+                self.data['LONGITUDE'].to_numpy(),
+                self.data['EllipseAzimuth [deg]'].to_numpy() + x[0],
+                self.data[x[1]].to_numpy()
+            )
+            for x in [
+                (0, 'AX1 [m]'), (90, 'AX2 [m]'),
+                (180, 'AX1 [m]'), (270, 'AX2 [m]')
+            ]
+        ]
+
+        error_coordinates = np.array(
+            [list(zip(x[0], x[1])) for x in error_coordinates]
+        )
+
+        error_coordinates = error_coordinates.reshape(
+            error_coordinates.size // 2, 2
+        )
+
+        return error_coordinates
 
 
 class BaselEarthquakeData(EarthquakeData):
