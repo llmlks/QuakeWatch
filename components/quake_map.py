@@ -30,8 +30,8 @@ def get_component(eq_data, sizes, color_column=None):
 
     return dl.Map(
         id='quake-map',
-        center=[33.7, -117.3],
-        zoom=8,
+        center=eq_data.get_map_center(),
+        zoom=eq_data.get_initial_zoom(),
         children=[
             dl.TileLayer(
                 url=api_url,
