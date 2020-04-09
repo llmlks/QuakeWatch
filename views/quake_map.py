@@ -11,6 +11,7 @@ from components import quake_map
 from components import time_slider
 from components.config import map_config
 from components.config.timestep_picker import DEFAULT_TIMESTEP
+from components.config.size_picker import get_sizes
 from utils import earthquake_data
 
 
@@ -30,17 +31,23 @@ def get_layout(session_id):
         default_end_date = start_date + timedelta(weeks=1)
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
+        sizes = get_sizes(filtered_data.data)
 
         return html.Div([
             dbc.Row(
                 [
                     dbc.Col(html.Div(
                         id='map-wrapper',
-                        children=[quake_map.get_component(filtered_data)]
+                        children=[
+                            quake_map.get_component(filtered_data, sizes)
+                        ]
                     )),
                     dbc.Col(map_config.get_component(
-                        start_date, end_date, default_end_date)
-                    )
+                        start_date, end_date, default_end_date,
+                        filtered_data.data.select_dtypes(
+                            include='number'
+                        ).columns
+                    ))
                 ]
             ),
             dbc.Row(
@@ -83,9 +90,11 @@ def filter_data(eq_data, start_date, timestep, slider_value):
     [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
-     State('timestep-unit', 'value')])
+     State('timestep-unit', 'value'),
+     State('size-column', 'value'),
+     State('color-column', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
-               timestep_value, timestep_seconds):
+               timestep_value, timestep_seconds, size_column, color_column):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -102,6 +111,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         happened within the time window of this size are shown.
     timestep_seconds -- The number of seconds the selected time unit is
         equal to
+    size_column -- The column for computing the size of each data point
+    color_column -- The column for computing the color of each data point
     """
 
     timestep = timestep_seconds * timestep_value
@@ -111,7 +122,12 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = filter_data(eq_data, start_date, timestep, slider_value)
 
-    return quake_map.get_component(filtered_data)
+    sizes = get_sizes(
+        filtered_data.data,
+        eq_data.get_normalized_column(size_column)
+    )
+
+    return quake_map.get_component(filtered_data, sizes, color_column)
 
 
 @app.callback(
@@ -151,7 +167,7 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
 
 
 @app.callback(
-    Output('output-container-range-slider', 'children'),
+    Output('time-slider-value-container', 'children'),
     [Input('time-slider', 'value')],
     [State('date-pick', 'start_date'),
      State('timestep-value', 'value'),
@@ -175,7 +191,7 @@ def update_time_slider_value(slider_value, start_date, timestep_value,
     start_date = get_datetime_from_str(start_date)
     slider_time = start_date + timedelta(seconds=slider_value*timestep)
 
-    return time_slider.get_time_string(slider_time, timestep_seconds)
+    return time_slider.get_time_string(slider_time, timestep)
 
 
 def get_datetime_from_str(date_str):
