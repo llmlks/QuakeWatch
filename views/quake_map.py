@@ -167,7 +167,7 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
 
 
 @app.callback(
-    Output('output-container-range-slider', 'children'),
+    Output('time-slider-value-container', 'children'),
     [Input('time-slider', 'value')],
     [State('date-pick', 'start_date'),
      State('timestep-value', 'value'),

@@ -4,7 +4,18 @@
 }
 
 #time-slider {
-    width: 50vw;
+    width: 46vw;
     padding: 0px !important;
     padding-top: 10px !important;
+    display: inline-block;
+}
+
+#time-slider-play-button {
+    width: 3vw;
+    margin: 0 1vw 0 0;
+    display: inline-block;
+}
+
+#time-slider-value-container {
+    margin: 0 0 0 4vw;
 }
