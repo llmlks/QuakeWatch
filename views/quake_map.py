@@ -191,7 +191,7 @@ def update_time_slider_value(slider_value, start_date, timestep_value,
     start_date = get_datetime_from_str(start_date)
     slider_time = start_date + timedelta(seconds=slider_value*timestep)
 
-    return time_slider.get_time_string(slider_time, timestep_seconds)
+    return time_slider.get_time_string(slider_time, timestep)
 
 
 def get_datetime_from_str(date_str):
