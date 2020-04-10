@@ -32,7 +32,9 @@ def get_layout(session_id):
         default_end_date = start_date + timedelta(weeks=1)
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
-        templates = filtered_data.get_templateids()
+        templates = eq_data.filter_by_dates(
+            start_date, end_date
+        ).get_templateids()
         sizes = get_sizes(filtered_data.data)
 
         return html.Div([
@@ -93,7 +95,7 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
-     State('template-id', 'value')])
+     State('template-id', 'value'),
      State('size-column', 'value'),
      State('color-column', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,

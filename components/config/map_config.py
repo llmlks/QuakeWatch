@@ -13,7 +13,8 @@ from components.config import size_picker
 from components.config import color_picker
 
 
-def get_component(min_date, max_date, default_end_date, columns, templates=None):
+def get_component(min_date, max_date, default_end_date, columns,
+                  templates=None):
     """Return the configuration component for the map view.
 
     Keyword arguments:
