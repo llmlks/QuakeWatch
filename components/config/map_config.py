@@ -9,9 +9,11 @@ from utils.dateutils import get_datetime_from_str
 from components.config import date_picker
 from components.config import timestep_picker
 from components.config import template_picker
+from components.config import size_picker
+from components.config import color_picker
 
 
-def get_component(min_date, max_date, default_end_date, templates=None):
+def get_component(min_date, max_date, default_end_date, columns, templates=None):
     """Return the configuration component for the map view.
 
     Keyword arguments:
@@ -20,12 +22,17 @@ def get_component(min_date, max_date, default_end_date, templates=None):
     default_end_date -- The default end date for the datepicker. The
         default start date is the `min_date`.
     templates -- A list of template IDs to select from.
+    columns -- The available columns in the uploaded data
+    templates -- A list of template IDs to select from.
     """
     return html.Div([
         date_picker.get_component(min_date, max_date, default_end_date),
         timestep_picker.get_component(),
+        size_picker.get_component(columns),
+        color_picker.get_component(columns),
         template_picker.get_component(templates),
-        dbc.Button("Apply", id='apply', outline=True, color="success")
+        dbc.Button("Apply", id='apply', outline=True,
+                    color="success")
     ])
 
 

@@ -33,3 +33,7 @@
 .form-control:disabled {
     background-color: #f9f9f9;
 }
+
+#color-column, #size-column {
+    width: 288px
+}
