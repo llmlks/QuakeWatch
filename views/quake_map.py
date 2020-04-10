@@ -12,6 +12,7 @@ from components import time_slider
 from components.config import map_config
 from components.config.timestep_picker import DEFAULT_TIMESTEP
 from utils import earthquake_data
+from utils.dateutils import get_datetime_from_str
 
 
 def get_layout(session_id):
@@ -28,9 +29,9 @@ def get_layout(session_id):
     if eq_data.data.shape[0] != 0:
         start_date, end_date = eq_data.get_daterange()
         default_end_date = start_date + timedelta(weeks=1)
-        templates = eq_data.get_templateids()
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
+        templates = filtered_data.get_templateids()
 
         return html.Div([
             dbc.Row(
@@ -109,17 +110,19 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     """
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
+    start_date = get_datetime_from_str(start_date)
+    end_date = get_datetime_from_str(end_date)
+
     if template_id is None:
-
         timestep = timestep_seconds * timestep_value
-        start_date = get_datetime_from_str(start_date)
-        end_date = get_datetime_from_str(end_date)
-
         filtered_data = filter_data(
             eq_data, start_date, timestep, slider_value
         )
+
     else:
-        filtered_data = eq_data.filter_by_template_id(template_id)
+        filtered_data = eq_data.filter_by_dates(
+            start_date, end_date
+        ).filter_by_template_id(template_id)
 
     return quake_map.get_component(filtered_data)
 
@@ -189,12 +192,3 @@ def update_time_slider_value(slider_value, start_date, timestep_value,
     slider_time = start_date + timedelta(seconds=slider_value*timestep)
 
     return time_slider.get_time_string(slider_time, timestep_seconds)
-
-
-def get_datetime_from_str(date_str):
-    """Parse the given date string to a datetime object.
-
-    Keyword arguments:
-    date_str -- String in the format YYYY-MM-DD
-    """
-    return datetime(*map(int, date_str.split('-')))

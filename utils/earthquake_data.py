@@ -61,7 +61,7 @@ class EarthquakeData:
         """Return a pandas Series with the template IDs for each of
         the earthquakes in the uploaded data.
         """
-        return self.data['TEMPLATEID']
+        return self.data['TEMPLATEID'].unique()
 
     def get_daterange(self):
         """Return minimum and maximum dates in the data as timestamps."""
@@ -186,7 +186,7 @@ class BaselEarthquakeData(EarthquakeData):
         return self.data['Mwx']
 
     def get_templateids(self):
-        return self.data['TpID']
+        return self.data['TpID'].dropna().unique()
 
     def filter_by_dates(self, datemin, datemax):
         return BaselEarthquakeData(
@@ -215,15 +215,16 @@ class FMEarthquakeData(EarthquakeData):
                 x['SECOND']
             ), axis=1)
 
+    def get_templateids(self):
+        return None
+
     def filter_by_dates(self, datemin, datemax):
         return FMEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
 
     def filter_by_template_id(self, template):
-        return FMEarthquakeData(
-            self.data[self.data['TEMPLATEID'] == template]
-        )
+        return None
 
 
 class QTMEarthquakeData(EarthquakeData):

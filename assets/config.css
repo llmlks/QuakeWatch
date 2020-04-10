@@ -29,3 +29,7 @@
 #template-id {
     width: 288px
 }
+
+.form-control:disabled {
+    background-color: #f9f9f9;
+}
