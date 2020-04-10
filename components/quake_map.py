@@ -1,7 +1,7 @@
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_leaflet as dl
-import geopandas as gpd
+import shapefile
 
 from app import app
 from utils import earthquake_data
@@ -70,8 +70,8 @@ def get_fault_layer():
     Blind faults are represented by dashed, dark grey lines and
     non-blind faults by solid, black lines.
     """
-    blind_faults = gpd.read_file(faults_blind)
-    nonblind_faults = gpd.read_file(faults_nonblind)
+    blind_faults = shapefile.Reader(faults_blind)
+    nonblind_faults = shapefile.Reader(faults_nonblind)
 
     faults = [
         dl.Polyline(
@@ -80,10 +80,10 @@ def get_fault_layer():
             dashArray='2, 3',
             positions=[
                 [coord[1], coord[0]]
-                for coord in zip(list(fault.xy[0]), list(fault.xy[1]))
+                for coord in feature.shape.__geo_interface__['coordinates']
             ]
         )
-        for _, fault in blind_faults['geometry'].iteritems()
+        for feature in blind_faults.shapeRecords()
     ]
 
     faults += [
@@ -92,10 +92,10 @@ def get_fault_layer():
             weight=1,
             positions=[
                 [coord[1], coord[0]]
-                for coord in zip(list(fault.xy[0]), list(fault.xy[1]))
+                for coord in feature.shape.__geo_interface__['coordinates']
             ]
         )
-        for _, fault in nonblind_faults['geometry'].iteritems()
+        for feature in nonblind_faults.shapeRecords()
     ]
 
     return dl.LayerGroup(id='fault-layer', children=faults)

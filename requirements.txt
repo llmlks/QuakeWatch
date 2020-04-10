@@ -7,4 +7,4 @@ numba
 networkx
 pyproj>=2.5.0
 gunicorn>=20.0.4
-geopandas>=0.7.0
+pyshp>=2.1.0
