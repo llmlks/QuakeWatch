@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timedelta
 
 import pandas as pd
+import numpy as np
 from pyproj import Proj
 from app import cache
 from utils.catalog_types import CatalogTypes
@@ -84,6 +85,41 @@ class EarthquakeData:
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
 
+    def get_normalized_column(self, column_name):
+        """Return a numpy array containing the values from the
+        given column normalized to the range [0,1].
+
+        If the column does not exist, a None value is returned.
+        No normalization is performed on columns that are not
+        numeric.
+
+        Keyword arguments:
+        column_name -- Column to normalize
+        """
+        if column_name is None or column_name not in self.data.columns:
+            return None
+
+        column = self.data[column_name].to_numpy()
+
+        if not np.issubdtype(column.dtype, np.number):
+            return column
+
+        if column.min() <= 0:
+            column -= column.min()
+
+        if column.max() > 1:
+            column /= column.max()
+
+        return column
+
+    def get_map_center(self):
+        """Return coordinates to use for the initial positioning of the map."""
+        return [33.7, -117.3]
+
+    def get_initial_zoom(self):
+        """Return initial zoom level to use for the map."""
+        return 8
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
@@ -98,12 +134,8 @@ class OtaniemiEarthquakeData(EarthquakeData):
             lat_longs = list(map(
                 lambda x: PROJECTION(x[0], x[1], inverse=True),
                 list(zip(
-                    data['EASTING [m]'].apply(
-                        lambda y: float(str(y).replace(',', '.'))
-                    ).to_numpy(),
-                    data['NORTHING [m]'].apply(
-                        lambda y: float(str(y).replace(',', '.'))
-                    ).to_numpy()
+                    data['EASTING [m]'].to_numpy(),
+                    data['NORTHING [m]'].to_numpy()
                 ))
             ))
 
@@ -139,6 +171,12 @@ class OtaniemiEarthquakeData(EarthquakeData):
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
 
+    def get_map_center(self):
+        return [60.193, 24.84]
+
+    def get_initial_zoom(self):
+        return 13
+
 
 class BaselEarthquakeData(EarthquakeData):
     """Internal representation of the Basel catalog data.
@@ -165,6 +203,12 @@ class BaselEarthquakeData(EarthquakeData):
         return BaselEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
+
+    def get_map_center(self):
+        return [47.585, 7.593]
+
+    def get_initial_zoom(self):
+        return 13
 
 
 class FMEarthquakeData(EarthquakeData):
