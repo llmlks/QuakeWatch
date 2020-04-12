@@ -17,16 +17,17 @@ attribution = """Maps &copy;
 OpenStreetMap contributors</a>"""
 
 
-def get_component(eq_data, sizes, color_column=None):
+def get_component(eq_data, sizes, color_params=None):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
     sizes -- An array containing a size for each data point
-    color_column -- The column for computing the color of each data point
+    color_params -- A tuple with the information for extracting and
+        normalizing values to use for colors
     """
 
-    colors, color_domain = get_colors(eq_data.data, color_column)
+    colors, color_domain = get_colors(eq_data.data, color_params)
 
     return dl.Map(
         id='quake-map',
