@@ -13,6 +13,7 @@ from components.config import map_config
 from components.config.timestep_picker import DEFAULT_TIMESTEP
 from components.config.size_picker import get_sizes
 from utils import earthquake_data
+from utils.catalog_types import is_california_data
 
 
 def get_layout(session_id):
@@ -32,6 +33,7 @@ def get_layout(session_id):
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
         sizes = get_sizes(filtered_data.data)
+        california_data = is_california_data(eq_data.catalog_type)
 
         return html.Div([
             dbc.Row(
@@ -46,7 +48,8 @@ def get_layout(session_id):
                         start_date, end_date, default_end_date,
                         filtered_data.data.select_dtypes(
                             include='number'
-                        ).columns
+                        ).columns,
+                        california_data
                     ))
                 ]
             ),
@@ -92,9 +95,11 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
      State('size-column', 'value'),
-     State('color-column', 'value')])
+     State('color-column', 'value'),
+     State('faults-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
-               timestep_value, timestep_seconds, size_column, color_column):
+               timestep_value, timestep_seconds, size_column, color_column,
+               show_faults):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -113,6 +118,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         equal to
     size_column -- The column for computing the size of each data point
     color_column -- The column for computing the color of each data point
+    show_faults -- A list indicating if faults shall be visible, length 1
+        indicates yes
     """
 
     timestep = timestep_seconds * timestep_value
@@ -127,7 +134,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         eq_data.get_normalized_column(size_column)
     )
 
-    return quake_map.get_component(filtered_data, sizes, color_column)
+    return quake_map.get_component(filtered_data, sizes, color_column,
+                                   len(show_faults) == 1)
 
 
 @app.callback(
