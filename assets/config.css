@@ -29,3 +29,7 @@
 #color-column, #size-column {
     width: 288px
 }
+
+.toggle-select {
+    margin-top: 10px;
+}

@@ -106,6 +106,14 @@ class EarthquakeData:
 
         return (column_name, params[0], params[1])
 
+    def get_map_center(self):
+        """Return coordinates to use for the initial positioning of the map."""
+        return [33.7, -117.3]
+
+    def get_initial_zoom(self):
+        """Return initial zoom level to use for the map."""
+        return 8
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
@@ -157,6 +165,12 @@ class OtaniemiEarthquakeData(EarthquakeData):
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
 
+    def get_map_center(self):
+        return [60.193, 24.84]
+
+    def get_initial_zoom(self):
+        return 13
+
 
 class BaselEarthquakeData(EarthquakeData):
     """Internal representation of the Basel catalog data.
@@ -183,6 +197,12 @@ class BaselEarthquakeData(EarthquakeData):
         return BaselEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
+
+    def get_map_center(self):
+        return [47.585, 7.593]
+
+    def get_initial_zoom(self):
+        return 13
 
 
 class FMEarthquakeData(EarthquakeData):
