@@ -42,8 +42,9 @@ def get_colors(data, color_params):
 
     Keyword arguments:
     data -- Dataframe object
-    color_column -- A tuple with the information for extracting
-        and normalizing values to use for sizes
+    color_params -- A tuple with the column name and its minimum
+        and maximum values for extracting and normalizing values
+        to use for colors
     """
 
     if color_params is None:

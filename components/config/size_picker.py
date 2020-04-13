@@ -40,8 +40,9 @@ def get_sizes(data, column_params=None):
 
     Keyword arguments:
     data -- Dataframe object containing the filtered data
-    column_params -- A tuple with the information for
-        extracting and normalizing values to use for sizes
+    column_params -- A tuple with the column name and its minimum
+        and maximum values for extracting and normalizing values
+        to use for sizes
     """
     if column_params is None:
         return np.repeat(200, data.shape[0])
