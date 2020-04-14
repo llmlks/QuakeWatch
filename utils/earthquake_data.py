@@ -169,7 +169,7 @@ class OtaniemiEarthquakeData(EarthquakeData):
         )
 
     def get_location_uncertainties(self):
-        geod = Geod(ellps='clrk66')
+        geod = Geod(ellps='WGS84')
         error_coordinates = [
             geod.fwd(
                 self.data['LATITUDE'].to_numpy(),

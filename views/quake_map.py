@@ -92,7 +92,7 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
      State('size-column', 'value'),
-     State('color-column', 'value')
+     State('color-column', 'value'),
      State('uncertainty-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
                timestep_value, timestep_seconds, size_column, color_column,
