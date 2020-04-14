@@ -23,7 +23,6 @@ def get_component(min_date, max_date, default_end_date, columns,
     max_date -- The maximum date allowed to pick with the datepicker.
     default_end_date -- The default end date for the datepicker. The
         default start date is the `min_date`.
-    templates -- A list of template IDs to select from.
     columns -- The available columns in the uploaded data
     show_faults -- Whether to display the faults toggler
     templates -- A list of template IDs to select from.
