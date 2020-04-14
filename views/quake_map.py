@@ -49,7 +49,6 @@ def get_layout(session_id):
                         ]
                     )),
                     dbc.Col(map_config.get_component(
-<<<<<<< Updated upstream
                         start_date,
                         end_date,
                         default_end_date,
@@ -58,12 +57,6 @@ def get_layout(session_id):
                         ).columns,
                         california_data,
                         templates
-=======
-                        start_date, end_date, default_end_date,
-                        filtered_data.data.select_dtypes(
-                            include='number'
-                        ).columns, templates
->>>>>>> Stashed changes
                     ))
                 ]
             ),
