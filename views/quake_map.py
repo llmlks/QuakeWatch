@@ -13,6 +13,7 @@ from components.config import map_config
 from components.config.timestep_picker import DEFAULT_TIMESTEP
 from components.config.size_picker import get_sizes
 from utils import earthquake_data
+from utils.catalog_types import is_california_data
 
 
 def get_layout(session_id):
@@ -32,6 +33,7 @@ def get_layout(session_id):
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
         sizes = get_sizes(filtered_data.data)
+        california_data = is_california_data(eq_data.catalog_type)
 
         return html.Div([
             dbc.Row(
@@ -46,7 +48,8 @@ def get_layout(session_id):
                         start_date, end_date, default_end_date,
                         filtered_data.data.select_dtypes(
                             include='number'
-                        ).columns
+                        ).columns,
+                        california_data
                     ))
                 ]
             ),
@@ -93,10 +96,11 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('timestep-unit', 'value'),
      State('size-column', 'value'),
      State('color-column', 'value'),
-     State('uncertainty-toggle', 'value')])
+     State('uncertainty-toggle', 'value'),
+     State('faults-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
                timestep_value, timestep_seconds, size_column, color_column,
-               show_uncertainties):
+               show_uncertainties, show_faults):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -117,6 +121,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     color_column -- The column for computing the color of each data point
     show_uncertainties -- An array with length one if the toggle for
         showing location uncertainties is on, and zero if not
+    show_faults -- A list indicating if faults shall be visible, length 1
+        indicates yes
     """
 
     timestep = timestep_seconds * timestep_value
@@ -132,7 +138,11 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     )
 
     return quake_map.get_component(
-        filtered_data, sizes, color_column, len(show_uncertainties) == 1
+        filtered_data,
+        sizes,
+        color_column,
+        len(show_uncertainties) == 1,
+        len(show_faults) == 1
     )
 
 
@@ -173,7 +183,7 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
 
 
 @app.callback(
-    Output('output-container-range-slider', 'children'),
+    Output('time-slider-value-container', 'children'),
     [Input('time-slider', 'value')],
     [State('date-pick', 'start_date'),
      State('timestep-value', 'value'),
@@ -197,7 +207,7 @@ def update_time_slider_value(slider_value, start_date, timestep_value,
     start_date = get_datetime_from_str(start_date)
     slider_time = start_date + timedelta(seconds=slider_value*timestep)
 
-    return time_slider.get_time_string(slider_time, timestep_seconds)
+    return time_slider.get_time_string(slider_time, timestep)
 
 
 def get_datetime_from_str(date_str):

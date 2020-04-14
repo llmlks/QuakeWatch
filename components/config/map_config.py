@@ -7,9 +7,10 @@ from components.config import timestep_picker
 from components.config import size_picker
 from components.config import color_picker
 from components.config import uncertainty_toggler
+from components.config import faults_toggler
 
 
-def get_component(min_date, max_date, default_end_date, columns):
+def get_component(min_date, max_date, default_end_date, columns, show_faults):
     """Return the configuration component for the map view.
 
     Keyword arguments:
@@ -18,6 +19,7 @@ def get_component(min_date, max_date, default_end_date, columns):
     default_end_date -- The default end date for the datepicker. The
         default start date is the `min_date`.
     columns -- The available columns in the uploaded data
+    show_faults -- Whether to display the faults toggler
     """
     return html.Div([
         date_picker.get_component(min_date, max_date, default_end_date),
@@ -25,6 +27,7 @@ def get_component(min_date, max_date, default_end_date, columns):
         size_picker.get_component(columns),
         color_picker.get_component(columns),
         uncertainty_toggler.get_component(),
+        faults_toggler.get_component(show_faults),
         dbc.Button("Apply", id='apply', outline=True,
                     color="success")
     ])
