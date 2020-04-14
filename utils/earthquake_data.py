@@ -21,6 +21,10 @@ class EarthquakeData:
         self.catalog_type = catalog_type
         self.data = data
         self.dates = pd.Series(dtype='datetime64[ns]')
+        self.column_params = {
+            column: (data[column].min(), data[column].max())
+            for column in data.select_dtypes(np.number)
+        }
 
     def get_datetimes(self):
         """Return a pandas Series with the datetimes for each of the
@@ -103,32 +107,22 @@ class EarthquakeData:
             self.data[self.data['TEMPLATEID'] == template]
         )
 
-    def get_normalized_column(self, column_name):
-        """Return a numpy array containing the values from the
-        given column normalized to the range [0,1].
+    def get_column_params(self, column_name):
+        """Return column name, minimum, and maximum as tuple.
 
         If the column does not exist, a None value is returned.
-        No normalization is performed on columns that are not
-        numeric.
+        The same applies to non-numeric columns.
 
         Keyword arguments:
-        column_name -- Column to normalize
+        column_name -- Name of the column
         """
-        if column_name is None or column_name not in self.data.columns:
+
+        params = self.column_params.get(column_name)
+
+        if params is None:
             return None
 
-        column = self.data[column_name].to_numpy()
-
-        if not np.issubdtype(column.dtype, np.number):
-            return column
-
-        if column.min() <= 0:
-            column -= column.min()
-
-        if column.max() > 1:
-            column /= column.max()
-
-        return column
+        return (column_name, params[0], params[1])
 
     def get_map_center(self):
         """Return coordinates to use for the initial positioning of the map."""

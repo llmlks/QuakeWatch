@@ -14,6 +14,7 @@ from components.config.timestep_picker import DEFAULT_TIMESTEP
 from components.config.size_picker import get_sizes
 from utils import earthquake_data
 from utils.dateutils import get_datetime_from_str
+from utils.catalog_types import is_california_data
 
 
 def get_layout(session_id):
@@ -36,6 +37,7 @@ def get_layout(session_id):
             start_date, end_date
         ).get_templateids()
         sizes = get_sizes(filtered_data.data)
+        california_data = is_california_data(eq_data.catalog_type)
 
         return html.Div([
             dbc.Row(
@@ -47,10 +49,14 @@ def get_layout(session_id):
                         ]
                     )),
                     dbc.Col(map_config.get_component(
-                        start_date, end_date, default_end_date, templates,
+                        start_date,
+                        end_date,
+                        default_end_date,
                         filtered_data.data.select_dtypes(
                             include='number'
-                        ).columns
+                        ).columns,
+                        california_data,
+                        templates
                     ))
                 ]
             ),
@@ -95,12 +101,13 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
-     State('template-id', 'value'),
      State('size-column', 'value'),
-     State('color-column', 'value')])
+     State('color-column', 'value'),
+     State('template-id', 'value'),
+     State('faults-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
                timestep_value, timestep_seconds, size_column, color_column,
-               template_id):
+               template_id, show_faults):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -121,6 +128,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     color_column -- The column for computing the color of each data point
     template_id -- ID of the template which determines the earthquakes
         shown on the map
+    show_faults -- A list indicating if faults shall be visible, length 1
+        indicates yes
     """
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
@@ -140,10 +149,12 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
 
     sizes = get_sizes(
         filtered_data.data,
-        eq_data.get_normalized_column(size_column)
+        eq_data.get_column_params(size_column)
     )
+    color_params = eq_data.get_column_params(color_column)
 
-    return quake_map.get_component(filtered_data, sizes, color_column)
+    return quake_map.get_component(filtered_data, sizes, color_params,
+                                   len(show_faults) == 1)
 
 
 @app.callback(

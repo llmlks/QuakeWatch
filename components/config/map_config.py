@@ -11,10 +11,11 @@ from components.config import timestep_picker
 from components.config import template_picker
 from components.config import size_picker
 from components.config import color_picker
+from components.config import faults_toggler
 
 
 def get_component(min_date, max_date, default_end_date, columns,
-                  templates=None):
+                  show_faults, templates=None):
     """Return the configuration component for the map view.
 
     Keyword arguments:
@@ -24,6 +25,7 @@ def get_component(min_date, max_date, default_end_date, columns,
         default start date is the `min_date`.
     templates -- A list of template IDs to select from.
     columns -- The available columns in the uploaded data
+    show_faults -- Whether to display the faults toggler
     templates -- A list of template IDs to select from.
     """
     return html.Div([
@@ -32,6 +34,7 @@ def get_component(min_date, max_date, default_end_date, columns,
         size_picker.get_component(columns),
         color_picker.get_component(columns),
         template_picker.get_component(templates),
+        faults_toggler.get_component(show_faults),
         dbc.Button("Apply", id='apply', outline=True,
                     color="success")
     ])

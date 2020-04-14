@@ -7,3 +7,13 @@ class CatalogTypes(Enum):
     SCEDC_EXT = '.scedc'
     CSV_EXT = '.csv'
     DAT_EXT = '.dat'
+
+
+def is_california_data(catalog_type):
+    """Return boolean indicating whether given catalog
+    type contains data located in California.
+
+    Keyword arguments:
+    catalog_type -- String representing the catalog type to test
+    """
+    return catalog_type in [CatalogTypes.HYPO_EXT, CatalogTypes.SCEDC_EXT]
