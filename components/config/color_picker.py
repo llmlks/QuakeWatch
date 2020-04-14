@@ -30,40 +30,41 @@ def get_component(columns):
     ])
 
 
-def get_colors(data, color_column):
+def get_colors(data, color_params):
     """Return an array of colors, one for each row of data, and
     a dictionary for building a colorbar.
-    If the color column argument is None, default color 'red' is
-    used instead.
+    If the color parameters argument is None, default color 'red'
+    is used instead.
 
     The values in the given column are normalized to the range
-    [0,1], and the result is used to extract a color from a
-    colormap.
+    [0,1] using the given minimum and maximum values. The result
+    is used to extract a color from a colormap.
 
     Keyword arguments:
     data -- Dataframe object
-    color_column -- Column to use for calculating the colors,
-        or None for default values
+    color_params -- A tuple with the column name and its minimum
+        and maximum values for extracting and normalizing values
+        to use for colors
     """
 
-    if color_column is None:
+    if color_params is None:
         colors = np.repeat('red', data.shape[0])
         color_domain = None
+
     else:
-        colors = data[color_column]
+        name, minimum, maximum = color_params
+
+        colors = data[name].copy()
         color_domain = dict(
-            domainMin=colors.min(),
-            domainMax=colors.max(),
+            domainMin=minimum,
+            domainMax=maximum,
             colorscale=[
                 clrs.to_hex(color_map(c)) for c in [0, 0.25, 0.5, 0.75, 0.99]
             ]
         )
 
-        if colors.min() <= 0:
-            colors -= colors.min()
-
-        if colors.max() > 1:
-            colors /= colors.max()
+        colors -= minimum
+        colors /= maximum
 
         colors = [clrs.to_hex(color_map(c)) for c in colors]
 
