@@ -8,6 +8,7 @@ from components.config import axis_picker
 from components.config import date_picker
 from components.config import histogram_config
 from dash.exceptions import PreventUpdate
+from datetime import timedelta
 from app import app
 
 
@@ -17,6 +18,14 @@ def get_layout(session_id):
     if eq_data is None or eq_data.data.shape == (0, 0):
         return 'No uploaded data found'
 
+    start_date, end_date = eq_data.get_daterange()
+    default_end_date = start_date + timedelta(weeks=1)
+    filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
+
+    default_size_column = eq_data.get_column_params(
+        eq_data.get_magnitudes().name
+    )
+
     return html.Div([
             dbc.Col(
                 html.Div(
@@ -24,7 +33,8 @@ def get_layout(session_id):
                     children=histogram.get_component(None)
                 )
             ),
-            dbc.Col(histogram_config.get_component(eq_data.data.columns))
+            dbc.Col(histogram_config.get_component(
+                eq_data.data.columns, start_date, end_date, default_end_date))
     ])
 
 
@@ -32,11 +42,15 @@ def get_layout(session_id):
     Output('histogram', 'children'),
     [Input('apply', 'n_clicks')],
     [State('session-id', 'children'),
-     State('x-axis', 'value')])
-def update_output(clicks, session_id, x_axis):
+     State('x-axis', 'value'),
+     State('date-pick', 'start_date'),
+     State('date-pick', 'end_date')])
+def update_output(clicks, session_id, x_axis, start_date, end_date):
     if clicks is None:
         raise PreventUpdate
 
     eq_data = earthquake_data.get_earthquake_data(session_id)
-    x_axis = eq_data.data[x_axis]
+    filtered_data = eq_data.filter_by_dates(start_date, end_date)
+
+    x_axis = filtered_data.data[x_axis]
     return histogram.get_component(x_axis)
