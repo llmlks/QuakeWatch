@@ -11,7 +11,7 @@ from utils.dateutils import get_datetime
 
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
-PROJECTION = Proj(3879)
+PROJECTION = Proj(init='epsg:3879')
 
 
 class EarthquakeData:
