@@ -1,14 +1,12 @@
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-
-from components import histogram
-from utils import earthquake_data
-from components.config import axis_picker
-from components.config import date_picker
-from components.config import histogram_config
 from dash.exceptions import PreventUpdate
 from datetime import timedelta
+
+from components import histogram
+from components.config import histogram_config
+from utils import earthquake_data
 from app import app
 
 
@@ -42,7 +40,7 @@ def get_layout(session_id):
     Output('histogram', 'children'),
     [Input('apply', 'n_clicks')],
     [State('session-id', 'children'),
-     State('x-axis', 'value'),
+     State('column', 'value'),
      State('date-pick', 'start_date'),
      State('date-pick', 'end_date')])
 def update_output(clicks, session_id, x_axis, start_date, end_date):
