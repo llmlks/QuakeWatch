@@ -22,20 +22,22 @@ faults_blind = './shapefiles/CFM52_preferred_traces_blind.shp'
 faults_nonblind = './shapefiles/CFM52_preferred_traces_nonblind.shp'
 
 
-def get_component(eq_data, sizes, color_column=None, show_uncertainties=False,
+def get_component(eq_data, sizes, color_params=None, show_uncertainties=False,
                   show_faults=False):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
     sizes -- An array containing a size for each data point
-    color_column -- The column for computing the color of each data point
+    color_params -- A tuple with the column name and its minimum
+        and maximum values for extracting and normalizing values
+        to use for colors
     show_uncertainties -- A boolean indicating whether to display the
         uncertainties in location of each data point
     show_faults -- A boolean indicating whether to show the faults
     """
 
-    colors, color_domain = get_colors(eq_data.data, color_column)
+    colors, color_domain = get_colors(eq_data.data, color_params)
 
     return dl.Map(
         id='quake-map',

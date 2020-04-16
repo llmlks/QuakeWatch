@@ -134,16 +134,13 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
 
     sizes = get_sizes(
         filtered_data.data,
-        eq_data.get_normalized_column(size_column)
+        eq_data.get_column_params(size_column)
     )
+    color_params = eq_data.get_column_params(color_column)
 
-    return quake_map.get_component(
-        filtered_data,
-        sizes,
-        color_column,
-        len(show_uncertainties) == 1,
-        len(show_faults) == 1
-    )
+    return quake_map.get_component(filtered_data, sizes, color_params,
+                                   len(show_uncertainties) == 1,
+                                   len(show_faults) == 1)
 
 
 @app.callback(
