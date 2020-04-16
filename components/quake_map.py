@@ -102,6 +102,8 @@ def get_location_uncertainty_layer(eq_data, visible):
 
     Keyword arguments:
     eq_data -- An Earthquake data object containing the data visible on the map
+    visible -- A boolean indicating whether to display the uncertainties in
+        location of each data point
     """
     if eq_data.data.shape[0] == 0 or not visible:
         return dl.LayerGroup(id='location-uncertainties')
