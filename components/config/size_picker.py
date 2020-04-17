@@ -11,6 +11,7 @@ def get_component(columns, default_value=None):
 
     Keyword arguments:
     columns -- The columns available in the uploaded data
+    default_value -- Name of column selected by default
     """
 
     return html.Div(children=[
@@ -44,6 +45,7 @@ def get_sizes(data, column_params=None, is_map=True):
     column_params -- A tuple with the column name and its minimum
         and maximum values for extracting and normalizing values
         to use for sizes
+    is_map -- A boolean, whether the sizes are used in the map or not
     """
     if column_params is None:
         default_size = 200
