@@ -22,6 +22,10 @@
     height: 39px;
 }
 
+#uncertainty-toggle {
+    margin-top: 10px;
+}
+
 #apply {
     margin-top: 15px;
 }

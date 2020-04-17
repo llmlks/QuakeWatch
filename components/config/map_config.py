@@ -6,6 +6,7 @@ from components.config import date_picker
 from components.config import timestep_picker
 from components.config import size_picker
 from components.config import color_picker
+from components.config import uncertainty_toggler
 from components.config import faults_toggler
 
 
@@ -25,6 +26,7 @@ def get_component(min_date, max_date, default_end_date, columns, show_faults):
         timestep_picker.get_component(),
         size_picker.get_component(columns),
         color_picker.get_component(columns),
+        uncertainty_toggler.get_component(),
         faults_toggler.get_component(show_faults),
         dbc.Button("Apply", id='apply', outline=True,
                     color="success")
