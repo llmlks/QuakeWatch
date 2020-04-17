@@ -126,7 +126,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     start_date = get_datetime_from_str(start_date)
     end_date = get_datetime_from_str(end_date)
 
-    eq_data = earthquake_data.get_earthquake_data(session_id)
+    eq_data = earthquake_data.get_earthquake_data_by_dates(
+        session_id, start_date, end_date)
     filtered_data = filter_data(eq_data, start_date, timestep, slider_value)
 
     sizes = get_sizes(

@@ -285,3 +285,9 @@ def get_earthquake_data(session_id):
     except Exception as ex:
         print(os.path.basename(__file__), ':', ex)
         return EarthquakeData('', pd.DataFrame())
+
+
+@cache.memoize(timeout=36000)
+def get_earthquake_data_by_dates(session_id, datemin, datemax):
+    eq_data = get_earthquake_data(session_id)
+    return eq_data.filter_by_dates(datemin, datemax)
