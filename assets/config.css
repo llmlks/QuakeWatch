@@ -30,7 +30,7 @@
     margin-top: 15px;
 }
 
-#color-column, #size-column {
+#color-column, #size-column, #x-axis, #y-axis {
     width: 288px
 }
 

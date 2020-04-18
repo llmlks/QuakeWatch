@@ -250,6 +250,8 @@ class FMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
+        self.dates.rename('DateTime', inplace=True)
+        self.data = self.data.assign(DateTime=self.dates)
 
     def filter_by_dates(self, datemin, datemax):
         return FMEarthquakeData(
@@ -272,6 +274,8 @@ class QTMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
+        self.dates.rename('DateTime', inplace=True)
+        self.data = self.data.assign(DateTime=self.dates)
 
     def filter_by_dates(self, datemin, datemax):
         return QTMEarthquakeData(
