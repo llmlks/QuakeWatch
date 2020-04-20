@@ -22,6 +22,10 @@
     height: 39px;
 }
 
+#uncertainty-toggle {
+    margin-top: 10px;
+}
+
 #apply {
     margin-top: 15px;
 }
@@ -34,7 +38,7 @@
     background-color: #f9f9f9;
 }
 
-#color-column, #size-column {
+#color-column, #size-column, #x-axis, #y-axis {
     width: 288px
 }
 

@@ -2,14 +2,16 @@ import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
 
-HALF_MAX_SIZE = 1000
+MAP_MAX_SIZE = 1000
+PLOT_MAX_SIZE = 50
 
 
-def get_component(columns):
+def get_component(columns, default_value=None):
     """Return size picker component.
 
     Keyword arguments:
     columns -- The columns available in the uploaded data
+    default_value -- Name of column selected by default
     """
 
     return html.Div(children=[
@@ -22,12 +24,12 @@ def get_component(columns):
                 {'label': column, 'value': column}
                 for column in columns
             ],
-            value=None
+            value=default_value
         )
     ])
 
 
-def get_sizes(data, column_params=None):
+def get_sizes(data, column_params=None, is_map=True):
     """Return an array of sizes, one for each row of data.
 
     The values in the given column are normalized to the range
@@ -43,16 +45,24 @@ def get_sizes(data, column_params=None):
     column_params -- A tuple with the column name and its minimum
         and maximum values for extracting and normalizing values
         to use for sizes
+    is_map -- A boolean, whether the sizes are used in the map or not
     """
     if column_params is None:
-        return np.repeat(200, data.shape[0])
+        default_size = 200
+        if not is_map:
+            default_size = 10
+        return np.repeat(default_size, data.shape[0])
 
     name, minimum, maximum = column_params
 
     sizes = data[name].astype(float).copy()
 
     sizes += 0.1 - minimum
-    sizes /= maximum
-    sizes = [200 if np.isnan(size) else size for size in sizes]
+    sizes /= (maximum - minimum + 0.1)
+    sizes = np.array([0.5 if np.isnan(size) else size for size in sizes])
 
-    return sizes * HALF_MAX_SIZE
+    scalar = MAP_MAX_SIZE
+    if not is_map:
+        scalar = PLOT_MAX_SIZE
+
+    return sizes * scalar

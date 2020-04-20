@@ -104,10 +104,11 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('size-column', 'value'),
      State('color-column', 'value'),
      State('template-id', 'value'),
+     State('uncertainty-toggle', 'value'),
      State('faults-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
                timestep_value, timestep_seconds, size_column, color_column,
-               template_id, show_faults):
+               template_id, show_uncertainties, show_faults):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -128,6 +129,8 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     color_column -- The column for computing the color of each data point
     template_id -- ID of the template which determines the earthquakes
         shown on the map
+    show_uncertainties -- An array with length one if the toggle for
+        showing location uncertainties is on, and zero if not
     show_faults -- A list indicating if faults shall be visible, length 1
         indicates yes
     """
@@ -154,6 +157,7 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     color_params = eq_data.get_column_params(color_column)
 
     return quake_map.get_component(filtered_data, sizes, color_params,
+                                   len(show_uncertainties) == 1,
                                    len(show_faults) == 1)
 
 
