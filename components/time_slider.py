@@ -10,7 +10,7 @@ from dash.exceptions import PreventUpdate
 from app import app
 
 
-def get_component(min_time, max_time, time_step):
+def get_component(min_time, max_time, time_step, visible=True):
     """Return the time slider component.
 
     The number of steps is calculated based on the argument values.
@@ -20,9 +20,14 @@ def get_component(min_time, max_time, time_step):
     max_time -- A datetime object representing the end of the time frame
     time_step -- The time step as seconds. One slider step represents
         a time window of this size.
+    visible -- A boolean indicating whether the component should be visible
     """
     seconds = (max_time - min_time).total_seconds()
     steps = ceil(seconds / time_step)
+
+    display_style = {}
+    if not visible:
+        display_style = {'display': 'none'}
 
     return html.Div([
         dbc.Button(
@@ -49,7 +54,7 @@ def get_component(min_time, max_time, time_step):
             n_intervals=None,
             disabled=True
         )
-    ])
+    ], style=display_style)
 
 
 def get_time_string(time, timestep):

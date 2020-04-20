@@ -30,6 +30,14 @@
     margin-top: 15px;
 }
 
+#template-id {
+    width: 288px
+}
+
+.form-control:disabled {
+    background-color: #f9f9f9;
+}
+
 #color-column, #size-column, #x-axis, #y-axis {
     width: 288px
 }
