@@ -13,6 +13,7 @@ from components.config import map_config
 from components.config.timestep_picker import DEFAULT_TIMESTEP
 from components.config.size_picker import get_sizes
 from utils import earthquake_data
+from utils.dateutils import get_datetime_from_str
 from utils.catalog_types import is_california_data
 
 
@@ -32,6 +33,9 @@ def get_layout(session_id):
         default_end_date = start_date + timedelta(weeks=1)
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
+        templates = eq_data.filter_by_dates(
+            start_date, end_date
+        ).get_templateids()
         sizes = get_sizes(filtered_data.data)
         california_data = is_california_data(eq_data.catalog_type)
 
@@ -45,11 +49,14 @@ def get_layout(session_id):
                         ]
                     )),
                     dbc.Col(map_config.get_component(
-                        start_date, end_date, default_end_date,
+                        start_date,
+                        end_date,
+                        default_end_date,
                         filtered_data.data.select_dtypes(
                             include='number'
                         ).columns,
-                        california_data
+                        california_data,
+                        templates
                     ))
                 ]
             ),
@@ -96,10 +103,12 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('timestep-unit', 'value'),
      State('size-column', 'value'),
      State('color-column', 'value'),
+     State('template-id', 'value'),
+     State('uncertainty-toggle', 'value'),
      State('faults-toggle', 'value')])
 def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
                timestep_value, timestep_seconds, size_column, color_column,
-               show_faults):
+               template_id, show_uncertainties, show_faults):
     """Update the map based on the slider position and the configuration.
 
     This is a callback function invoked by changes to either the time slider
@@ -118,17 +127,29 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         equal to
     size_column -- The column for computing the size of each data point
     color_column -- The column for computing the color of each data point
+    template_id -- ID of the template which determines the earthquakes
+        shown on the map
+    show_uncertainties -- An array with length one if the toggle for
+        showing location uncertainties is on, and zero if not
     show_faults -- A list indicating if faults shall be visible, length 1
         indicates yes
     """
-
-    timestep = timestep_seconds * timestep_value
     start_date = get_datetime_from_str(start_date)
     end_date = get_datetime_from_str(end_date)
 
     eq_data = earthquake_data.get_earthquake_data_by_dates(
         session_id, start_date, end_date)
-    filtered_data = filter_data(eq_data, start_date, timestep, slider_value)
+
+    if template_id is None:
+        timestep = timestep_seconds * timestep_value
+        filtered_data = filter_data(
+            eq_data, start_date, timestep, slider_value
+        )
+
+    else:
+        filtered_data = eq_data.filter_by_dates(
+            start_date, end_date
+        ).filter_by_template_id(template_id)
 
     sizes = get_sizes(
         filtered_data.data,
@@ -137,6 +158,7 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     color_params = eq_data.get_column_params(color_column)
 
     return quake_map.get_component(filtered_data, sizes, color_params,
+                                   len(show_uncertainties) == 1,
                                    len(show_faults) == 1)
 
 
@@ -147,9 +169,10 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
-     State('timestep-unit', 'value')])
+     State('timestep-unit', 'value'),
+     State('template-id', 'value')])
 def update_time_slider(apply_clicks, session_id, start_date, end_date,
-                       timestep_value, timestep_seconds):
+                       timestep_value, timestep_seconds, template_id):
     """Update the time slider based on the configuration.
 
     This is a callback function invoked by changes to the configuration.
@@ -163,6 +186,8 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
         happened within the time window of this size are shown.
     timestep_seconds -- The number of seconds the selected time unit is
         equal to
+    template_id -- ID of the template which determines the earthquakes
+        shown on the map
     """
     if apply_clicks is None:
         raise PreventUpdate
@@ -172,7 +197,7 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
     end_date = get_datetime_from_str(end_date)
 
     return time_slider.get_component(
-        start_date, end_date, timestep
+        start_date, end_date, timestep, template_id is None
     )
 
 
@@ -202,12 +227,3 @@ def update_time_slider_value(slider_value, start_date, timestep_value,
     slider_time = start_date + timedelta(seconds=slider_value*timestep)
 
     return time_slider.get_time_string(slider_time, timestep)
-
-
-def get_datetime_from_str(date_str):
-    """Parse the given date string to a datetime object.
-
-    Keyword arguments:
-    date_str -- String in the format YYYY-MM-DD
-    """
-    return datetime(*map(int, date_str.split('-')))

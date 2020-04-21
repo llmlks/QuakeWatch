@@ -39,3 +39,12 @@ def get_datetime(year, month, day, hour, minute, second_float):
     return datetime(
         year, month, day, hour, minute, second, microsecond
     )
+
+
+def get_datetime_from_str(date_str):
+    """Parse the given date string to a datetime object.
+
+    Keyword arguments:
+    date_str -- String in the format YYYY-MM-DD
+    """
+    return datetime(*map(int, date_str.split('-')))
