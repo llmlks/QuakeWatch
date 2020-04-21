@@ -1,32 +1,7 @@
-import os
-
 import dash_html_components as html
 import dash_core_components as dcc
-import dash_table
-import pandas as pd
 
 from utils import dataparser, earthquake_data
-
-
-def get_table(session_id):
-    """Fetch catalog data from cache and return it as a dash DataTable.
-
-    Keywords arguments:
-    session_id -- ID of the current session
-    """
-    eq_data = earthquake_data.get_earthquake_data(session_id)
-
-    if eq_data is not None and eq_data.data.shape != (0, 0):
-        return dash_table.DataTable(
-            data=eq_data.data[:100].to_dict('records'),
-            columns=[
-                {'name': i, 'id': i} for i in eq_data.data.columns
-            ],
-            style_table={
-                'overflow': 'auto',
-                'padding': '1em'
-            }
-        )
 
 
 def get_component(session_id):
@@ -53,13 +28,12 @@ def get_component(session_id):
                 'margin': '2.5%'
             }
         ),
-        html.Div(id='output-data-upload', children=get_table(session_id)),
+        html.Div(id='output-data-upload'),
     ])
 
 
 def update_output(contents, filename, session_id):
-    """Return an updated data table with uploaded data or an error
-    message if parsing fails.
+    """Redirect to data view or return an error message if parsing fails.
 
     Keyword arguments:
     contents -- The contents of the uploaded file as a binary string
@@ -70,7 +44,7 @@ def update_output(contents, filename, session_id):
         try:
             dataparser.parse_contents(contents, filename, session_id)
 
-            return get_table(session_id)
+            return dcc.Location(pathname='/data', id='redirect-after-upload')
 
         except Exception as ex:
             print('Uploader:', ex)
