@@ -38,6 +38,7 @@ def display_page(pathname, session_id):
     pathname -- The current URL ending
     session_id -- ID of the current session
     """
+    print('session_id', session_id)
     if pathname in ['/', '/upload']:
         return uploadapp.get_layout(session_id)
     if pathname == '/map':

@@ -344,8 +344,10 @@ def get_earthquake_data(session_id):
     Keyword arguments:
     session_id -- ID of the current session
     """
+    print('getting eq data with session id', session_id)
     try:
         if os.path.exists(TEMP_FILE_EXT % session_id):
+            print('using file', TEMP_FILE_EXT % session_id)
             with open(TEMP_FILE_EXT % session_id, 'r') as file_in:
                 extension = file_in.read()
             data = pd.read_json(TEMP_FILE_DF % session_id)
