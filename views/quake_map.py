@@ -133,11 +133,12 @@ def update_map(slider_value, apply_clicks, start_date, end_date,
     show_faults -- A list indicating if faults shall be visible, length 1
         indicates yes
     """
-    session_id = session.get_session_id()
-    eq_data = earthquake_data.get_earthquake_data(session_id)
-
     start_date = get_datetime_from_str(start_date)
     end_date = get_datetime_from_str(end_date)
+
+    session_id = session.get_session_id()
+    eq_data = earthquake_data.get_earthquake_data_by_dates(
+        session_id, start_date, end_date)
 
     if template_id is None:
         timestep = timestep_seconds * timestep_value
