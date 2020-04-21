@@ -15,6 +15,7 @@ from components.config.size_picker import get_sizes
 from utils import earthquake_data
 from utils.dateutils import get_datetime_from_str
 from utils.catalog_types import is_california_data
+from utils import session
 
 
 def get_layout(session_id):
@@ -95,8 +96,7 @@ def filter_data(eq_data, start_date, timestep, slider_value):
 @app.callback(
     Output('map-wrapper', 'children'),
     [Input('time-slider', 'value'),
-     Input('apply', 'n_clicks'),
-     Input('session-id', 'children')],
+     Input('apply', 'n_clicks')],
     [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
@@ -106,7 +106,7 @@ def filter_data(eq_data, start_date, timestep, slider_value):
      State('template-id', 'value'),
      State('uncertainty-toggle', 'value'),
      State('faults-toggle', 'value')])
-def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
+def update_map(slider_value, apply_clicks, start_date, end_date,
                timestep_value, timestep_seconds, size_column, color_column,
                template_id, show_uncertainties, show_faults):
     """Update the map based on the slider position and the configuration.
@@ -118,7 +118,6 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     slider_value -- The value of the current slider position.
         Between 0 and steps-1.
     apply_clicks -- The number of clicks on the apply button.
-    session_id -- ID of the current session
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
     timestep_value -- The time step in some time unit. Earthquakes that
@@ -134,6 +133,7 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
     show_faults -- A list indicating if faults shall be visible, length 1
         indicates yes
     """
+    session_id = session.get_session_id()
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
     start_date = get_datetime_from_str(start_date)
@@ -163,14 +163,13 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
 
 @app.callback(
     Output('slider-wrapper', 'children'),
-    [Input('apply', 'n_clicks'),
-     Input('session-id', 'children')],
+    [Input('apply', 'n_clicks')],
     [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
      State('template-id', 'value')])
-def update_time_slider(apply_clicks, session_id, start_date, end_date,
+def update_time_slider(apply_clicks, start_date, end_date,
                        timestep_value, timestep_seconds, template_id):
     """Update the time slider based on the configuration.
 
@@ -178,7 +177,6 @@ def update_time_slider(apply_clicks, session_id, start_date, end_date,
 
     Keyword arguments:
     apply_clicks -- The number of clicks on the apply button.
-    session_id -- ID of the current session
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
     timestep_value -- The time step in some time unit. Earthquakes that
