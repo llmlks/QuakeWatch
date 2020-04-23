@@ -164,7 +164,7 @@ def update_map(slider_value, apply_clicks, session_id, start_date, end_date,
         + timedelta(seconds=slider_value*timestep + timestep)
 
     if template_id is not None:
-        filtered_data = eq_data.filter_by_template_id(template_id)
+        filtered_data = filtered_data.filter_by_template_id(template_id)
 
     sizes = get_sizes(
         filtered_data.data,

@@ -273,7 +273,7 @@ class FMEarthquakeData(EarthquakeData):
 
     def __init__(self, data):
         EarthquakeData.__init__(self, CatalogTypes.SCEDC_EXT, data)
-        self.dates = data.apply(
+        self.dates = data.agg(
             lambda x: get_datetime(
                 int(x['YEAR']),
                 int(x['MONTH']),
