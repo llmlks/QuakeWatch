@@ -42,37 +42,35 @@ def get_layout(session_id):
         california_data = is_california_data(eq_data.catalog_type)
 
         return html.Div([
-            dbc.Row(
-                [
-                    dbc.Col(html.Div(
+            dbc.Row([
+                dbc.Col([
+                    dbc.Row(html.Div(
                         id='map-wrapper',
                         children=[
                             quake_map.get_component(
                                 filtered_data, sizes, opacities
                             )
-                        ]
-                    )),
-                    dbc.Col(map_config.get_component(
-                        start_date,
-                        end_date,
-                        default_end_date,
-                        filtered_data.data.select_dtypes(
-                            include='number'
-                        ).columns,
-                        california_data,
-                        templates
-                    ))
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(html.Div(
-                        id='slider-wrapper',
-                        children=[time_slider.get_component(
-                            start_date, default_end_date, DEFAULT_TIMESTEP
-                        )]))
-                ]
-            )
+                        ])),
+                    dbc.Row(
+                        html.Div(
+                            id='slider-wrapper',
+                            children=[time_slider.get_component(
+                                start_date, default_end_date, DEFAULT_TIMESTEP
+                            )]
+                        )
+                    )
+                ]),
+                dbc.Col(map_config.get_component(
+                    start_date,
+                    end_date,
+                    default_end_date,
+                    filtered_data.data.select_dtypes(
+                        include='number'
+                    ).columns,
+                    california_data,
+                    templates
+                ))
+            ]),
 
         ])
 
