@@ -1,0 +1,12 @@
+.plot_sidebar_open {
+    height: 85vh;
+    width: 50vw;
+}
+
+.plot_sidebar_collapsed {
+    width: 65vw;
+}
+
+.plot_sidebar_open > .dash-graph, .plot_sidebar_collapsed > .dash-graph {
+    height: 100%;
+}

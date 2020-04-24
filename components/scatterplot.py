@@ -4,58 +4,36 @@ import dash_core_components as dcc
 from utils import earthquake_data
 
 
-def get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size):
-    """Return a scatterplot with example points.
+def get_component(x_axis, y_axis, color, size):
+    """Return a scatterplot with given configurations.
 
     Keyword arguments:
-    session_id -- ID of the current session
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
     x_axis -- A pandas Series of the x-axis values
     y_axis -- A pandas Series of the y-axis values
-    color -- A pandas Series of the marker color values
-    size -- A pandas Series of the marker sizes
+    color -- An iterable of the marker color values, or a string for one color
+    size -- An iterable of the marker sizes
     """
+    if type(color) == str:
+        show_scale = False
+    else:
+        show_scale = True
 
     return dcc.Graph(
-        # The size is 10 times to make points visible for this example
         figure={
-            'data': [
-                {'x': x_axis, 'y': y_axis, 'mode': 'markers',
-                    'marker': {'size': size*10, 'color': color}}
-            ],
+            'data': [{
+                'x': x_axis, 'y': y_axis, 'mode': 'markers',
+                'marker': {
+                    'size': size, 'color': color, 'showscale': show_scale
+                }
+            }],
             'layout': {
                 'title': 'Scatterplot',
                 'xaxis': {
-                    'title': 'Date'
+                    'title': x_axis.name
                 },
                 'yaxis': {
-                    'title': 'Depth'
+                    'title': y_axis.name
                 }
             }
         }
-    )
-
-
-def get_component(session_id, min_time, max_time, x_axis, y_axis, color, size):
-    """
-    Return the scatterplot component.
-
-    Keyword arguments:
-    session_id -- ID of the current session
-    min_time -- A datetime object representing the start of the time frame
-    max_time -- A datetime object representing the end of the time frame
-    x_axis -- A pandas Series of the x-axis values
-    y_axis -- A pandas Series of the y-axis values
-    color -- A pandas Series of the marker color values
-    size -- A pandas Series of the marker sizes
-    """
-    return html.Div([
-        get_graph(session_id, min_time, max_time, x_axis, y_axis, color, size)
-    ])
-
-
-def update_output(session_id, min_time, max_time, x_axis, y_axis, color, size):
-    return get_graph(
-        session_id, min_time, max_time, x_axis, y_axis, color, size
     )

@@ -63,6 +63,12 @@ class EarthquakeData:
         """
         return self.data['EVENTID']
 
+    def get_templateids(self):
+        """Return a pandas Series with the template IDs for each of
+        the earthquakes in the uploaded data.
+        """
+        return self.data['TEMPLATEID'].unique()
+
     def get_daterange(self):
         """Return minimum and maximum dates in the data as timestamps."""
         return self.dates.min(), self.dates.max()
@@ -88,6 +94,18 @@ class EarthquakeData:
         return EarthquakeData(
             self.catalog_type,
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        """Return a new EarthquakeData object filtered to contain only events
+        that have the given template.
+
+        Keyword arguments:
+        template -- The template ID to use for filtering
+        """
+        return EarthquakeData(
+            self.catalog_type,
+            self.data[self.data['TEMPLATEID'] == template]
         )
 
     def get_column_params(self, column_name):
@@ -165,10 +183,16 @@ class OtaniemiEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['M_HEL']
 
+    def get_templateids(self):
+        return None
+
     def filter_by_dates(self, datemin, datemax):
         return OtaniemiEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
+
+    def filter_by_template_id(self, template):
+        return None
 
     def get_location_uncertainties(self):
         geod = Geod(ellps='WGS84')
@@ -223,9 +247,17 @@ class BaselEarthquakeData(EarthquakeData):
     def get_magnitudes(self):
         return self.data['Mwx']
 
+    def get_templateids(self):
+        return self.data['TpID'].dropna().unique()
+
     def filter_by_dates(self, datemin, datemax):
         return BaselEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return BaselEarthquakeData(
+            self.data[self.data['TpID'] == template]
         )
 
     def get_map_center(self):
@@ -250,11 +282,19 @@ class FMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
+        self.dates.rename('DateTime', inplace=True)
+        self.data = self.data.assign(DateTime=self.dates)
+
+    def get_templateids(self):
+        return None
 
     def filter_by_dates(self, datemin, datemax):
         return FMEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
         )
+
+    def filter_by_template_id(self, template):
+        return None
 
 
 class QTMEarthquakeData(EarthquakeData):
@@ -272,10 +312,17 @@ class QTMEarthquakeData(EarthquakeData):
                 int(x['MINUTE']),
                 x['SECOND']
             ), axis=1)
+        self.dates.rename('DateTime', inplace=True)
+        self.data = self.data.assign(DateTime=self.dates)
 
     def filter_by_dates(self, datemin, datemax):
         return QTMEarthquakeData(
             self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return QTMEarthquakeData(
+            self.data[self.data['TEMPLATEID'] == template]
         )
 
 
@@ -315,3 +362,9 @@ def get_earthquake_data(session_id):
     except Exception as ex:
         print(os.path.basename(__file__), ':', ex)
         return EarthquakeData('', pd.DataFrame())
+
+
+@cache.memoize(timeout=36000)
+def get_earthquake_data_by_dates(session_id, datemin, datemax):
+    eq_data = get_earthquake_data(session_id)
+    return eq_data.filter_by_dates(datemin, datemax)
