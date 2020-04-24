@@ -77,6 +77,7 @@ def save_uploaded_data(session_id, data, extension):
     extesions -- File extension of the uploaded file
     """
     cache.delete_memoized(earthquake_data.get_earthquake_data, session_id)
+    cache.delete_memoized(earthquake_data.get_earthquake_data_by_dates)
 
     data.to_json(earthquake_data.TEMP_FILE_DF % session_id)
 

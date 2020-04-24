@@ -155,9 +155,12 @@ def get_fault_layer(show_faults=False):
     Keyword arguments:
     show_faults -- A boolean indicating whether to show the faults
     """
-    if not show_faults:
-        return dl.LayerGroup(id='fault-layer', children=[])
+    if show_faults:
+        return fault_layer
+    return dl.LayerGroup(id='fault-layer', children=[])
 
+
+def create_fault_layer():
     blind_faults = shapefile.Reader(faults_blind)
     nonblind_faults = shapefile.Reader(faults_nonblind)
 
@@ -187,3 +190,6 @@ def get_fault_layer(show_faults=False):
     ]
 
     return dl.LayerGroup(id='fault-layer', children=faults)
+
+
+fault_layer = create_fault_layer()
