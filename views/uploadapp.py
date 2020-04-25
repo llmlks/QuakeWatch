@@ -23,9 +23,6 @@ def get_layout(session_id):
 def update_output(contents, filename):
     """Parse the given data and update the upload output.
 
-    Also generate a session ID and set it as a cookie
-    so that the uploaded data is accessible during the session.
-
     Keyword arguments:
     contents -- The contents of the uploaded data
     filename -- The name of the uploaded file
