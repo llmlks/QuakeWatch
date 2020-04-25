@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -73,7 +75,7 @@ def update_template_options(start_date, end_date):
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
     start_date = get_datetime_from_str(start_date)
-    end_date = get_datetime_from_str(end_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
     templates = eq_data.filter_by_dates(start_date, end_date).get_templateids()
     if templates is None:

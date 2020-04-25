@@ -28,7 +28,9 @@ def get_layout(session_id):
 
     start_date, end_date = eq_data.get_daterange()
     default_end_date = start_date + timedelta(weeks=1)
-    filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
+    filtered_data = eq_data.filter_by_dates(
+        start_date, default_end_date + timedelta(days=1)
+    )
 
     x_axis = filtered_data.get_datetimes()
     y_axis = filtered_data.get_depths()
@@ -95,7 +97,7 @@ def update_output(clicks, start_date, end_date, x_axis, y_axis,
         raise PreventUpdate
 
     start_date = get_datetime_from_str(start_date)
-    end_date = get_datetime_from_str(end_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
     session_id = session.get_session_id()
     eq_data = earthquake_data.get_earthquake_data(session_id)
