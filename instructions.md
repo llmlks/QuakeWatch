@@ -1,12 +1,10 @@
-## QuakeWatch   
-
 This application is meant for visualising and analysing earthquake catalogs. The supported catalog types are   
 * [The QTM seismicity catalogs (SCEDC)](https://scedc.caltech.edu/research-tools/QTMcatalog.html)
 * [The focal mechanism catalogs (SCEDC)](https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html)
 * [Basel seismicity catalog](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468)
 * [Otaniemi seismicity catalog](https://advances.sciencemag.org/content/5/5/eaav7224)   
 
-To get started, please upload the catalog of your choice undearneath by clicking the upload area underneath these instructions, or by dragging the file onto it.
+To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it.
 
 Once the data has been uploaded, the available features include a map view, a scatter plot view, and a clustering view. Each of the features includes a set of configurations to control them. With the exception of the clustering view, changes in the settings only take effect after submitting them by clicking on the "Apply" button on each page.
 
@@ -40,3 +38,10 @@ The clustering method used is based on a distance measure introduced by [Zaliapi
 *  **Time range** allows the user to select the start and the end dates for the earthquakes included in the clustering. All the earthquakes that occurred between the start and the end dates are taken into account.
 
 Different clusters can be compared easily by selecting a time range in each of the two tabs. **NB**: The clustering takes quite a while, especially with large amounts of data.
+
+##### Data
+
+The uploaded data can be inspected in this view. Available features consists of filtering and sorting the data. Using the control underneath the table, you can browse through the whole data set. Filtering is possible by using the inputs under each column header. Syntax for filtering is as follows:
+* `=` or `eq` are used to search for exact matches, and `!=` or `ne` filter out the rows containing the given value.
+* `>` or `gt`, and `<` or `lt` return rows that have values greater than or less than the input. Similarly, `>=` or `ge`, and `<=` or `le` find rows with values greater/less than or equal to the given value.
+* Entering a value without an operator returns partial matches, this can only be used with columns that have alphabetic values. Optionally, the operator `contains` can be inserted before the input.
