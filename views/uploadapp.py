@@ -1,11 +1,17 @@
+import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
 from app import app
 from components import uploader
+from components import instructions
 
 
 def get_layout(session_id):
-    return uploader.get_component(session_id)
+    """Return the layout for the upload page."""
+    return html.Div([
+        instructions.get_component(),
+        uploader.get_component(session_id)
+    ])
 
 
 @app.callback(
