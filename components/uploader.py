@@ -5,12 +5,8 @@ import dash_bootstrap_components as dbc
 from utils import dataparser, earthquake_data
 
 
-def get_component(session_id):
-    """Return the uploader component.
-
-    Keyword arguments:
-    session_id -- ID of the current session
-    """
+def get_component():
+    """Return the uploader component."""
     return html.Div([
         dcc.Upload(
             id='upload-data',
@@ -34,11 +30,13 @@ def get_component(session_id):
 
 
 def update_output(contents, filename, session_id):
-    """Redirect to data view or return an error message if parsing fails.
+    """Return a success or an error message depending on the success
+    of parsing.
 
     Keyword arguments:
     contents -- The contents of the uploaded file as a binary string
     filename -- Name of the uploaded file
+    session_id -- ID of the current session
     """
 
     if contents is not None:

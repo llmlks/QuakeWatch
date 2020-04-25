@@ -38,7 +38,7 @@ def display_page(pathname):
         session_id = session.generate_session_id()
 
     if pathname in ['/', '/upload']:
-        return uploadapp.get_layout(session_id)
+        return uploadapp.get_layout()
     if pathname == '/map':
         return quake_map.get_layout(session_id)
     if pathname == '/cluster':
