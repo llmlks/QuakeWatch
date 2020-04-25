@@ -1,5 +1,6 @@
 import dash_html_components as html
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 
 from utils import dataparser, earthquake_data
 
@@ -43,13 +44,22 @@ def update_output(contents, filename, session_id):
     if contents is not None:
         try:
             dataparser.parse_contents(contents, filename, session_id)
+            eq_data = earthquake_data.get_earthquake_data(session_id)
 
-            return dcc.Location(pathname='/data', id='redirect-after-upload')
+            return dbc.Alert(
+                """File {} uploaded successfully, {} rows. Please select a tool
+                from the menu to inspect the data.
+                """.format(filename, eq_data.data.shape[0]),
+                color='success',
+                className='alert-message'
+            )
 
         except Exception as ex:
             print('Uploader:', ex)
             return html.Div([
-                html.H5("""
-                    The file could not be parsed, please try another one
-                """),
+                dbc.Alert(
+                    'The file could not be parsed, please try another one',
+                    color='danger',
+                    className='alert-message'
+                )
             ])
