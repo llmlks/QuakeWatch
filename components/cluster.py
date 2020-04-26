@@ -121,6 +121,7 @@ def build_cluster_component(mindate, maxdate, session_id, idd="1"):
     threshold_component = cluster_config.get_component(idd)
     return html.Div([
         date_component,
+        html.Div(children="Type threshold:"),
         threshold_component,
         html.Div(
             id='intermediate-value',
@@ -176,7 +177,6 @@ def callback_wrapper(n_clicks, threshold, start_date, end_date):
 
     if n_clicks is None:
         return "Select dates and press apply"
-    print(n_clicks)
     if start_date is None or end_date is None:
         return "Select dates"
     print("Computing clusters...")
