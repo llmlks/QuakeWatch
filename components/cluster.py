@@ -7,6 +7,7 @@ import pandas as pd
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import dash
 import dash_leaflet as dl
 from numba import njit, jit
@@ -106,8 +107,8 @@ def get_component(session_id):
     tab2 = build_cluster_component(mindate, maxdate, session_id, "2")
     items.append(
         dcc.Tabs([
-            dcc.Tab(label='Date 1', children=[tab1]),
-            dcc.Tab(label="Date 2", children=[tab2])
+            dcc.Tab(label='Timeframe 1', children=[tab1]),
+            dcc.Tab(label="Timeframe 2", children=[tab2])
         ])
     )
     return html.Div(items)
@@ -126,8 +127,11 @@ def build_cluster_component(mindate, maxdate, session_id, idd="1"):
             style={'display': 'none'},
             children=[session_id]
         ),
+        dcc.Loading(
+            id="loading-"+idd,
+            type="default",
+            children=html.Div(id='output-clustering-'+idd))
 
-        html.Div(id='output-clustering-'+idd)
 
     ])
 
@@ -139,7 +143,7 @@ def build_cluster_component(mindate, maxdate, session_id, idd="1"):
         State('date-pick-1', 'start_date'),
         State('date-pick-1', 'end_date')]
 )
-def update_output(n_clicks, th, start_date, end_date):
+def update_output(n_clicks, threshold, start_date, end_date):
     """Return the list of graphs.This is a callback function
 
     Keyword arguments:
@@ -147,34 +151,12 @@ def update_output(n_clicks, th, start_date, end_date):
     start_date -- datetime, from the calendar component
     end_date -- datetime , from the calendar component
    """
-    if start_date is None or end_date is None:
-        return "Select dates"
-    print("Computing clusters...")
-    start_date = dt.strptime(start_date,  "%Y-%m-%d")
-    end_date = dt.strptime(end_date,  "%Y-%m-%d")
-
-    session_id = session.get_session_id()
-    data = get_data(session_id)
-    data = data.filter_by_dates(start_date, end_date)
-
-    df = data.data
-    if df.empty:
-        figures = [go.Figure()]
-    else:
-        edges, df = compute_edges(data)
-        figures = get_figures(edges, df, th)
-
-    graphs = []
-    for i, fig in enumerate(figures):
-        c = dcc.Graph(id="fig-{}".format(i),  figure=fig)
-        graphs.append(c)
-    print("Done!")
-    return graphs
+    return callback_wrapper(n_clicks, threshold, start_date, end_date)
 
 
 @app.callback(
     Output('output-clustering-2', 'children'),
-    [Input('apply_thr_1', 'n_clicks')],
+    [Input('apply_thr_2', 'n_clicks')],
     [State("thr_2", "value"),
         State('date-pick-2', 'start_date'),
         State('date-pick-2', 'end_date')
@@ -187,8 +169,16 @@ def update_output(n_clicks, threshold, start_date, end_date):
     start_date -- datetime, from the calendar component
     end_date -- datetime , from the calendar component
    """
+    return callback_wrapper(n_clicks, threshold, start_date, end_date)
+
+
+def callback_wrapper(n_clicks, threshold, start_date, end_date):
+
+    if n_clicks is None:
+        return "Select dates and press apply"
+    print(n_clicks)
     if start_date is None or end_date is None:
-        return "No Data"
+        return "Select dates"
     print("Computing clusters...")
     start_date = dt.strptime(start_date,  "%Y-%m-%d")
     end_date = dt.strptime(end_date,  "%Y-%m-%d")
@@ -199,7 +189,7 @@ def update_output(n_clicks, threshold, start_date, end_date):
 
     df = data.data
     if df.empty:
-        figures = [go.Figure()]
+        return "No data"
     else:
         edges, df = compute_edges(data)
         figures = get_figures(edges, df, threshold)

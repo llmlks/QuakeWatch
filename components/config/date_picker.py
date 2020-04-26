@@ -19,7 +19,7 @@ def get_component(min_date, max_date, default_end_date, id="date-pick"):
         end_date = default_end_date.date()
 
     return html.Div(children=[
-        html.Div(className='config-label', children='Time range'),
+        html.Div(className='config-label', children='Calendar'),
         dcc.DatePickerRange(
             id=id,
             min_date_allowed=min_date,
