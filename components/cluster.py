@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
+from utils import session
 from components.config import date_picker
 
 
@@ -132,10 +133,9 @@ def build_cluster_component(mindate, maxdate, session_id, idd="1"):
     Output('output-clustering-1', 'children'),
     [
         Input('date-pick-1', 'start_date'),
-        Input('date-pick-1', 'end_date'),
-        Input('session-id', "children")
+        Input('date-pick-1', 'end_date')
     ])
-def update_output(start_date, end_date, session_id):
+def update_output(start_date, end_date):
     """Return the list of graphs.This is a callback function
 
     Keyword arguments:
@@ -149,6 +149,7 @@ def update_output(start_date, end_date, session_id):
     start_date = dt.strptime(start_date,  "%Y-%m-%d")
     end_date = dt.strptime(end_date,  "%Y-%m-%d")
 
+    session_id = session.get_session_id()
     data = get_data(session_id)
     data = data.filter_by_dates(start_date, end_date)
 
@@ -171,10 +172,9 @@ def update_output(start_date, end_date, session_id):
     Output('output-clustering-2', 'children'),
     [
         Input('date-pick-2', 'start_date'),
-        Input('date-pick-2', 'end_date'),
-        Input('session-id', "children")
+        Input('date-pick-2', 'end_date')
     ])
-def update_output(start_date, end_date, session_id):
+def update_output(start_date, end_date):
     """Return the list of graphs.This is a callback function
 
     Keyword arguments:
@@ -188,6 +188,7 @@ def update_output(start_date, end_date, session_id):
     start_date = dt.strptime(start_date,  "%Y-%m-%d")
     end_date = dt.strptime(end_date,  "%Y-%m-%d")
 
+    session_id = session.get_session_id()
     data = get_data(session_id)
     data = data.filter_by_dates(start_date, end_date)
 
