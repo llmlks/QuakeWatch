@@ -7,6 +7,7 @@ from views import uploadapp
 from views import quake_map
 from views import clusterview
 from views import scatterplot
+from views import dataview
 from utils import session
 
 from components import sidebar
@@ -37,13 +38,15 @@ def display_page(pathname):
         session_id = session.generate_session_id()
 
     if pathname in ['/', '/upload']:
-        return uploadapp.get_layout(session_id)
+        return uploadapp.get_layout()
     if pathname == '/map':
         return quake_map.get_layout(session_id)
     if pathname == '/cluster':
         return clusterview.get_layout(session_id)
     if pathname == '/scatter':
         return scatterplot.get_layout(session_id)
+    if pathname == '/data':
+        return dataview.get_layout(session_id)
 
     else:
         return '404'
