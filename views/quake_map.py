@@ -53,29 +53,28 @@ def get_layout(session_id):
                             )
                         ]
                     )),
-                    dbc.Col(map_config.get_component(
-                        start_date,
-                        end_date,
-                        default_end_date,
-                        filtered_data.data.select_dtypes(
-                            include='number'
-                        ).columns,
-                        california_data,
-                        templates
-                    ))
-                ]
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(html.Div(
-                        id='slider-wrapper',
-                        children=[time_slider.get_component(
-                            start_date,
-                            default_end_date + timedelta(days=1),
-                            DEFAULT_TIMESTEP
-                        )]))
-                ]
-            )
+                    dbc.Row(
+                        html.Div(
+                            id='slider-wrapper',
+                            children=[time_slider.get_component(
+                                start_date,
+                                default_end_date + timedelta(days=1),
+                                DEFAULT_TIMESTEP
+                            )]
+                        )
+                    )
+                ]),
+                dbc.Col(map_config.get_component(
+                    start_date,
+                    end_date,
+                    default_end_date,
+                    filtered_data.data.select_dtypes(
+                        include='number'
+                    ).columns,
+                    california_data,
+                    templates
+                ))
+            ])
 
         ])
 
