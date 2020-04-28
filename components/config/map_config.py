@@ -15,6 +15,7 @@ from components.config import size_picker
 from components.config import color_picker
 from components.config import uncertainty_toggler
 from components.config import faults_toggler
+from components.config import opacity_toggler
 from utils import session
 
 
@@ -39,24 +40,10 @@ def get_component(min_date, max_date, default_end_date, columns,
         template_picker.get_component(templates),
         uncertainty_toggler.get_component(),
         faults_toggler.get_component(show_faults),
+        opacity_toggler.get_component(),
         dbc.Button("Apply", id='apply', outline=True,
                     color="success")
     ])
-
-
-@app.callback(
-    [Output('timestep-value', 'disabled'),
-     Output('timestep-unit', 'disabled')],
-    [Input('template-id', 'value')])
-def toggle_time_configs_disabled(template_value):
-    """Toggle the timestep value and unit selectors' disabled
-    property according to whether a template ID has been selected.
-
-    Keyword arguments:
-    template_value -- Template ID selected by user
-    """
-    disabled = template_value is not None
-    return (disabled, disabled)
 
 
 @app.callback(

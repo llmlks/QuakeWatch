@@ -273,17 +273,20 @@ class FMEarthquakeData(EarthquakeData):
 
     def __init__(self, data):
         EarthquakeData.__init__(self, CatalogTypes.SCEDC_EXT, data)
-        self.dates = data.apply(
-            lambda x: get_datetime(
-                int(x['YEAR']),
-                int(x['MONTH']),
-                int(x['DAY']),
-                int(x['HOUR']),
-                int(x['MINUTE']),
-                x['SECOND']
-            ), axis=1)
-        self.dates.rename('DateTime', inplace=True)
-        self.data = self.data.assign(DateTime=self.dates)
+        if 'DateTime' in data.columns:
+            self.dates = data['DateTime']
+        else:
+            self.dates = data.agg(
+                lambda x: get_datetime(
+                    int(x['YEAR']),
+                    int(x['MONTH']),
+                    int(x['DAY']),
+                    int(x['HOUR']),
+                    int(x['MINUTE']),
+                    x['SECOND']
+                ), axis=1)
+            self.dates.rename('DateTime', inplace=True)
+            self.data = self.data.assign(DateTime=self.dates)
 
     def get_templateids(self):
         return None
@@ -303,17 +306,20 @@ class QTMEarthquakeData(EarthquakeData):
 
     def __init__(self, data):
         EarthquakeData.__init__(self, CatalogTypes.HYPO_EXT, data)
-        self.dates = data.apply(
-            lambda x: get_datetime(
-                int(x['YEAR']),
-                int(x['MONTH']),
-                int(x['DAY']),
-                int(x['HOUR']),
-                int(x['MINUTE']),
-                x['SECOND']
-            ), axis=1)
-        self.dates.rename('DateTime', inplace=True)
-        self.data = self.data.assign(DateTime=self.dates)
+        if 'DateTime' in data.columns:
+            self.dates = data['DateTime']
+        else:
+            self.dates = data.agg(
+                lambda x: get_datetime(
+                    int(x['YEAR']),
+                    int(x['MONTH']),
+                    int(x['DAY']),
+                    int(x['HOUR']),
+                    int(x['MINUTE']),
+                    x['SECOND']
+                ), axis=1)
+            self.dates.rename('DateTime', inplace=True)
+            self.data = self.data.assign(DateTime=self.dates)
 
     def filter_by_dates(self, datemin, datemax):
         return QTMEarthquakeData(

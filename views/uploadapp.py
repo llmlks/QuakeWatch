@@ -8,11 +8,12 @@ from components import instructions
 from utils import session
 
 
-def get_layout(session_id):
+def get_layout():
     """Return the layout for the upload page."""
     return html.Div([
-        instructions.get_component(),
-        uploader.get_component(session_id)
+        html.H2('QuakeWatch'),
+        uploader.get_component(),
+        instructions.get_component()
     ])
 
 
