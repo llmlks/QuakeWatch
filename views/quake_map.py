@@ -49,14 +49,17 @@ def get_layout(session_id):
                         id='map-wrapper',
                         children=[
                             quake_map.get_component(
-                                filtered_data, sizes, opacities
+                              filtered_data, sizes, opacities
                             )
-                        ])),
+                        ]
+                    )),
                     dbc.Row(
                         html.Div(
                             id='slider-wrapper',
                             children=[time_slider.get_component(
-                                start_date, default_end_date, DEFAULT_TIMESTEP
+                                start_date,
+                                default_end_date + timedelta(days=1),
+                                DEFAULT_TIMESTEP
                             )]
                         )
                     )
@@ -71,7 +74,7 @@ def get_layout(session_id):
                     california_data,
                     templates
                 ))
-            ]),
+            ])
 
         ])
 
@@ -149,7 +152,7 @@ def update_map(slider_value, apply_clicks, start_date, end_date,
     opacity_unit -- Number of seconds equal to selected opacity unit
     """
     start_date = get_datetime_from_str(start_date)
-    end_date = get_datetime_from_str(end_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
     session_id = session.get_session_id()
     eq_data = earthquake_data.get_earthquake_data_by_dates(
@@ -208,7 +211,7 @@ def update_time_slider(apply_clicks, start_date, end_date,
 
     timestep = timestep_seconds * timestep_value
     start_date = get_datetime_from_str(start_date)
-    end_date = get_datetime_from_str(end_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
     return time_slider.get_component(start_date, end_date, timestep)
 
