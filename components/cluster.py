@@ -7,9 +7,8 @@ import pandas as pd
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
+
 import dash
-import dash_leaflet as dl
 from numba import njit, jit
 import networkx as nx
 import dash_bootstrap_components as dbc
@@ -115,26 +114,8 @@ def get_component(session_id):
 
 
 def build_cluster_component(mindate, maxdate, session_id, idd="1"):
-    id_component = "date-pick-{}".format(idd)
-    date_component = date_picker.get_component(
-        mindate, maxdate, None, id_component)
-    threshold_component = cluster_config.get_component(idd)
-    return html.Div([
-        date_component,
-        html.Div(children="Type threshold:"),
-        threshold_component,
-        html.Div(
-            id='intermediate-value',
-            style={'display': 'none'},
-            children=[session_id]
-        ),
-        dcc.Loading(
-            id="loading-"+idd,
-            type="default",
-            children=html.Div(id='output-clustering-'+idd))
 
-
-    ])
+    return cluster_config.get_component(mindate, maxdate, session_id, idd)
 
 
 @app.callback(
