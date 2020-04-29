@@ -22,13 +22,14 @@ faults_blind = './shapefiles/CFM52_preferred_traces_blind.shp'
 faults_nonblind = './shapefiles/CFM52_preferred_traces_nonblind.shp'
 
 
-def get_component(eq_data, sizes, color_params=None, show_uncertainties=False,
-                  show_faults=False):
+def get_component(eq_data, sizes, opacities, color_params=None,
+                  show_uncertainties=False, show_faults=False):
     """Return the map component with earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
     sizes -- An array containing a size for each data point
+    opacities -- An array containing an opacity for each data point
     color_params -- A tuple with the column name and its minimum
         and maximum values for extracting and normalizing values
         to use for colors
@@ -49,7 +50,7 @@ def get_component(eq_data, sizes, color_params=None, show_uncertainties=False,
                 attribution=attribution),
             html.Div(id='test-id', children=[
                 get_fault_layer(show_faults),
-                get_event_layer(eq_data, sizes, colors),
+                get_event_layer(eq_data, sizes, colors, opacities),
                 get_location_uncertainty_layer(
                     eq_data, show_uncertainties
                 )
@@ -66,13 +67,14 @@ def get_component(eq_data, sizes, color_params=None, show_uncertainties=False,
         ])
 
 
-def get_event_layer(eq_data, sizes, colors):
+def get_event_layer(eq_data, sizes, colors, opacities):
     """Return a LayerGroup that contains earthquakes represented as circles.
 
     Keyword arguments:
     eq_data -- EarthquakeData object containing the quakes to be drawn.
     sizes -- An array containing a size for each data point
     colors -- An array containing a color for each data point
+    opacities -- An array containing an opacity for each data point
     """
 
     quake_circles = [
@@ -80,7 +82,7 @@ def get_event_layer(eq_data, sizes, colors):
             center=[quake['LATITUDE'], quake['LONGITUDE']],
             radius=sizes[idx],
             color=colors[idx],
-            fillOpacity=0.3,
+            fillOpacity=opacities[idx],
             weight=2,
             children=[dl.Popup(
                 dcc.Markdown(

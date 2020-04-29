@@ -12,6 +12,7 @@ from utils import earthquake_data
 from utils.catalog_types import CatalogTypes
 from views.quake_map import get_datetime_from_str
 from app import app
+from utils import session
 
 
 def get_layout(session_id):
@@ -27,7 +28,9 @@ def get_layout(session_id):
 
     start_date, end_date = eq_data.get_daterange()
     default_end_date = start_date + timedelta(weeks=1)
-    filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
+    filtered_data = eq_data.filter_by_dates(
+        start_date, default_end_date + timedelta(days=1)
+    )
 
     x_axis = filtered_data.get_datetimes()
     y_axis = filtered_data.get_depths()
@@ -71,20 +74,18 @@ def get_layout(session_id):
 @app.callback(
     Output('scatter-plot', 'children'),
     [Input('apply', 'n_clicks')],
-    [State('session-id', 'children'),
-     State('date-pick', 'start_date'),
+    [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('x-axis', 'value'),
      State('y-axis', 'value'),
      State('size-column', 'value'),
      State('color-column', 'value')])
-def update_output(clicks, session_id, start_date, end_date, x_axis, y_axis,
+def update_output(clicks, start_date, end_date, x_axis, y_axis,
                   size_column, color_column):
     """Return an updated scatter plot based on changes in the configuration.
 
     Keyword arguments:
     clicks -- Number of clicks on the apply button
-    session_id -- ID of the current session
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
     x_axis -- Name of the column to use for x-axis
@@ -96,8 +97,9 @@ def update_output(clicks, session_id, start_date, end_date, x_axis, y_axis,
         raise PreventUpdate
 
     start_date = get_datetime_from_str(start_date)
-    end_date = get_datetime_from_str(end_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
+    session_id = session.get_session_id()
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = eq_data.filter_by_dates(start_date, end_date)
 
