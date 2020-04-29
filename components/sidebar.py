@@ -22,13 +22,10 @@ from dash.dependencies import Input, Output, State
 from app import app
 
 
-<<<<<<< HEAD
-page_names = ['Upload data', 'Map', 'Scatter plot', 'Histogram', "Clustering"]
-page_paths = ['/upload', '/map', '/scatter', '/histogram', "/cluster"]
-=======
-page_names = ['Upload data', 'Map', 'Scatter plot', "Clustering", 'Data']
-page_paths = ['/upload', '/map', '/scatter', "/cluster", '/data']
->>>>>>> master
+page_names = ['Upload data', 'Map', 'Scatter plot',
+              'Histogram', 'Clustering', 'Data']
+page_paths = ['/upload', '/map', '/scatter',
+              '/histogram', '/cluster', '/data']
 
 
 def get_component():

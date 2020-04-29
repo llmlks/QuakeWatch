@@ -8,6 +8,8 @@ from components import histogram
 from components.config import histogram_config
 from utils import earthquake_data
 from app import app
+from views.quake_map import get_datetime_from_str
+from utils import session
 
 
 def get_layout(session_id):
@@ -25,30 +27,32 @@ def get_layout(session_id):
     default_end_date = start_date + timedelta(weeks=1)
     filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
 
-    default_size_column = eq_data.get_column_params(
-        eq_data.get_magnitudes().name
-    )
+    default_column = filtered_data.get_magnitudes()
+    default_nbins = 10
 
     return html.Div([
             dbc.Col(
                 html.Div(
                     id='histogram',
-                    children=histogram.get_component(None)
+                    className='plot_sidebar_open',
+                    children=histogram.get_component(
+                        default_column, default_nbins)
                 )
             ),
             dbc.Col(histogram_config.get_component(
-                eq_data.data.columns, start_date, end_date, default_end_date))
+                eq_data.data.columns, start_date, end_date,
+                default_end_date, default_column.name))
     ])
 
 
 @app.callback(
     Output('histogram', 'children'),
     [Input('apply', 'n_clicks')],
-    [State('session-id', 'children'),
-     State('column', 'value'),
+    [State('column', 'value'),
+     State('nbins', 'value'),
      State('date-pick', 'start_date'),
      State('date-pick', 'end_date')])
-def update_output(clicks, session_id, column, start_date, end_date):
+def update_output(clicks, column, nbins, start_date, end_date):
     """ Return an updated histogram based on the changes in the configuration.
 
     Keyword arguments:
@@ -61,8 +65,28 @@ def update_output(clicks, session_id, column, start_date, end_date):
     if clicks is None:
         raise PreventUpdate
 
+    start_date = get_datetime_from_str(start_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
+
+    session_id = session.get_session_id()
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = eq_data.filter_by_dates(start_date, end_date)
 
     column = filtered_data.data[column]
-    return histogram.get_component(column)
+    return histogram.get_component(column, nbins)
+
+
+@app.callback(
+    Output('histogram', 'className'),
+    [Input('sidebar', 'className')])
+def update_scatterplot_class(sidebar_class):
+    """Return class name for div element containing a plot based
+    on the collapsed state of the side bar.
+
+    Keyword arguments:
+    sidebar_class -- Current class name of the sidebar
+    """
+
+    if sidebar_class == '':
+        return 'plot_sidebar_open'
+    return 'plot_sidebar_collapsed'
