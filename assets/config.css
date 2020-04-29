@@ -26,11 +26,13 @@
     margin-top: 10px;
 }
 
-#apply {
+#apply, #apply_thr_1 , #apply_thr_2 {
     margin-top: 15px;
 }
-
-#template-id {
+#output-clustering-1 , #output-clustering-2  {
+    margin-top: 15px;
+}
+#template-id, #thr_1 ,#thr_2 {
     width: 288px
 }
 
