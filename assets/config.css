@@ -30,7 +30,7 @@
     background-color: #f9f9f9;
 }
 
-#color-column, #size-column, #x-axis, #y-axis, #template-id {
+#color-column, #size-column, #x-axis, #y-axis, #template-id, #column, #nbins {
     width: 288px
 }
 

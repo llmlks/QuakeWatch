@@ -8,7 +8,7 @@ from components import histogram
 from components.config import histogram_config
 from utils import earthquake_data
 from app import app
-from views.quake_map import get_datetime_from_str
+from utils.dateutils import get_datetime_from_str
 from utils import session
 
 
@@ -31,6 +31,7 @@ def get_layout(session_id):
     default_nbins = 10
 
     return html.Div([
+        dbc.Row([
             dbc.Col(
                 html.Div(
                     id='histogram',
@@ -42,6 +43,7 @@ def get_layout(session_id):
             dbc.Col(histogram_config.get_component(
                 eq_data.data.columns, start_date, end_date,
                 default_end_date, default_column.name))
+        ])
     ])
 
 

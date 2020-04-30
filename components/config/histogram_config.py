@@ -20,7 +20,7 @@ def get_component(columns, min_date, max_date, default_end_date,
     return html.Div([
         date_picker.get_component(min_date, max_date, default_end_date),
         axis_picker.get_component(columns, default_column, is_histogram=True),
-        html.Div(className='label', children='Maximum number of bins'),
+        html.Div(className='config-label', children='Maximum number of bins'),
         dbc.Input(id='nbins', type='number', min=2, step=1, value=10),
         dbc.Button('Apply', id='apply', outline=True, color='success')
     ])
