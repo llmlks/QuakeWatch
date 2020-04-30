@@ -3,12 +3,12 @@
     margin-left: 0px;
 }
 
-#timestep-value, #timestep-unit {
+#timestep-value, #timestep-unit, #opacity-value, #opacity-unit {
     display: inline-block;
     vertical-align: top;
 }
 
-#timestep-value {
+#timestep-value, #opacity-value {
     width: calc(278px * 0.3);
     margin-right: 5px;
 }
@@ -40,7 +40,7 @@
     background-color: #f9f9f9;
 }
 
-#color-column, #size-column, #x-axis, #y-axis {
+#color-column, #size-column, #x-axis, #y-axis, #template-id  {
     width: 288px
 }
 
