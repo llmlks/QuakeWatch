@@ -3,17 +3,17 @@
     margin-left: 0px;
 }
 
-#timestep-value, #timestep-unit, #opacity-value, #opacity-unit {
+#timestep-value, #timestep-unit {
     display: inline-block;
     vertical-align: top;
 }
 
-#timestep-value, #opacity-value {
+#timestep-value {
     width: calc(278px * 0.3);
     margin-right: 5px;
 }
 
-#timestep-unit, #opacity-unit {
+#timestep-unit {
     width: calc(278px * 0.7);
     margin-left: 5px;
 }
@@ -22,15 +22,25 @@
     height: 39px;
 }
 
-#apply {
+#uncertainty-toggle {
+    margin-top: 10px;
+}
+
+#apply, #apply_thr_1 , #apply_thr_2 {
     margin-top: 15px;
+}
+#output-clustering-1 , #output-clustering-2  {
+    margin-top: 15px;
+}
+#template-id, #thr_1 ,#thr_2 {
+    width: 288px
 }
 
 .form-control:disabled {
     background-color: #f9f9f9;
 }
 
-#color-column, #size-column, #x-axis, #y-axis, #template-id {
+#color-column, #size-column, #x-axis, #y-axis {
     width: 288px
 }
 
@@ -38,6 +48,3 @@
     margin-top: 10px;
 }
 
-.hidden {
-    display: none;
-}

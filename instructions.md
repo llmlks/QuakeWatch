@@ -11,7 +11,7 @@ Once the data has been uploaded, the available features include a map view, a sc
 ##### Map
 
 The map can be configured with the following settings:
-*  **Time range** allows the user to select the start and the end time for the earthquakes shown on the map. The selected dates represent the start and the end of the time slider underneath the map, respectively.
+*  **Select dates** allows the user to select the start and the end time for the earthquakes shown on the map. The selected dates represent the start and the end of the time slider underneath the map, respectively.
 * **Time step** includes a selection of the value and the unit of one time step. A time step is the length of the time shown in one still frame on the map.
 * **Size column** is used to define which column from the uploaded data is used to set the size for the marker of each earthquake. Only numerical columns are listed as valid choices.
 * **Color column** defines the column used for setting the color of each marker. Only numerical columns are listed as valid choices.
@@ -26,7 +26,7 @@ The time slider below the map can be either moved manually, or played automatica
 ##### Scatter plot
 
 The configurations available on the scatter plot are
-*  **Time range** allows the user to select the start and the end dates for the earthquakes shown on the plot. All the earthquakes that occurred between the start and the end dates are shown.
+*  **Select dates** allows the user to select the start and the end dates for the earthquakes shown on the plot. All the earthquakes that occurred between the start and the end dates are shown.
 * **X/Y-axis** settings define which column is used for which of the axes. Any column, even non-numerical ones can be selected here.
 * **Size column** is used to define which column from the uploaded data is used to set the size for the marker of each earthquake. Only numerical columns are listed as valid choices.
 * **Color column** defines the column used for setting the color of each marker. Only numerical columns are listed as valid choices.
@@ -37,7 +37,9 @@ The plot can be zoomed into by selecting an area to zoom into or by clicking on 
 
 The clustering method used is based on a distance measure introduced by [Zaliapin and Be-Zion (2013)](https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1002/jgrb.50179), which defines the distance between two earthquakes in terms of the difference in their location, time of occurrence, and magnitude. The distances are then used to find clusters with fore-, main-, and aftershocks, similarly to an accompanying article [Zaliapin and Be-Zion (2013)](https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1002/jgrb.50178).
 
-*  **Time range** allows the user to select the start and the end dates for the earthquakes included in the clustering. All the earthquakes that occurred between the start and the end dates are taken into account.
+*  **Select dates** allows the user to select the start and the end dates for the earthquakes included in the clustering. All the earthquakes that occurred between the start and the end dates are taken into account.
+* **Threshold value** clustering works by removing edges from a graph. If a link in the graph has a distance higher than the threshold value, the edge is removed. High values for the threshold would lead to fewer and higly connected clusters, lower values to more sparse and less populated ones. 
+
 
 Different clusters can be compared easily by selecting a time range in each of the two tabs. **NB**: The clustering takes quite a while, especially with large amounts of data.
 
