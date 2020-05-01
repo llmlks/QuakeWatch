@@ -3,17 +3,17 @@
     margin-left: 0px;
 }
 
-#timestep-value, #timestep-unit {
+#timestep-value, #timestep-unit, #opacity-value, #opacity-unit {
     display: inline-block;
     vertical-align: top;
 }
 
-#timestep-value {
+#timestep-value, #opacity-value {
     width: calc(278px * 0.3);
     margin-right: 5px;
 }
 
-#timestep-unit {
+#timestep-unit, #opacity-unit {
     width: calc(278px * 0.7);
     margin-left: 5px;
 }
@@ -48,3 +48,6 @@
     margin-top: 10px;
 }
 
+.hidden {
+    display: none;
+}
