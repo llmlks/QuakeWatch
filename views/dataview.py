@@ -1,3 +1,5 @@
+import dash_core_components as dcc
+
 from components import data_table
 
 
@@ -7,4 +9,4 @@ def get_layout(session_id):
     Keywords arguments:
     session_id -- ID of the current session
     """
-    return data_table.get_component(session_id)
+    return dcc.Loading(data_table.get_component(session_id))

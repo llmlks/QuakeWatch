@@ -5,6 +5,7 @@
 
 .plot_sidebar_collapsed {
     width: 65vw;
+    height: 85vh;
 }
 
 .plot_sidebar_open > .dash-graph, .plot_sidebar_collapsed > .dash-graph {

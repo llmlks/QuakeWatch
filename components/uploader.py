@@ -25,7 +25,9 @@ def get_component():
                 'margin': '2.5%'
             }
         ),
-        html.Div(id='output-data-upload'),
+        dcc.Loading(
+            children=html.Div(id='output-data-upload')
+        )
     ])
 
 
