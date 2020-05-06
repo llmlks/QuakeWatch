@@ -32,3 +32,19 @@
 .earthquake-popup .leaflet-popup-content {
     width: auto;
 }
+
+#map-wrapper[data-dash-is-loading='true']::after {
+    content: 'Loading...';
+    color: #119DFF;
+    visibility: visible;
+    font-weight: 700;
+    float: right;
+}
+
+div > #map-wrapper {
+    margin-bottom: 24px;
+}
+
+div > #map-wrapper[data-dash-is-loading='true'] {
+    margin-bottom: 0;
+}

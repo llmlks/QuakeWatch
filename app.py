@@ -10,6 +10,7 @@ app = dash.Dash(
         {"name": "viewport", "content": "width=device-width, initial-scale=1"}
     ]
 )
+app.title = 'QuakeWatch'
 server = app.server
 
 server.config.from_object("config")

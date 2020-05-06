@@ -1,4 +1,5 @@
 import dash_html_components as html
+import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -10,11 +11,11 @@ from utils import session
 
 def get_layout():
     """Return the layout for the upload page."""
-    return html.Div([
+    return dcc.Loading(html.Div([
         html.H2('QuakeWatch'),
         uploader.get_component(),
         instructions.get_component()
-    ])
+    ]))
 
 
 @app.callback(

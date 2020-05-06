@@ -75,7 +75,6 @@ def get_layout(session_id):
                     templates
                 ))
             ])
-
         ])
 
     return 'No uploaded data found'
