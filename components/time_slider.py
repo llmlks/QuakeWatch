@@ -9,6 +9,10 @@ from dash.exceptions import PreventUpdate
 
 from app import app
 
+n_intervals = 0
+n_forward_clicks = 0
+n_backward_clicks = 0
+
 
 def get_component(min_time, max_time, time_step):
     """Return the time slider component.
@@ -25,30 +29,56 @@ def get_component(min_time, max_time, time_step):
     steps = ceil(seconds / time_step)
 
     return html.Div([
-        dbc.Button(
-            id='time-slider-play-button',
-            children=html.I(
-                id='play-button-icon',
-                className='fas fa-play'
+        dbc.Row([
+            dcc.Slider(
+                id='time-slider',
+                min=0,
+                max=steps-1,
+                value=0,
+                step=1
             )
-        ),
-        dcc.Slider(
-            id='time-slider',
-            min=0,
-            max=steps-1,
-            value=0,
-            step=1
-        ),
-        html.Div(
-            [get_time_string(min_time, time_step)],
-            id='time-slider-value-container'
-        ),
-        dcc.Interval(
-            id='auto-stepper',
-            interval=2000,
-            n_intervals=None,
-            disabled=True
-        )
+        ]),
+        dbc.Row([
+            html.Div(
+                className='time-slider-button-group',
+                children=[
+                    dbc.Button(
+                        id='time-slider-backward-button',
+                        className='slider-button',
+                        children=html.I(
+                            id='backward-button-icon',
+                            className='fas fa-step-backward'
+                        )
+                    ),
+                    dbc.Button(
+                        id='time-slider-play-button',
+                        className='slider-button',
+                        children=html.I(
+                            id='play-button-icon',
+                            className='fas fa-play'
+                        )
+                    ),
+                    dbc.Button(
+                        id='time-slider-forward-button',
+                        className='slider-button',
+                        children=html.I(
+                            id='forward-button-icon',
+                            className='fas fa-step-forward'
+                        )
+                    )
+                ]
+            ),
+            html.Div(
+                [get_time_string(min_time, time_step)],
+                id='time-slider-value-container'
+            ),
+            dcc.Interval(
+                id='auto-stepper',
+                interval=2000,
+                n_intervals=None,
+                disabled=True
+            )
+        ])
     ])
 
 
@@ -96,21 +126,35 @@ def update_play_button(disabled):
 
 @app.callback(
     Output('time-slider', 'value'),
-    [Input('auto-stepper', 'n_intervals')],
+    [Input('auto-stepper', 'n_intervals'),
+     Input('time-slider-forward-button', 'n_clicks'),
+     Input('time-slider-backward-button', 'n_clicks')],
     [State('time-slider', 'value'),
      State('time-slider', 'max')])
-def update_slider_on_play(intervals, value, max_value):
+def update_slider_on_play(intervals, forward, backward, value, max_value):
     """Update time slider by adding one to its value.
 
     Keyword arguments:
     intervals -- Current number of intervals
+    forward -- Number of clicks on the forward button
+    backward -- Number of clicks on the backward button
     value -- Current value of the time slider
     max_value -- Maximum value of the time slider
     """
-    if intervals is None:
-        raise PreventUpdate
 
-    return (value + 1) % (max_value + 1)
+    if intervals is not None and intervals != n_intervals:
+        n_intervals += 1
+        return (value + 1) % (max_value + 1)
+
+    if forward is not None and forward != n_forward_clicks:
+        n_forward_clicks += 1
+        return (value + 1) % (max_value + 1)
+
+    if backward is not None and backward != n_backward_clicks:
+        n_backward_clicks += 1
+        return (value - 1) % (max_value + 1)
+
+    raise PreventUpdate
 
 
 @app.callback(
