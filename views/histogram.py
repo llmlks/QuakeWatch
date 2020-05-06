@@ -1,5 +1,6 @@
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from datetime import timedelta
@@ -30,21 +31,25 @@ def get_layout(session_id):
     default_column = filtered_data.get_magnitudes()
     default_nbins = 10
 
-    return html.Div([
+    return dcc.Loading(html.Div([
         dbc.Row([
             dbc.Col(
-                html.Div(
-                    id='histogram',
+                dcc.Loading(
+                    id='histogram-loading',
                     className='plot_sidebar_open',
-                    children=histogram.get_component(
-                        default_column, default_nbins)
+                    children=html.Div(
+                        id='histogram',
+                        className='plot_sidebar_open',
+                        children=histogram.get_component(
+                            default_column, default_nbins)
+                    )
                 )
             ),
             dbc.Col(histogram_config.get_component(
                 eq_data.data.columns, start_date, end_date,
                 default_end_date, default_column.name))
         ])
-    ])
+    ]))
 
 
 @app.callback(
@@ -79,7 +84,8 @@ def update_output(clicks, column, nbins, start_date, end_date):
 
 
 @app.callback(
-    Output('histogram', 'className'),
+    [Output('histogram', 'className'),
+     Output('histogram-loading', 'className')],
     [Input('sidebar', 'className')])
 def update_scatterplot_class(sidebar_class):
     """Return class name for div element containing a plot based
@@ -90,5 +96,5 @@ def update_scatterplot_class(sidebar_class):
     """
 
     if sidebar_class == '':
-        return 'plot_sidebar_open'
-    return 'plot_sidebar_collapsed'
+        return ('plot_sidebar_open', 'plot_sidebar_open')
+    return ('plot_sidebar_collapsed', 'plot_sidebar_collapsed')
