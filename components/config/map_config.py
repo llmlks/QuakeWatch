@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -13,6 +15,8 @@ from components.config import size_picker
 from components.config import color_picker
 from components.config import uncertainty_toggler
 from components.config import faults_toggler
+from components.config import opacity_toggler
+from utils import session
 
 
 def get_component(min_date, max_date, default_end_date, columns,
@@ -36,44 +40,29 @@ def get_component(min_date, max_date, default_end_date, columns,
         template_picker.get_component(templates),
         uncertainty_toggler.get_component(),
         faults_toggler.get_component(show_faults),
+        opacity_toggler.get_component(),
         dbc.Button("Apply", id='apply', outline=True,
                     color="success")
     ])
 
 
 @app.callback(
-    [Output('timestep-value', 'disabled'),
-     Output('timestep-unit', 'disabled')],
-    [Input('template-id', 'value')])
-def toggle_time_configs_disabled(template_value):
-    """Toggle the timestep value and unit selectors' disabled
-    property according to whether a template ID has been selected.
-
-    Keyword arguments:
-    template_value -- Template ID selected by user
-    """
-    disabled = template_value is not None
-    return (disabled, disabled)
-
-
-@app.callback(
     Output('template-id', 'options'),
     [Input('date-pick', 'start_date'),
-     Input('date-pick', 'end_date')],
-    [State('session-id', 'children')])
-def update_template_options(start_date, end_date, session_id):
+     Input('date-pick', 'end_date')])
+def update_template_options(start_date, end_date):
     """Update the list of template IDs to choose from to include all template
     IDs occurring at least once in the selected time period.
 
     Keyword arguments:
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
-    session_id -- ID of the current session
     """
+    session_id = session.get_session_id()
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
     start_date = get_datetime_from_str(start_date)
-    end_date = get_datetime_from_str(end_date)
+    end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
     templates = eq_data.filter_by_dates(start_date, end_date).get_templateids()
     if templates is None:

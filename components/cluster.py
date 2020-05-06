@@ -7,8 +7,8 @@ import pandas as pd
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
+
 import dash
-import dash_leaflet as dl
 from numba import njit, jit
 import networkx as nx
 import dash_bootstrap_components as dbc
@@ -16,7 +16,9 @@ import plotly.graph_objects as go
 
 from app import app
 from utils import earthquake_data
+from utils import session
 from components.config import date_picker
+from components.config import cluster_config
 
 
 def get_data(session_id):
@@ -104,38 +106,26 @@ def get_component(session_id):
     tab2 = build_cluster_component(mindate, maxdate, session_id, "2")
     items.append(
         dcc.Tabs([
-            dcc.Tab(label='Date 1', children=[tab1]),
-            dcc.Tab(label="Date 2", children=[tab2])
+            dcc.Tab(label='Timeframe 1', children=[tab1]),
+            dcc.Tab(label="Timeframe 2", children=[tab2])
         ])
     )
     return html.Div(items)
 
 
 def build_cluster_component(mindate, maxdate, session_id, idd="1"):
-    id_component = "date-pick-{}".format(idd)
-    date_component = date_picker.get_component(
-        mindate, maxdate, None, id_component)
-    return html.Div([
-        date_component,
-        html.Div(
-            id='intermediate-value',
-            style={'display': 'none'},
-            children=[session_id]
-        ),
 
-        html.Div(id='output-clustering-'+idd)
-
-    ])
+    return cluster_config.get_component(mindate, maxdate, session_id, idd)
 
 
 @app.callback(
     Output('output-clustering-1', 'children'),
-    [
-        Input('date-pick-1', 'start_date'),
-        Input('date-pick-1', 'end_date'),
-        Input('session-id', "children")
-    ])
-def update_output(start_date, end_date, session_id):
+    [Input("apply_thr_1", "n_clicks")],
+    [State("thr_1", "value"),
+        State('date-pick-1', 'start_date'),
+        State('date-pick-1', 'end_date')]
+)
+def update_output(n_clicks, threshold, start_date, end_date):
     """Return the list of graphs.This is a callback function
 
     Keyword arguments:
@@ -143,38 +133,17 @@ def update_output(start_date, end_date, session_id):
     start_date -- datetime, from the calendar component
     end_date -- datetime , from the calendar component
    """
-    if start_date is None or end_date is None:
-        return "No Data"
-    print("Computing clusters...")
-    start_date = dt.strptime(start_date,  "%Y-%m-%d")
-    end_date = dt.strptime(end_date,  "%Y-%m-%d")
-
-    data = get_data(session_id)
-    data = data.filter_by_dates(start_date, end_date)
-
-    df = data.data
-    if df.empty:
-        figures = [go.Figure()]
-    else:
-        edges, df = compute_edges(data)
-        figures = get_figures(edges, df)
-
-    graphs = []
-    for i, fig in enumerate(figures):
-        c = dcc.Graph(id="fig-{}".format(i),  figure=fig)
-        graphs.append(c)
-    print("Done!")
-    return graphs
+    return callback_wrapper(n_clicks, threshold, start_date, end_date)
 
 
 @app.callback(
     Output('output-clustering-2', 'children'),
-    [
-        Input('date-pick-2', 'start_date'),
-        Input('date-pick-2', 'end_date'),
-        Input('session-id', "children")
-    ])
-def update_output(start_date, end_date, session_id):
+    [Input('apply_thr_2', 'n_clicks')],
+    [State("thr_2", "value"),
+        State('date-pick-2', 'start_date'),
+        State('date-pick-2', 'end_date')
+     ])
+def update_output(n_clicks, threshold, start_date, end_date):
     """Return the list of graphs.This is a callback function
 
     Keyword arguments:
@@ -182,21 +151,29 @@ def update_output(start_date, end_date, session_id):
     start_date -- datetime, from the calendar component
     end_date -- datetime , from the calendar component
    """
+    return callback_wrapper(n_clicks, threshold, start_date, end_date)
+
+
+def callback_wrapper(n_clicks, threshold, start_date, end_date):
+
+    if n_clicks is None:
+        return "Select dates and press apply"
     if start_date is None or end_date is None:
-        return "No Data"
+        return "Select dates"
     print("Computing clusters...")
     start_date = dt.strptime(start_date,  "%Y-%m-%d")
     end_date = dt.strptime(end_date,  "%Y-%m-%d")
 
+    session_id = session.get_session_id()
     data = get_data(session_id)
     data = data.filter_by_dates(start_date, end_date)
 
     df = data.data
     if df.empty:
-        figures = [go.Figure()]
+        return "No data"
     else:
         edges, df = compute_edges(data)
-        figures = get_figures(edges, df)
+        figures = get_figures(edges, df, threshold)
 
     graphs = []
     for i, fig in enumerate(figures):
@@ -205,13 +182,14 @@ def update_output(start_date, end_date, session_id):
     return graphs
 
 
-def get_figures(edges_np, df):
+def get_figures(edges_np, df, th=1e-5):
     """Return list of plotly figures. One figure per cluster
 
     Keyword arguments:
 
     edges_np -- numpy, result from the numba computation
     df -- datetime , dataframe with the catalog
+    th -- Threshold for computing the weak edges.
    """
     edges = []
     for e in edges_np[1:]:
@@ -220,7 +198,7 @@ def get_figures(edges_np, df):
     G = nx.DiGraph()
     G.add_edges_from(edges)
     # this threshold value is experimental and subject to changes.
-    th = 1e-5
+
     to_remove = []
     # this loop will remove the weak edges. weak edges are the ones
     # with a distance above the threshold  defined above as th.
@@ -344,9 +322,9 @@ def get_plot(graph, positions):
     fig.add_trace(get_figure(X_foreshocks, Y_foreshocks,
                              Hover_foreshocks, "Foreshocks", '#ffe100'))
     fig.add_trace(get_figure(X_aftershocks, Y_aftershocks,
-                             Hover_aftershocks, "Aftershocks", '#0d35a5'))
+                             Hover_aftershocks, "Aftershocks", '#ba0000'))
     fig.add_trace(get_figure([max_time], [max_magnitude], [
-                  hovermainshock], "Mainshock", '#ba0000'))
+                  hovermainshock], "Mainshock", '#0d35a5'))
 
     return fig
 
