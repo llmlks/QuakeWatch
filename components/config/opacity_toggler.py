@@ -14,15 +14,19 @@ def get_component():
     """Return the opacity toggler component."""
 
     return html.Div(children=[
-        dbc.Checklist(
-            id='opacity-toggle',
-            className='toggle-select',
-            options=[{
-                'label': 'Show earthquakes cumulatively',
-                'value': 1
-            }],
-            value=[],
-            switch=True,
+        html.Div(
+            dbc.Checklist(
+                id='opacity-toggle',
+                className='toggle-select',
+                options=[{
+                    'label': 'Show earthquakes cumulatively',
+                    'value': 1
+                }],
+                value=[],
+                switch=True
+            ),
+            title='Toggle showing all earthquakes cumulatively from the start'
+            ' date until the end of the active time step'
         ),
         html.Div(id='opacity-config', className='hidden', children=[
             html.Div(
@@ -43,7 +47,8 @@ def get_component():
                 ],
                 value=DEFAULT_TIMESTEP
             )
-        ])
+        ], title='Control the rate of the decrease of opacity, which decreases'
+           + 'as a logarithmic function of time in the selected unit of time')
     ])
 
 

@@ -28,4 +28,4 @@ def get_component(min_date, max_date, default_end_date, id="date-pick"):
             end_date=end_date,
             display_format='DD.MM.YYYY'
         )
-    ])
+    ], title='Select the start and the end time for the time range')
