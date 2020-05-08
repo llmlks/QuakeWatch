@@ -291,8 +291,9 @@ def get_plot(graph, positions):
             max_magnitude = mag
             max_time = positions[n][0]
             hmshock = """Location:({:.4f},{:.4f}) <br> EventId: {} <br>
-Mag: {:.2f}""".format(
-                positions[n][2], positions[n][3], n, positions[n][1])
+Mag: {:.2f} <br> Time: {}""".format(
+                positions[n][2], positions[n][3], n,
+                positions[n][1], positions[n][0])
 
     for n in graph:
         mag = positions[n][1]
@@ -300,8 +301,9 @@ Mag: {:.2f}""".format(
             # cont
             continue
         text = """Location:({:.4f},{:.4f}) <br> EventId: {} <br>
-Mag: {:.2f}""".format(
-            positions[n][2], positions[n][3], n, positions[n][1])
+Mag: {:.2f} <br> Time: {}""".format(
+            positions[n][2], positions[n][3], n,
+            positions[n][1], positions[n][0])
         if positions[n][0] < max_time:
             # foreshock
             X_foreshocks.append(positions[n][0])
