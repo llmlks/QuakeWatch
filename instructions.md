@@ -24,7 +24,7 @@ The map can be configured with the following settings:
 * **Show earthquakes cumulatively** controls whether the visible earthquakes consist only of those that occurred within the selected time slot, or whether all earthquakes from the start of the time range until the end of the selected time slot are visible.
 * **Opacity decrease rate** is available for configuration when the **Show earthquakes cumulatively** is selected. When displaying the earthquakes cumulatively, the opacity of the earthquake markers is computed as a logarithm of time. Thus, the larger the time difference between the the end of the current time slot and the time of occurrence, the more transparent the marker. The rate of the decrease can be controlled by selecting the value and unit of time in which the opacity decreases.
 
-The time slider below the map can be either moved manually, or played automatically from start to end. Using the play-feature will automatically move the time slider one step at a time, once every three seconds, until the end. The currently shown time step with start and end times is visible underneath the slider. Clicking on an earthquake on the map will display all the information related to it.
+The time slider below the map can be either moved manually, or played automatically from start to end. Using the play-feature will automatically move the time slider one step at a time, once every three seconds, until the end. The forward and backward buttons move the slider one step at a time. The currently shown time step with start and end times is visible underneath the slider. Clicking on an earthquake on the map will display all the information related to it.
 
 ##### Scatter plot
 

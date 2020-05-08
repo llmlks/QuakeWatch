@@ -4,20 +4,26 @@
 }
 
 #time-slider {
-    width: 46vw;
+    width: calc(50vw - 150px);
+    margin-left: 12px;
     padding: 0px !important;
-    padding-top: 10px !important;
+    padding-top: 0px !important;
     display: inline-block;
 }
 
-#time-slider-play-button {
-    width: 3vw;
-    margin: 0 1vw 0 0;
+.time-slider-button-group {
+    display: inline-block;
+}
+
+.slider-button {
+    width: 45px;
+    margin-right: 1px;
     display: inline-block;
 }
 
 #time-slider-value-container {
-    margin: 0 0 0 4vw;
+    margin-left: 143px;
+    padding: 5px;
 }
 
 .earthquake-popup .leaflet-popup-content {

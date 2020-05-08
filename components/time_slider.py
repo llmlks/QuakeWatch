@@ -1,6 +1,7 @@
 from math import ceil
 import datetime
 
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -26,16 +27,44 @@ def get_component(min_time, max_time, time_step):
 
     return html.Div([
         html.Div(
-            dbc.Button(
-                id='time-slider-play-button',
-                children=html.I(
-                    id='play-button-icon',
-                    className='fas fa-play'
+            className='time-slider-button-group',
+            children=[
+                html.Div(
+                    dbc.Button(
+                        id='time-slider-backward-button',
+                        children=html.I(
+                            id='backward-button-icon',
+                            className='fas fa-step-backward'
+                        )
+                    ),
+                    className='slider-button',
+                    title='Moves the slider one step backward'
+                ),
+                html.Div(
+                    dbc.Button(
+                        id='time-slider-play-button',
+                        children=html.I(
+                            id='play-button-icon',
+                            className='fas fa-play'
+                        )
+                    ),
+                    className='slider-button',
+                    title='Moves the slider one step at a time until the end'
+                    ' of the time range. Updates every three seconds',
+                    id='play-button'
+                ),
+                html.Div(
+                    dbc.Button(
+                        id='time-slider-forward-button',
+                        children=html.I(
+                            id='forward-button-icon',
+                            className='fas fa-step-forward'
+                        )
+                    ),
+                    className='slider-button',
+                    title='Moves the slider one step forward'
                 )
-            ),
-            title='Moves the slider one step at a time until the end'
-            ' of the time range. Updates every three seconds',
-            id='play-button'
+            ]
         ),
         dcc.Slider(
             id='time-slider',
@@ -106,21 +135,33 @@ def update_play_button(disabled):
 
 @app.callback(
     Output('time-slider', 'value'),
-    [Input('auto-stepper', 'n_intervals')],
+    [Input('auto-stepper', 'n_intervals'),
+     Input('time-slider-forward-button', 'n_clicks'),
+     Input('time-slider-backward-button', 'n_clicks')],
     [State('time-slider', 'value'),
      State('time-slider', 'max')])
-def update_slider_on_play(intervals, value, max_value):
+def update_slider_on_play(intervals, forward, backward, value, max_value):
     """Update time slider by adding one to its value.
 
     Keyword arguments:
     intervals -- Current number of intervals
+    forward -- Number of clicks on the forward button
+    backward -- Number of clicks on the backward button
     value -- Current value of the time slider
     max_value -- Maximum value of the time slider
     """
-    if intervals is None:
-        raise PreventUpdate
+    context = dash.callback_context
 
-    return (value + 1) % (max_value + 1)
+    if context.triggered:
+        triggered_id = context.triggered[0]['prop_id'].split('.')[0]
+
+        if triggered_id in ['auto-stepper', 'time-slider-forward-button']:
+            return (value + 1) % (max_value + 1)
+
+        if triggered_id == 'time-slider-backward-button':
+            return (value - 1) % (max_value + 1)
+
+    raise PreventUpdate
 
 
 @app.callback(
