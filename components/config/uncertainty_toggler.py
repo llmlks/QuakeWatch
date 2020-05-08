@@ -17,4 +17,4 @@ def get_component():
             value=[],
             switch=True,
         )
-    ])
+    ], title='Toggle visualizing the uncertainty in earthquake locations')

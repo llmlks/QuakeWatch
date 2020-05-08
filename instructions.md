@@ -1,8 +1,11 @@
 This application is meant for visualising and analysing earthquake catalogs. The supported catalog types are   
-* [The QTM seismicity catalogs (SCEDC)](https://scedc.caltech.edu/research-tools/QTMcatalog.html)
-* [The focal mechanism catalogs (SCEDC)](https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html)
-* [Basel seismicity catalog](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468)
-* [Otaniemi seismicity catalog](https://advances.sciencemag.org/content/5/5/eaav7224)   
+
+<ul>
+  <li><a href="https://scedc.caltech.edu/research-tools/QTMcatalog.html" target="_blank">The QTM seismicity catalogs (SCEDC)</a></li>
+  <li><a href="https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html" target="_blank">The focal mechanism catalogs (SCEDC)</a></li>
+  <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468" target="_blank">Basel seismicity catalog</a></li>
+  <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a></li>
+</ul>
 
 To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it.
 

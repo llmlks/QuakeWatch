@@ -28,7 +28,9 @@ def get_component(mindate, maxdate, session_id, id="1"):
             date_component,
             html.Div(children="Threshold value:",
                      className="config-label"),
-            threshold_component]
+            threshold_component],
+            title='Select the threshold value, which is used to determine the'
+            ' maximum distance between earthquakes in one cluster'
         ),
         html.Div(
             id='intermediate-value',

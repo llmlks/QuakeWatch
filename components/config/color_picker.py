@@ -27,7 +27,7 @@ def get_component(columns):
             ],
             value=None
         )
-    ])
+    ], title='Select the column used to compute the colors of the markers')
 
 
 def get_colors(data, color_params):

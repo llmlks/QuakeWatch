@@ -17,7 +17,6 @@
 
 .slider-button {
     width: 45px;
-    padding: 5px;
     margin-right: 1px;
     display: inline-block;
 }
@@ -45,4 +44,8 @@ div > #map-wrapper {
 
 div > #map-wrapper[data-dash-is-loading='true'] {
     margin-bottom: 0;
+}
+
+#play-button {
+    display: inline-block;
 }

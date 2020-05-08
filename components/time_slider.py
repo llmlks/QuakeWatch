@@ -29,29 +29,40 @@ def get_component(min_time, max_time, time_step):
         html.Div(
             className='time-slider-button-group',
             children=[
-                dbc.Button(
-                    id='time-slider-backward-button',
+                html.Div(
+                    dbc.Button(
+                        id='time-slider-backward-button',
+                        children=html.I(
+                            id='backward-button-icon',
+                            className='fas fa-step-backward'
+                        )
+                    ),
                     className='slider-button',
-                    children=html.I(
-                        id='backward-button-icon',
-                        className='fas fa-step-backward'
-                    )
+                    title='Moves the slider one step backward'
                 ),
-                dbc.Button(
-                    id='time-slider-play-button',
+                html.Div(
+                    dbc.Button(
+                        id='time-slider-play-button',
+                        children=html.I(
+                            id='play-button-icon',
+                            className='fas fa-play'
+                        )
+                    ),
                     className='slider-button',
-                    children=html.I(
-                        id='play-button-icon',
-                        className='fas fa-play'
-                    )
+                    title='Moves the slider one step at a time until the end'
+                    ' of the time range. Updates every three seconds',
+                    id='play-button'
                 ),
-                dbc.Button(
-                    id='time-slider-forward-button',
+                html.Div(
+                    dbc.Button(
+                        id='time-slider-forward-button',
+                        children=html.I(
+                            id='forward-button-icon',
+                            className='fas fa-step-forward'
+                        )
+                    ),
                     className='slider-button',
-                    children=html.I(
-                        id='forward-button-icon',
-                        className='fas fa-step-forward'
-                    )
+                    title='Moves the slider one step forward'
                 )
             ]
         ),
@@ -102,7 +113,8 @@ def get_time_string(time, timestep):
 
 
 @app.callback(
-    Output('play-button-icon', 'className'),
+    [Output('play-button-icon', 'className'),
+     Output('play-button', 'title')],
     [Input('auto-stepper', 'disabled')])
 def update_play_button(disabled):
     """Toggle the icon on the play/pause button.
@@ -112,9 +124,13 @@ def update_play_button(disabled):
     """
 
     if disabled:
-        return 'fas fa-play'
+        return [
+            'fas fa-play',
+            'Moves the slider one step at a time until the end'
+            ' of the time range. Updates every three seconds'
+        ]
 
-    return 'fas fa-pause'
+    return ['fas fa-pause', 'Pause the automatic update of the slider']
 
 
 @app.callback(
