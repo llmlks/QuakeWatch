@@ -5,6 +5,7 @@ This application is meant for visualising and analysing earthquake catalogs. The
   <li><a href="https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html" target="_blank">The focal mechanism catalogs (SCEDC)</a></li>
   <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468" target="_blank">Basel seismicity catalog</a></li>
   <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a></li>
+  <li><a href="https://www.seismo.helsinki.fi/bulletin/list/catalog/Scandia_updated.html" target="_blank">Fennoscandian Earthquake Catalog</a></li>
 </ul>
 
 To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it. Optionally, you can use the sample dataset by clicking on the button below the upload area. The sample catalog is the 2018 Focal Mechanism Catalog from SCEDC.
@@ -54,6 +55,8 @@ The clustering method used is based on a distance measure introduced by [Zaliapi
 
 
 Different clusters can be compared easily by selecting a time range in each of the two tabs. **NB**: The clustering takes quite a while, especially with large amounts of data.
+
+When using FENCAT data, only the earthquakes that occurred after the year 1677 can be processed due to limitations in date handling. This leaves out about 27 earthquakes from the start.
 
 ##### Data
 

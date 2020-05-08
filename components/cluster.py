@@ -42,6 +42,9 @@ def compute_edges(data):
     ids = data.get_eventids().values
     dates = data.get_datetimes()
 
+    if dates.dtype == 'object':
+        dates = dates.astype('datetime64[ns]')
+
     vals = np.zeros((5, len(dates)))
     vals[0, :] = dates
     vals[1, :] = ids
@@ -97,6 +100,8 @@ def get_component(session_id):
    """
     data = get_data(session_id)
     mindate, maxdate = data.get_daterange()
+    mindate = max(pd.Timestamp.min, mindate)
+
     if maxdate - mindate <= datetime.timedelta(days=1):
         maxdate = maxdate + datetime.timedelta(days=1)
     items = []

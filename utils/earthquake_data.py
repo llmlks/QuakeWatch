@@ -332,11 +332,65 @@ class QTMEarthquakeData(EarthquakeData):
         )
 
 
+class FENCATEarthquakeData(EarthquakeData):
+    """Internal representation of the FENCAT catalog data.
+    """
+
+    def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.HTML_EXT, data)
+
+        if 'DateTime' in data.columns:
+            self.dates = data['DateTime'].apply(
+                lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f')
+            )
+        else:
+            self.dates = data.agg(
+                lambda x: get_datetime(
+                    x['YEAR'],
+                    int(self.get_number(x['MONTH'])),
+                    int(self.get_number(x['DAY'])),
+                    int(self.get_number(x['HOUR'])),
+                    int(self.get_number(x['MINUTE'])),
+                    self.get_number(x['SECOND'])
+                ), axis=1)
+            self.dates.rename('DateTime', inplace=True)
+            self.data = self.data.assign(DateTime=self.dates.apply(
+                lambda x: x.strftime('%Y-%m-%d %H:%M:%S.%f')
+            ))
+
+    def get_number(self, x, default=1):
+        if np.isnan(x):
+            return default
+        return x
+
+    def get_eventids(self):
+        return self.data['ID']
+
+    def get_templateids(self):
+        return None
+
+    def get_map_center(self):
+        return [60.193, 24.84]
+
+    def get_initial_zoom(self):
+        return 4
+
+    def filter_by_dates(self, datemin, datemax):
+        return FENCATEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return None
+
+
 EXTENSIONS = {
     CatalogTypes.CSV_EXT: OtaniemiEarthquakeData,
     CatalogTypes.DAT_EXT: BaselEarthquakeData,
     CatalogTypes.HYPO_EXT: QTMEarthquakeData,
-    CatalogTypes.SCEDC_EXT: FMEarthquakeData
+    CatalogTypes.SCEDC_EXT: FMEarthquakeData,
+    CatalogTypes.HTML_EXT: FENCATEarthquakeData,
+    CatalogTypes.TXT_EXT: FENCATEarthquakeData
 }
 
 
