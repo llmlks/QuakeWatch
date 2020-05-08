@@ -27,7 +27,7 @@ def get_layout(session_id):
     filtered_data = eq_data.filter_by_dates(start_date, end_date)
 
     default_x = filtered_data.get_magnitudes()
-    default_y = filtered_data.get_latitudes()
+    default_y = filtered_data.get_depths()
 
     default_nbins_x = 40
     default_nbins_y = 40

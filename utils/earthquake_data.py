@@ -151,6 +151,9 @@ class EarthquakeData:
         ycats, ybins = pd.cut(self.data[y_axis_name], nbins_y, retbins=True)
 
         z = self.data.groupby([xcats, ycats]).size().unstack()
+
+        xbins = pd.Series(xbins, name=x_axis_name)
+        ybins = pd.Series(ybins, name=y_axis_name)
         return z, xbins, ybins
 
 

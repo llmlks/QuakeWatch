@@ -20,7 +20,14 @@ def get_component(z, xbins, ybins):
                 {'z': z.values, 'x': xbins, 'y': ybins, 'type': 'heatmap'},
             ],
             'layout': {
-                'title': 'Heatmap'
+                'title': 'Heatmap',
+                'xaxis': {
+                    'title': xbins.name
+                },
+                'yaxis': {
+                    'title': ybins.name
+                },
+                'hovermode': 'closest'
             }
         }
     )
