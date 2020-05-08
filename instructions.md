@@ -1,8 +1,11 @@
 This application is meant for visualising and analysing earthquake catalogs. The supported catalog types are   
-* [The QTM seismicity catalogs (SCEDC)](https://scedc.caltech.edu/research-tools/QTMcatalog.html)
-* [The focal mechanism catalogs (SCEDC)](https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html)
-* [Basel seismicity catalog](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468)
-* [Otaniemi seismicity catalog](https://advances.sciencemag.org/content/5/5/eaav7224)   
+
+<ul>
+  <li><a href="https://scedc.caltech.edu/research-tools/QTMcatalog.html" target="_blank">The QTM seismicity catalogs (SCEDC)</a></li>
+  <li><a href="https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html" target="_blank">The focal mechanism catalogs (SCEDC)</a></li>
+  <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468" target="_blank">Basel seismicity catalog</a></li>
+  <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a></li>
+</ul>
 
 To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it.
 
@@ -21,7 +24,7 @@ The map can be configured with the following settings:
 * **Show earthquakes cumulatively** controls whether the visible earthquakes consist only of those that occurred within the selected time slot, or whether all earthquakes from the start of the time range until the end of the selected time slot are visible.
 * **Opacity decrease rate** is available for configuration when the **Show earthquakes cumulatively** is selected. When displaying the earthquakes cumulatively, the opacity of the earthquake markers is computed as a logarithm of time. Thus, the larger the time difference between the the end of the current time slot and the time of occurrence, the more transparent the marker. The rate of the decrease can be controlled by selecting the value and unit of time in which the opacity decreases.
 
-The time slider below the map can be either moved manually, or played automatically from start to end. Using the play-feature will automatically move the time slider one step at a time, once every three seconds, until the end. The currently shown time step with start and end times is visible underneath the slider. Clicking on an earthquake on the map will display all the information related to it.
+The time slider below the map can be either moved manually, or played automatically from start to end. Using the play-feature will automatically move the time slider one step at a time, once every three seconds, until the end. The forward and backward buttons move the slider one step at a time. The currently shown time step with start and end times is visible underneath the slider. Clicking on an earthquake on the map will display all the information related to it.
 
 ##### Scatter plot
 

@@ -24,4 +24,4 @@ def get_component(columns, default_value, x_axis=True, is_histogram=False):
             ],
             value=default_value
         )
-    ])
+    ], title='Select the {} to use'.format(label))

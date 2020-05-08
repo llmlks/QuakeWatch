@@ -1,4 +1,5 @@
 import dash_table
+import dash_core_components as dcc
 
 from utils import earthquake_data
 
@@ -12,7 +13,7 @@ def get_component(session_id):
     eq_data = earthquake_data.get_earthquake_data(session_id)
 
     if eq_data is not None and eq_data.data.shape != (0, 0):
-        return dash_table.DataTable(
+        return dcc.Loading(dash_table.DataTable(
             data=eq_data.data.to_dict('records'),
             columns=[
                 {'name': i, 'id': i} for i in eq_data.data.columns
@@ -28,5 +29,5 @@ def get_component(session_id):
             sort_mode='single',
             sort_by=[],
             filter_action='native'
-        )
+        ))
     return 'No uploaded data found'

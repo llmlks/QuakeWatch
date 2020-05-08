@@ -2,6 +2,7 @@ from datetime import timedelta
 
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -47,14 +48,18 @@ def get_layout(session_id):
         is_map=False
     )
 
-    return html.Div([
+    return dcc.Loading(html.Div([
         dbc.Row([
             dbc.Col(
-                html.Div(
-                    id='scatter-plot',
+                dcc.Loading(
+                    id='scatter-plot-loading',
                     className='plot_sidebar_open',
-                    children=scatterplot.get_component(
-                        x_axis, y_axis, color, sizes
+                    children=html.Div(
+                        id='scatter-plot',
+                        className='plot_sidebar_open',
+                        children=scatterplot.get_component(
+                            x_axis, y_axis, color, sizes
+                        )
                     )
                 )
             ),
@@ -68,7 +73,7 @@ def get_layout(session_id):
                 default_size_column[0]
             ))
         ])
-    ])
+    ]))
 
 
 @app.callback(
@@ -123,7 +128,8 @@ def update_output(clicks, start_date, end_date, x_axis, y_axis,
 
 
 @app.callback(
-    Output('scatter-plot', 'className'),
+    [Output('scatter-plot', 'className'),
+     Output('scatter-plot-loading', 'className')],
     [Input('sidebar', 'className')])
 def update_scatterplot_class(sidebar_class):
     """Return class name for div element containing a plot based
@@ -134,5 +140,5 @@ def update_scatterplot_class(sidebar_class):
     """
 
     if sidebar_class == '':
-        return 'plot_sidebar_open'
-    return 'plot_sidebar_collapsed'
+        return ('plot_sidebar_open', 'plot_sidebar_open')
+    return ('plot_sidebar_collapsed', 'plot_sidebar_collapsed')

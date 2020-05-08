@@ -14,15 +14,19 @@ def get_component(visible):
     if not visible:
         display_style = {'display': 'none'}
 
-    return html.Div(children=[
-        dbc.Checklist(
-            id='faults-toggle',
-            className='toggle-select',
-            options=[{
-                'label': 'Show fault lines',
-                'value': 1
-            }],
-            value=[],
-            switch=True,
-        )
-    ], style=display_style)
+    return html.Div(
+        children=[
+            dbc.Checklist(
+                id='faults-toggle',
+                className='toggle-select',
+                options=[{
+                    'label': 'Show fault lines',
+                    'value': 1
+                }],
+                value=[],
+                switch=True,
+            )
+        ],
+        style=display_style,
+        title='Toggle showing the Southern California fault lines.'
+        '\nNB: showing the fault lines slows down the application')
