@@ -6,5 +6,8 @@ def get_component():
     """Return the instructions component."""
     with open('instructions.md') as f:
         return html.Div(
-            dcc.Markdown(f.readlines())
+            dcc.Markdown(
+                f.readlines(),
+                dangerously_allow_html=True
+            )
         )

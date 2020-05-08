@@ -24,4 +24,7 @@ def get_component():
             ],
             value=DEFAULT_TIMESTEP
         )
-    ])
+    ], title='Select the unit and value of time for one frame in the map.'
+       ' One frame will show all the earthquakes that occurred within '
+       'the selected time.'
+    )

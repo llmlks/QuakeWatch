@@ -28,4 +28,8 @@ def get_component(templates):
             ],
             value=None
         )
-    ], style=display_style)
+        ],
+        style=display_style,
+        title='Select template ID to filter the earthquakes. If selected,'
+        ' only the earthquakes with that template ID are displayed'
+    )
