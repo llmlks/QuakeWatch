@@ -9,8 +9,9 @@ def get_component(z, xbins, ybins):
     """ Return a heatmap with the given configuration.
 
     Keyword components:
-    xaxis -- a pandas Series of the xaxis values
-    yaxis -- a pandas Series of the yaxis values
+    z -- Weight vector of the heatmap
+    xbins -- The bins used for the x-axis
+    ybins -- The bins used for the y-axis
     """
 
     return dcc.Graph(

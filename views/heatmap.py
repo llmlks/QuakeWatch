@@ -64,7 +64,8 @@ def get_layout(session_id):
      State('date-pick', 'end_date'),
      State('nbins-x', 'value'),
      State('nbins-y', 'value')])
-def update_output(clicks, x_axis, y_axis, start_date, end_date, nbins_x, nbins_y):
+def update_output(clicks, x_axis, y_axis,
+                  start_date, end_date, nbins_x, nbins_y):
     """ Return an updated heatmap based on the changes in the configuration.
 
     Keyword arguments:
@@ -73,6 +74,8 @@ def update_output(clicks, x_axis, y_axis, start_date, end_date, nbins_x, nbins_y
     y-axis -- The column used for the y-axis
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
+    nbins_x -- Number of bins used for the x-axis
+    nbins_y -- Number of bins used for the y-axis
     """
     if clicks is None:
         raise PreventUpdate

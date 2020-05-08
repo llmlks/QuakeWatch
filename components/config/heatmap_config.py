@@ -9,7 +9,7 @@ from components.config import date_picker
 
 def get_component(min_date, max_date, columns,
                   default_x, default_y, nbins_x, nbins_y):
-    """Return the configuration component for the scatter plot view.
+    """Return the configuration component for the heatmap plot view.
 
     Keyword arguments:
     min_date -- The minimum date allowed to pick with the datepicker.
@@ -17,6 +17,8 @@ def get_component(min_date, max_date, columns,
     columns -- The available columns in the uploaded data
     default_x -- Column to use for x-axis by default
     default_y -- Column to use for y-axis by default
+    nbins_x -- Number of bins used for the x-axis
+    nbins_y -- Number of bins used for the y-axis
     """
     return html.Div([
         date_picker.get_component(min_date, max_date, max_date),
