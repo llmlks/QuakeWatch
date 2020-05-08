@@ -1,5 +1,3 @@
-import base64
-
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
@@ -7,6 +5,8 @@ from dash.dependencies import Input, Output, State
 
 from utils import dataparser, earthquake_data
 from app import app
+
+SAMPLE_DATA_FILENAME = 'sc2018_hash_ABCD_so.focmec.scedc'
 
 
 def get_component():
@@ -46,7 +46,7 @@ def update_output(contents, filename, session_id, use_sample_data=False):
     use_sample_data -- Whether the sample data set should be used
     """
     if use_sample_data:
-        filename = 'sc2018_hash_ABCD_so.focmec.scedc'
+        filename = SAMPLE_DATA_FILENAME
 
     if contents is not None or use_sample_data:
         try:
