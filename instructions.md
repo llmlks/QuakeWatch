@@ -47,10 +47,14 @@ The plot can be zoomed into by selecting an area to zoom into or by clicking on 
 
 ##### Clustering
 
-The clustering method used is based on a distance measure introduced by [Zaliapin and Be-Zion (2013)](https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1002/jgrb.50179), which defines the distance between two earthquakes in terms of the difference in their location, time of occurrence, and magnitude. The distances are then used to find clusters with fore-, main-, and aftershocks, similarly to an accompanying article [Zaliapin and Be-Zion (2013)](https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1002/jgrb.50178).
+The clustering method used is based on a distance measure introduced by [Zaliapin and Be-Zion (2013)](https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1002/jgrb.50179), which defines the distance between two earthquakes in terms of the difference in their location, time of occurrence, and magnitude. The distances are then used to find clusters with fore-, main-, and aftershocks, similarly to an accompanying article [Zaliapin and Be-Zion (2013)](https://agupubs.onlinelibrary.wiley.com/doi/epdf/10.1002/jgrb.50178). 
+
+The clustering method works by finding the nearest neighbor (using the Zaliapin distance as measure of closeness; the nearest neighbor is also known as the parent event) for each event, this process creates a spanning network; a single cluster where each event is connected to its parent. The cluster can be modeled as a graph, where each edge is assigned a weight equal to the Zaliapin distance between the two events and the strength of an edge is defined as the inverse of the Zaliapin distance. This graph is pruned by removing weak edges, that is, edges whose strength is lower than certain threshold value, as a result the large graph is split into smaller disjoint ones. 
+
+For each graph, the event with the highest magnitude is labeled as the **mainshock**. Events occurring before the mainshock, are categorized as **foreshocks**, and finally, events taking place after the mainshock, are named **aftershocks**. 
 
 *  **Select dates** allows the user to select the start and the end dates for the earthquakes included in the clustering. All the earthquakes that occurred between the start and the end dates are taken into account.
-* **Threshold value** clustering works by removing edges from a graph. If a link in the graph has a distance higher than the threshold value, the edge is removed. High values for the threshold would lead to fewer and higly connected clusters, lower values to more sparse and less populated ones. 
+* **Threshold value** allows the user to control the threshold value for removing edges. High values would lead to fewer and higly connected clusters, lower values to more sparse and less populated ones. 
 
 
 Different clusters can be compared easily by selecting a time range in each of the two tabs. **NB**: The clustering takes quite a while, especially with large amounts of data.

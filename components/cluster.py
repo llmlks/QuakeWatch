@@ -84,6 +84,7 @@ def compute_edges_numba(data):
         edges_numpy[i][0] = data2[indx][1]
         edges_numpy[i][1] = data[i][1]
         edges_numpy[i][2] = x[indx]
+
     return edges_numpy
 
 
@@ -280,7 +281,7 @@ def get_plot(graph, positions):
 
     max_magnitude = -1000
     max_time = 0.0
-    hovermainshock = 0, 0
+    hmshock = 0, 0
     for n in graph:
         mag = positions[n][1]
         Xe.append(positions[n][0])
@@ -289,15 +290,20 @@ def get_plot(graph, positions):
         if mag >= max_magnitude:
             max_magnitude = mag
             max_time = positions[n][0]
-            hovermainshock = "Location:({},{})".format(
-                positions[n][2], positions[n][3])
+            hmshock = """Location:({:.4f},{:.4f}) <br> EventId: {} <br>
+Mag: {:.2f} <br> Time: {}""".format(
+                positions[n][2], positions[n][3], n,
+                positions[n][1], positions[n][0])
 
     for n in graph:
         mag = positions[n][1]
         if mag == max_magnitude:
             # cont
             continue
-        text = "Location:({},{})".format(positions[n][2], positions[n][3])
+        text = """Location:({:.4f},{:.4f}) <br> EventId: {} <br>
+Mag: {:.2f} <br> Time: {}""".format(
+            positions[n][2], positions[n][3], n,
+            positions[n][1], positions[n][0])
         if positions[n][0] < max_time:
             # foreshock
             X_foreshocks.append(positions[n][0])
@@ -312,20 +318,38 @@ def get_plot(graph, positions):
         # Ye.append(positions[n][1])
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=Xe,
-        y=Ye,
-        mode='lines',
-        line=dict(color='rgb(210,210,210)', width=3),
-        hoverinfo='none', name=""
-    ))
+    # Draw the edges
+    for e in graph.edges:
+        n1 = e[0]
+        n2 = e[1]
+        x1, y1 = positions[n1][0], positions[n1][1]
+        x2, y2 = positions[n2][0], positions[n2][1]
+        fig.add_trace(go.Scatter(
+            x=[x1, x2],
+            y=[y1, y2],
+            mode='lines',
+            line=dict(color='rgb(210,210,210)', width=3),
+            hoverinfo='none', name="",
+            showlegend=False
+        ))
     fig.add_trace(get_figure(X_foreshocks, Y_foreshocks,
                              Hover_foreshocks, "Foreshocks", '#ffe100'))
     fig.add_trace(get_figure(X_aftershocks, Y_aftershocks,
                              Hover_aftershocks, "Aftershocks", '#ba0000'))
     fig.add_trace(get_figure([max_time], [max_magnitude], [
-                  hovermainshock], "Mainshock", '#0d35a5'))
+                  hmshock], "Mainshock", '#0d35a5'))
 
+    max_date = max(Xe)
+    min_date = min(Xe)
+    fig.update_layout(
+        title={
+            "text": "From {} to {} ".format(max_date, min_date),
+            "x": 0.5
+        },
+        xaxis_title="Time",
+        yaxis_title="Magnitude"
+
+    )
     return fig
 
 
