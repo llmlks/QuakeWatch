@@ -24,11 +24,17 @@ def get_layout(session_id):
         return 'No uploaded data found'
 
     start_date, end_date = eq_data.get_daterange()
-    default_end_date = start_date + timedelta(weeks=1)
-    filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
+    filtered_data = eq_data.filter_by_dates(start_date, end_date)
 
     default_x = filtered_data.get_magnitudes()
-    default_y = filtered_data.get_depths()
+    default_y = filtered_data.get_latitudes()
+
+    default_nbins_x = 40
+    default_nbins_y = 40
+
+    z, xbins, ybins = filtered_data.get_weight_matrix(
+        default_x.name, default_y.name, default_nbins_x, default_nbins_y
+    )
 
     return html.Div([
         dbc.Row([
@@ -37,14 +43,17 @@ def get_layout(session_id):
                     id='heatmap',
                     className='plot_sidebar_open',
                     children=heatmap.get_component(
-                        default_x, default_y, session_id)
+                        z, xbins, ybins)
                 )
             ),
             dbc.Col(heatmap_config.get_component(
-                 start_date, end_date, default_end_date,
-                 eq_data.data.columns, default_x.name, default_y.name))
+                 start_date, end_date,
+                 eq_data.data.select_dtypes(include='number').columns,
+                 default_x.name, default_y.name,
+                 default_nbins_x, default_nbins_y))
         ])
     ])
+
 
 @app.callback(
     Output('heatmap', 'children'),
@@ -52,8 +61,10 @@ def get_layout(session_id):
     [State('x-axis', 'value'),
      State('y-axis', 'value'),
      State('date-pick', 'start_date'),
-     State('date-pick', 'end_date')])
-def update_output(clicks, x_axis, y_axis, start_date, end_date):
+     State('date-pick', 'end_date'),
+     State('nbins-x', 'value'),
+     State('nbins-y', 'value')])
+def update_output(clicks, x_axis, y_axis, start_date, end_date, nbins_x, nbins_y):
     """ Return an updated heatmap based on the changes in the configuration.
 
     Keyword arguments:
@@ -75,7 +86,12 @@ def update_output(clicks, x_axis, y_axis, start_date, end_date):
 
     x_axis = filtered_data.data[x_axis]
     y_axis = filtered_data.data[y_axis]
-    return heatmap.get_component(x_axis, y_axis, session_id)
+
+    z, xbins, ybins = filtered_data.get_weight_matrix(
+        x_axis.name, y_axis.name, nbins_x, nbins_y
+    )
+
+    return heatmap.get_component(z, xbins, ybins)
 
 
 @app.callback(

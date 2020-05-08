@@ -26,7 +26,9 @@ def get_layout(session_id):
 
     start_date, end_date = eq_data.get_daterange()
     default_end_date = start_date + timedelta(weeks=1)
-    filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
+    filtered_data = eq_data.filter_by_dates(
+        start_date, default_end_date + timedelta(days=1)
+    )
 
     default_column = filtered_data.get_magnitudes()
     default_nbins = 10
