@@ -24,11 +24,9 @@ python index.py
 ```
 You can access the app on your browser at http://127.0.0.1:8050
 
-__OR__ Run the production server (Starts Gunicorn):
-```
-chmod +x run.sh
-./run.sh
-```
+## Deployment
+
+In order to deploy the application, you should use a [WSGI](https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface) of your choice, such as [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) or [Gunicorn](https://gunicorn.org/). You can follow any instructions for setting up a WSGI framework for Flask (since Dash uses Flask under the hood). The WSGI module can be accessed with `index:server`.
 
 ## Linting
 
