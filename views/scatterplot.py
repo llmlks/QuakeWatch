@@ -37,7 +37,7 @@ def get_layout(session_id):
     y_axis = filtered_data.get_depths()
     if CatalogTypes(filtered_data.catalog_type) == CatalogTypes.CSV_EXT:
         y_axis = -y_axis
-
+    event_ids = filtered_data.get_eventids()
     color = 'red'
     default_size_column = eq_data.get_column_params(
         eq_data.get_magnitudes().name
@@ -47,6 +47,7 @@ def get_layout(session_id):
         default_size_column,
         is_map=False
     )
+    size_data = filtered_data.data[default_size_column[0]]
 
     return dcc.Loading(html.Div([
         dbc.Row([
@@ -58,7 +59,7 @@ def get_layout(session_id):
                         id='scatter-plot',
                         className='plot_sidebar_open',
                         children=scatterplot.get_component(
-                            x_axis, y_axis, color, sizes
+                            x_axis, y_axis, event_ids, color, sizes, size_data
                         )
                     )
                 )
@@ -113,6 +114,11 @@ def update_output(clicks, start_date, end_date, x_axis, y_axis,
         eq_data.get_column_params(size_column),
         False
     )
+    size_data = None
+    if size_column is not None:
+        size_data = filtered_data.data[size_column]
+
+    event_ids = filtered_data.get_eventids()
 
     if color_column is None:
         colors = 'red'
@@ -123,7 +129,7 @@ def update_output(clicks, start_date, end_date, x_axis, y_axis,
     y_axis = filtered_data.data[y_axis]
 
     return scatterplot.get_component(
-        x_axis, y_axis, colors, sizes
+        x_axis, y_axis, event_ids, colors, sizes, size_data
     )
 
 
