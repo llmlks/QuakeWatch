@@ -13,6 +13,10 @@
     margin-right: 5px;
 }
 
+#interval-seconds {
+    display: inline-block;
+}
+
 #timestep-unit, #opacity-unit {
     width: calc(278px * 0.7);
     margin-left: 5px;

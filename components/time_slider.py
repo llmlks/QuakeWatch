@@ -11,7 +11,7 @@ from dash.exceptions import PreventUpdate
 from app import app
 
 
-def get_component(min_time, max_time, time_step, interval_seconds=2):
+def get_component(min_time, max_time, time_step, interval_seconds=None):
     """Return the time slider component.
 
     The number of steps is calculated based on the argument values.

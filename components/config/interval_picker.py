@@ -6,11 +6,12 @@ def get_component():
     """Return the interval picker component"""
     return html.Div(
         children=[
-            html.Div(className='config-label', children='Update interval'),
+            html.Div(className='config-label', children='Update interval for "Play" button'),
             dbc.Input(
                 id='interval-seconds', type='number', min=1, step=0.5, value=2
-            )
+            ),
+            html.Div('Seconds', style={'display': 'inline-block'})
         ],
         title='The update frequency of the "Play" -feature in seconds.'
-        'NB: A small value may cause lagging'
+        '\nNB: A small value may cause lagging'
     )
