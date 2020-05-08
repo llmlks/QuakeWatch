@@ -48,7 +48,8 @@ def get_layout(session_id):
             ),
             dbc.Col(heatmap_config.get_component(
                  start_date, end_date,
-                 eq_data.data.select_dtypes(include='number').columns,
+                 eq_data.data.select_dtypes(
+                     include=['number', 'datetime']).columns,
                  default_x.name, default_y.name,
                  default_nbins_x, default_nbins_y))
         ])
