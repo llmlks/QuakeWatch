@@ -7,9 +7,9 @@ from datetime import timedelta
 from components import heatmap
 from components.config import heatmap_config
 from utils import earthquake_data
-from app import app
-from utils.dateutils import get_datetime_from_str
 from utils import session
+from utils.dateutils import get_datetime_from_str
+from app import app
 
 
 def get_layout(session_id):
