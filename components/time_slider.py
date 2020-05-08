@@ -25,6 +25,8 @@ def get_component(min_time, max_time, time_step, interval_seconds=2):
     """
     seconds = (max_time - min_time).total_seconds()
     steps = ceil(seconds / time_step)
+    if interval_seconds is None:
+        interval_seconds = 2
 
     return html.Div([
         html.Div(
@@ -51,7 +53,7 @@ def get_component(min_time, max_time, time_step, interval_seconds=2):
                     ),
                     className='slider-button',
                     title='Moves the slider one step at a time until the end'
-                    ' of the time range. Updates every three seconds',
+                    ' of the time range',
                     id='play-button'
                 ),
                 html.Div(

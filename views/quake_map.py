@@ -214,7 +214,9 @@ def update_time_slider(apply_clicks, start_date, end_date,
     start_date = get_datetime_from_str(start_date)
     end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
-    return time_slider.get_component(start_date, end_date, timestep, interval_seconds)
+    return time_slider.get_component(
+        start_date, end_date, timestep, interval_seconds
+    )
 
 
 @app.callback(
