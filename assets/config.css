@@ -8,7 +8,7 @@
     vertical-align: top;
 }
 
-#timestep-value, #opacity-value {
+#timestep-value, #opacity-value, #interval-seconds {
     width: calc(278px * 0.3);
     margin-right: 5px;
 }
