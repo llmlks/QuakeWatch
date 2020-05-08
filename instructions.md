@@ -7,7 +7,7 @@ This application is meant for visualising and analysing earthquake catalogs. The
   <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a></li>
 </ul>
 
-To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it.
+To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it. Optionally, you can use the sample dataset by clicking on the button below the upload area. The sample catalog is the 2018 Focal Mechanism Catalog from SCEDC.
 
 Once the data has been uploaded, the available features include a map view, a scatter plot view, and a clustering view. Each of the features includes a set of configurations to control them. With the exception of the clustering view, changes in the settings only take effect after submitting them by clicking on the "Apply" button on each page.
 

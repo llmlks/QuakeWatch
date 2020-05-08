@@ -1,0 +1,29 @@
+#output-container {
+    margin-top: 1%;
+}
+
+.alert-message {
+    width: calc(92.5% - 175px);
+    margin-left: 2.5%;
+    display: inline-block;
+}
+
+#sample-dataset {
+    margin-left: 2.5%;
+    width: 175px;
+    vertical-align: initial;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+#upload-data {
+    width: 95%;
+    height: 60px;
+    line-height: 60px;
+    border-width: 1px;
+    border-style: dashed;
+    border-radius: 5px;
+    text-align: center;
+    margin: 2.5%;
+    margin-bottom: 0;
+}

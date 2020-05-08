@@ -14,7 +14,7 @@ PARSERS = {
 }
 
 
-def parse_contents(contents, filename, session_id):
+def parse_contents(contents, filename, session_id, use_sample_data):
     """Parse the input into a dataframe using correct parser
     depending on the file extension, saving the results.
 
@@ -22,15 +22,21 @@ def parse_contents(contents, filename, session_id):
     contents -- The contents of the uploaded file as a binary string
     filename -- Name of the uploaded file
     session_id -- ID of the current session
+    use_sample_data -- Whether to use the sample data set
     """
-    content_type, content_string = contents.split(',')
+    if use_sample_data:
+        with open(filename) as f:
+            contents = f.read()
 
-    decoded = base64.b64decode(content_string)
+    else:
+        content_type, content_string = contents.split(',')
+
+        contents = base64.b64decode(content_string).decode('utf-8')
 
     file_extension = get_file_extension(filename)
     parser = get_parser(file_extension)
 
-    eq_data = parser(decoded)
+    eq_data = parser(contents)
 
     save_uploaded_data(session_id, eq_data, file_extension)
     return eq_data
