@@ -7,7 +7,7 @@ def get_component():
     return html.Div(
         children=[
             html.Div(className='config-label', children='Update interval'),
-            dbc.Input(id='interval-seconds', type='number', min=1, step=0.5, value=2,placeholder='Please enter a number'),
+            dbc.Input(id='interval-seconds', type='number', min=1, step=0.5, value=2),
         ],
         title='The update frequency of the "Play" -feature in seconds'
     )
