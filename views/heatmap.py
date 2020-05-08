@@ -4,8 +4,8 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from datetime import timedelta
 
-from components import histogram
-from components.config import histogram_config
+from components import heatmap
+from components.config import heatmap_config
 from utils import earthquake_data
 from app import app
 from utils.dateutils import get_datetime_from_str
@@ -13,7 +13,7 @@ from utils import session
 
 
 def get_layout(session_id):
-    """ Return the layout for a histogram and its configurations.
+    """ Return the layout for a heatmap and its configurations.
 
     Keyword arguments:
     session_id -- ID of the current session
@@ -27,40 +27,39 @@ def get_layout(session_id):
     default_end_date = start_date + timedelta(weeks=1)
     filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
 
-    default_column = filtered_data.get_magnitudes()
-    default_nbins = 10
+    default_x = filtered_data.get_magnitudes()
+    default_y = filtered_data.get_depths()
 
     return html.Div([
         dbc.Row([
             dbc.Col(
                 html.Div(
-                    id='histogram',
+                    id='heatmap',
                     className='plot_sidebar_open',
-                    children=histogram.get_component(
-                        default_column, default_nbins)
+                    children=heatmap.get_component(
+                        default_x, default_y, session_id)
                 )
             ),
-            dbc.Col(histogram_config.get_component(
-                eq_data.data.columns, start_date, end_date,
-                default_end_date, default_column.name))
+            dbc.Col(heatmap_config.get_component(
+                 start_date, end_date, default_end_date,
+                 eq_data.data.columns, default_x.name, default_y.name))
         ])
     ])
 
-
 @app.callback(
-    Output('histogram', 'children'),
+    Output('heatmap', 'children'),
     [Input('apply', 'n_clicks')],
-    [State('column', 'value'),
-     State('nbins', 'value'),
+    [State('x-axis', 'value'),
+     State('y-axis', 'value'),
      State('date-pick', 'start_date'),
      State('date-pick', 'end_date')])
-def update_output(clicks, column, nbins, start_date, end_date):
-    """ Return an updated histogram based on the changes in the configuration.
+def update_output(clicks, x_axis, y_axis, start_date, end_date):
+    """ Return an updated heatmap based on the changes in the configuration.
 
     Keyword arguments:
     clicks -- Number of clicks on the apply button
-    column -- Name of the column to use for the histogram
-    nbins -- Maximum number of bins used
+    x-axis -- The column used for the x-axis
+    y-axis -- The column used for the y-axis
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
     """
@@ -74,12 +73,13 @@ def update_output(clicks, column, nbins, start_date, end_date):
     eq_data = earthquake_data.get_earthquake_data(session_id)
     filtered_data = eq_data.filter_by_dates(start_date, end_date)
 
-    column = filtered_data.data[column]
-    return histogram.get_component(column, nbins)
+    x_axis = filtered_data.data[x_axis]
+    y_axis = filtered_data.data[y_axis]
+    return heatmap.get_component(x_axis, y_axis, session_id)
 
 
 @app.callback(
-    Output('histogram', 'className'),
+    Output('heatmap', 'className'),
     [Input('sidebar', 'className')])
 def update_scatterplot_class(sidebar_class):
     """Return class name for div element containing a plot based
