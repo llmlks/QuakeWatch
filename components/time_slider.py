@@ -25,12 +25,17 @@ def get_component(min_time, max_time, time_step):
     steps = ceil(seconds / time_step)
 
     return html.Div([
-        dbc.Button(
-            id='time-slider-play-button',
-            children=html.I(
-                id='play-button-icon',
-                className='fas fa-play'
-            )
+        html.Div(
+            dbc.Button(
+                id='time-slider-play-button',
+                children=html.I(
+                    id='play-button-icon',
+                    className='fas fa-play'
+                )
+            ),
+            title='Moves the slider one step at a time until the end'
+            ' of the time range. Updates every three seconds',
+            id='play-button'
         ),
         dcc.Slider(
             id='time-slider',
@@ -79,7 +84,8 @@ def get_time_string(time, timestep):
 
 
 @app.callback(
-    Output('play-button-icon', 'className'),
+    [Output('play-button-icon', 'className'),
+     Output('play-button', 'title')],
     [Input('auto-stepper', 'disabled')])
 def update_play_button(disabled):
     """Toggle the icon on the play/pause button.
@@ -89,9 +95,13 @@ def update_play_button(disabled):
     """
 
     if disabled:
-        return 'fas fa-play'
+        return [
+            'fas fa-play',
+            'Moves the slider one step at a time until the end'
+            ' of the time range. Updates every three seconds'
+        ]
 
-    return 'fas fa-pause'
+    return ['fas fa-pause', 'Pause the automatic update of the slider']
 
 
 @app.callback(

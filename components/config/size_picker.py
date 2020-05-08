@@ -26,7 +26,7 @@ def get_component(columns, default_value=None):
             ],
             value=default_value
         )
-    ])
+    ], title='Select the column to use for computing the sizes of the markers')
 
 
 def get_sizes(data, column_params=None, is_map=True):
