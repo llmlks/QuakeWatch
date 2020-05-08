@@ -19,7 +19,8 @@ def get_component(mindate, maxdate, session_id, id="1"):
     date_component = date_picker.get_component(
         mindate, maxdate, None, id_component)
     threshold_component = html.Div([
-        dbc.Input(id="thr_{}".format(id), type="number",  value=1e-5),
+        dbc.Input(id="thr_{}".format(id), type="number",
+                  value=1e-5, step=1e-5),
         dbc.Button('Apply', id='apply_thr_{}'.format(
             id), outline=True, color='success')
     ])
