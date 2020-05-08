@@ -155,7 +155,10 @@ def update_slider_on_play(intervals, forward, backward, value, max_value):
     if context.triggered:
         triggered_id = context.triggered[0]['prop_id'].split('.')[0]
 
-        if triggered_id in ['auto-stepper', 'time-slider-forward-button']:
+        if triggered_id == 'auto-stepper' and intervals is not None:
+            return (value + 1) % (max_value + 1)
+
+        if triggered_id == 'time-slider-forward-button':
             return (value + 1) % (max_value + 1)
 
         if triggered_id == 'time-slider-backward-button':
