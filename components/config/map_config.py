@@ -16,6 +16,7 @@ from components.config import color_picker
 from components.config import uncertainty_toggler
 from components.config import faults_toggler
 from components.config import opacity_toggler
+from components.config import interval_picker
 from utils import session
 
 
@@ -38,6 +39,7 @@ def get_component(min_date, max_date, default_end_date, columns,
         size_picker.get_component(columns),
         color_picker.get_component(columns),
         template_picker.get_component(templates),
+        interval_picker.get_component(),
         uncertainty_toggler.get_component(),
         faults_toggler.get_component(show_faults),
         opacity_toggler.get_component(),

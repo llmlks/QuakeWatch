@@ -11,7 +11,7 @@ from dash.exceptions import PreventUpdate
 from app import app
 
 
-def get_component(min_time, max_time, time_step):
+def get_component(min_time, max_time, time_step, interval_seconds=None):
     """Return the time slider component.
 
     The number of steps is calculated based on the argument values.
@@ -21,9 +21,12 @@ def get_component(min_time, max_time, time_step):
     max_time -- A datetime object representing the end of the time frame
     time_step -- The time step as seconds. One slider step represents
         a time window of this size.
+    interval_seconds -- The update frequency of the time slider in seconds
     """
     seconds = (max_time - min_time).total_seconds()
     steps = ceil(seconds / time_step)
+    if interval_seconds is None:
+        interval_seconds = 2
 
     return html.Div([
         html.Div(
@@ -50,7 +53,7 @@ def get_component(min_time, max_time, time_step):
                     ),
                     className='slider-button',
                     title='Moves the slider one step at a time until the end'
-                    ' of the time range. Updates every three seconds',
+                    ' of the time range',
                     id='play-button'
                 ),
                 html.Div(
@@ -79,7 +82,7 @@ def get_component(min_time, max_time, time_step):
         ),
         dcc.Interval(
             id='auto-stepper',
-            interval=2000,
+            interval=interval_seconds*1000,
             n_intervals=None,
             disabled=True
         )

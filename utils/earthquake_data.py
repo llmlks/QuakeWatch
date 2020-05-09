@@ -145,6 +145,25 @@ class EarthquakeData:
         """Return initial zoom level to use for the map."""
         return 8
 
+    def get_weight_matrix(self, x_axis_name, y_axis_name, nbins_x, nbins_y):
+        """Return weight matrix and the bins for the heatmap.
+
+        Keyword arguments:
+        x_axis_name -- Name of the x-axis
+        y_axis_name -- Name of the y-axis
+        nbins_x -- Number of bins used for x-axis
+        nbins_y -- Number of bins used for y-axis
+        """
+
+        xcats, xbins = pd.cut(self.data[x_axis_name], nbins_x, retbins=True)
+        ycats, ybins = pd.cut(self.data[y_axis_name], nbins_y, retbins=True)
+
+        z = self.data.groupby([xcats, ycats]).size().unstack()
+
+        xbins = pd.Series(xbins, name=x_axis_name)
+        ybins = pd.Series(ybins, name=y_axis_name)
+        return z, xbins, ybins
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.

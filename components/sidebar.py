@@ -23,9 +23,9 @@ from app import app
 
 
 page_names = ['Upload data', 'Map', 'Scatter plot',
-              'Histogram', 'Clustering', 'Data']
+              'Histogram', 'Heatmap', 'Clustering', 'Data']
 page_paths = ['/upload', '/map', '/scatter',
-              '/histogram', '/cluster', '/data']
+              '/histogram', '/heatmap', '/cluster', '/data']
 
 
 def get_component():

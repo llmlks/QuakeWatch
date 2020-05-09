@@ -8,9 +8,13 @@
     vertical-align: top;
 }
 
-#timestep-value, #opacity-value {
+#timestep-value, #opacity-value, #interval-seconds {
     width: calc(278px * 0.3);
     margin-right: 5px;
+}
+
+#interval-seconds {
+    display: inline-block;
 }
 
 #timestep-unit, #opacity-unit {
@@ -40,7 +44,7 @@
     background-color: #f9f9f9;
 }
 
-#color-column, #size-column, #x-axis, #y-axis, #template-id, #column, #nbins {
+#color-column, #size-column, #x-axis, #y-axis, #template-id, #column, #nbins, #nbins-x, #nbins-y {
     width: 288px
 }
 

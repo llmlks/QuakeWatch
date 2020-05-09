@@ -189,9 +189,10 @@ def update_map(slider_value, apply_clicks, start_date, end_date,
     [State('date-pick', 'start_date'),
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
-     State('timestep-unit', 'value')])
+     State('timestep-unit', 'value'),
+     State('interval-seconds', 'value')])
 def update_time_slider(apply_clicks, start_date, end_date,
-                       timestep_value, timestep_seconds):
+                       timestep_value, timestep_seconds, interval_seconds):
     """Update the time slider based on the configuration.
 
     This is a callback function invoked by changes to the configuration.
@@ -204,6 +205,7 @@ def update_time_slider(apply_clicks, start_date, end_date,
         happened within the time window of this size are shown.
     timestep_seconds -- The number of seconds the selected time unit is
         equal to
+    interval_seconds -- The update frequency of the time slider in seconds
     """
     if apply_clicks is None:
         raise PreventUpdate
@@ -212,7 +214,9 @@ def update_time_slider(apply_clicks, start_date, end_date,
     start_date = get_datetime_from_str(start_date)
     end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
-    return time_slider.get_component(start_date, end_date, timestep)
+    return time_slider.get_component(
+        start_date, end_date, timestep, interval_seconds
+    )
 
 
 @app.callback(
