@@ -13,6 +13,14 @@ from utils.dateutils import get_datetime
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
 PROJECTION = Proj(init='epsg:3879')
+LOCATION_UNCERTAINTY = {
+    ' ': 0,
+    'A': 0.2,
+    'B': 1.0,
+    'C': 1.5,
+    '?': 0
+}
+DIRECTIONS = np.array([(0, 1), (0, -1), (1, 0), (-1, 0)])
 
 
 class EarthquakeData:
@@ -374,6 +382,25 @@ class FENCATEarthquakeData(EarthquakeData):
 
     def get_initial_zoom(self):
         return 4
+
+    def get_location_uncertainties(self):
+        errors = self.data['LOCATION UNCERTAINTY'].apply(
+            lambda x: LOCATION_UNCERTAINTY[x]
+        ).to_numpy()
+
+        error_coordinates = np.array([
+            list(zip(
+                self.data['LATITUDE'].to_numpy() + direction[0] * errors,
+                self.data['LONGITUDE'].to_numpy() + direction[1] * errors,
+            ))
+            for direction in DIRECTIONS
+        ])
+
+        error_coordinates = error_coordinates.reshape(
+            error_coordinates.size // 2, 2
+        )
+
+        return error_coordinates
 
     def filter_by_dates(self, datemin, datemax):
         return FENCATEarthquakeData(
