@@ -56,7 +56,8 @@ The clustering method used is based on a distance measure introduced by [Zaliapi
 
 Different clusters can be compared easily by selecting a time range in each of the two tabs. **NB**: The clustering takes quite a while, especially with large amounts of data.
 
-When using FENCAT data, only the earthquakes that occurred after the year 1677 can be processed due to limitations in date handling. This leaves out about 27 earthquakes from the start.
+When using the clustering feature with FENCAT data, please note that earthquakes that occurred before the year 
+1678 cannot be processed. This mean that about 27 earthquakes are left out. The issue is caused by datetime formatting, which doesn't allow for dates that far in the past.
 
 ##### Data
 
