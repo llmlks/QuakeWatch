@@ -46,9 +46,9 @@ def get_hover_text(z, xbins, ybins):
     z_hover = np.empty((len(xbins)-1, len(ybins)-1), dtype=object)
     for i in range(len(xbins)-1):
         for j in range(len(ybins)-1):
-            z_hover[i, j] = (xbins.name + ": [" + xbins[i].astype(str) +
+            z_hover[i, j] = (xbins.name + ": [" + xbins[j].astype(str) +
                              ", " + xbins[i+1].astype(str) + "] <br>" +
-                             ybins.name + ": [" + ybins[j].astype(str) +
+                             ybins.name + ": [" + ybins[i].astype(str) +
                              ", " + ybins[j+1].astype(str) + "] <br>" +
                              "Count: " + z.values[i][j].astype(str))
     return z_hover
