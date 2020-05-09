@@ -9,6 +9,7 @@ from views import clusterview
 from views import scatterplot
 from views import histogram
 from views import dataview
+from views import heatmap
 from utils import session
 
 from components import sidebar
@@ -50,6 +51,8 @@ def display_page(pathname):
         return histogram.get_layout(session_id)
     if pathname == '/data':
         return dataview.get_layout(session_id)
+    if pathname == '/heatmap':
+        return heatmap.get_layout(session_id)
 
     else:
         return '404'

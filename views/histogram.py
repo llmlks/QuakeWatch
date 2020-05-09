@@ -26,7 +26,9 @@ def get_layout(session_id):
 
     start_date, end_date = eq_data.get_daterange()
     default_end_date = start_date + timedelta(weeks=1)
-    filtered_data = eq_data.filter_by_dates(start_date, default_end_date)
+    filtered_data = eq_data.filter_by_dates(
+        start_date, default_end_date + timedelta(days=1)
+    )
 
     default_column = filtered_data.get_magnitudes()
     default_nbins = 10
@@ -64,8 +66,8 @@ def update_output(clicks, column, nbins, start_date, end_date):
 
     Keyword arguments:
     clicks -- Number of clicks on the apply button
-    session_id -- ID of the current session
     column -- Name of the column to use for the histogram
+    nbins -- Maximum number of bins used
     start_date -- String from the date picker representing the start date
     end_date -- String from the date picker representing the end date
     """
