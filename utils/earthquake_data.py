@@ -147,12 +147,8 @@ class EarthquakeData:
         nbins_y -- Number of bins used for y-axis
         """
 
-        xcats, xbins = pd.cut(
-            self.data[x_axis_name].astype(float), nbins_x, retbins=True
-            )
-        ycats, ybins = pd.cut(
-            self.data[y_axis_name].astype(float), nbins_y, retbins=True
-            )
+        xcats, xbins = pd.cut(self.data[x_axis_name], nbins_x, retbins=True)
+        ycats, ybins = pd.cut(self.data[y_axis_name], nbins_y, retbins=True)
 
         z = self.data.groupby([xcats, ycats]).size().unstack()
 
