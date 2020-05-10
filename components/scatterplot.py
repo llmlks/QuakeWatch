@@ -32,7 +32,7 @@ def get_component(x_axis, y_axis, event_ids, color, size, size_data):
                 'text': get_hover_text(color, event_ids, size_data)
             }],
             'layout': {
-                'title': 'Scatterplot',
+                'title': 'Scatter plot',
                 'xaxis': {
                     'title': x_axis.name
                 },
