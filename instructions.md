@@ -41,9 +41,18 @@ The plot can be zoomed into by selecting an area to zoom into or by clicking on 
 ##### Histogram
 
 The configurations available on the histogram are
-*  **Time range** allows the user to select the start and the end dates for the earthquakes shown on the plot. All the earthquakes that occurred between the start and the end dates are shown.
+*  **Select dates** allows the user to select the start and the end dates for the earthquakes shown on the plot. All the earthquakes that occurred between the start and the end dates are shown.
 * **Column** is used to define which column from the uploaded data is used as the data for the histogram. Any column, even non-numerical ones can be selected here.
 * **Maximum number of bins** is used to define the maximum number of desired bins. The biggest number, that is lower than the selected maximum and provides a nice round number for the bin size is selected for the plot. For non-numerical columns, the number of bins is always the number of different labels.
+
+The plot can be zoomed into by selecting an area to zoom into or by clicking on the zoom icons in the top right corner of the plot. Zooming out can also be done by a double-click. After moving the plot around, it can be restored to its original position and zoom level by clicking on the "Reset axes" icon. Other options include printing a png of the plot, and selecting what is shown when hovering over a marker.
+
+##### Heatmap
+
+The configurations available on the heatmap are
+*  **Select dates** allows the user to select the start and the end dates for the earthquakes shown on the plot. All the earthquakes that occurred between the start and the end dates are shown.
+* **X/Y-axis** settings define which column is used for which of the axes. Only numerical and datetime columns are listed as valid choices.
+* **Number of bins for x/y** settings define how many bins are used for which of the axes.
 
 The plot can be zoomed into by selecting an area to zoom into or by clicking on the zoom icons in the top right corner of the plot. Zooming out can also be done by a double-click. After moving the plot around, it can be restored to its original position and zoom level by clicking on the "Reset axes" icon. Other options include printing a png of the plot, and selecting what is shown when hovering over a marker.
 
