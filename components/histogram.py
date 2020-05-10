@@ -7,6 +7,7 @@ def get_component(column, nbins):
 
     Keyword components:
     column -- a pandas Series of the column values
+    nbins -- Maximum number of bins used
     """
     return dcc.Graph(
         figure={
