@@ -343,7 +343,7 @@ Mag: {:.2f} <br> Time: {}""".format(
     min_date = min(Xe)
     fig.update_layout(
         title={
-            "text": "From {} to {} ".format(max_date, min_date),
+            "text": "From {} to {} ".format(min_date, max_date),
             "x": 0.5
         },
         xaxis_title="Time",
