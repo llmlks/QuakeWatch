@@ -291,8 +291,6 @@ class BaselEarthquakeData(EarthquakeData):
         return 13
 
     def get_default_timedelta(self):
-        """Return the default timedelta for each catalog.
-        """
         return timedelta(weeks=4)
 
 
