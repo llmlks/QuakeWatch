@@ -159,8 +159,6 @@ class EarthquakeData:
     def get_default_timedelta(self):
         """Return the default timedelta for each catalog.
         """
-        if self.catalog_type == CatalogTypes.DAT_EXT:
-            return timedelta(weeks=4)
         return timedelta(weeks=1)
 
 
@@ -291,6 +289,11 @@ class BaselEarthquakeData(EarthquakeData):
 
     def get_initial_zoom(self):
         return 13
+
+    def get_default_timedelta(self):
+        """Return the default timedelta for each catalog.
+        """
+        return timedelta(weeks=4)
 
 
 class FMEarthquakeData(EarthquakeData):
