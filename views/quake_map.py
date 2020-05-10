@@ -32,7 +32,7 @@ def get_layout(session_id):
     eq_data = earthquake_data.get_earthquake_data(session_id)
     if eq_data.data.shape[0] != 0:
         start_date, end_date = eq_data.get_daterange()
-        default_end_date = start_date + timedelta(weeks=1)
+        default_end_date = start_date + eq_data.get_default_timedelta()
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
         templates = eq_data.filter_by_dates(

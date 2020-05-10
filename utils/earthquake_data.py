@@ -147,14 +147,25 @@ class EarthquakeData:
         nbins_y -- Number of bins used for y-axis
         """
 
-        xcats, xbins = pd.cut(self.data[x_axis_name], nbins_x, retbins=True)
-        ycats, ybins = pd.cut(self.data[y_axis_name], nbins_y, retbins=True)
+        xcats, xbins = pd.cut(
+            self.data[x_axis_name].astype(float), nbins_x, retbins=True
+            )
+        ycats, ybins = pd.cut(
+            self.data[y_axis_name].astype(float), nbins_y, retbins=True
+            )
 
         z = self.data.groupby([xcats, ycats]).size().unstack()
 
         xbins = pd.Series(xbins, name=x_axis_name)
         ybins = pd.Series(ybins, name=y_axis_name)
         return z, xbins, ybins
+
+    def get_default_timedelta(self):
+        """Return the default timedelta for each catalog.
+        """
+        if self.catalog_type == CatalogTypes.DAT_EXT:
+            return timedelta(weeks=4)
+        return timedelta(weeks=1)
 
 
 class OtaniemiEarthquakeData(EarthquakeData):
@@ -261,7 +272,7 @@ class BaselEarthquakeData(EarthquakeData):
         return self.data['ID']
 
     def get_depths(self):
-        return self.data['Dep']
+        return pd.to_numeric(self.data['Dep'])
 
     def get_magnitudes(self):
         return self.data['Mwx']
