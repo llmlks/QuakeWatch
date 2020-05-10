@@ -242,7 +242,7 @@ def compute_pos(df, nodes):
     for n in nodes:
         row = df[df["EVENTID"] == int(n)]
         x = row["DateTime"].values[0]
-        x = dt.fromtimestamp(x//10**9)
+        x = dt(1970, 1, 1) + datetime.timedelta(seconds=x//10**9)
         y = row["MAGNITUDE"].values[0]
         lat = row["LATITUDE"].values[0]
         lon = row["LONGITUDE"].values[0]
