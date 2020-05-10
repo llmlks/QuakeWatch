@@ -268,7 +268,7 @@ class BaselEarthquakeData(EarthquakeData):
         return self.data['ID']
 
     def get_depths(self):
-        return pd.to_numeric(self.data['Dep'])
+        return self.data['Dep']
 
     def get_magnitudes(self):
         return self.data['Mwx']

@@ -79,6 +79,7 @@ def basel_parse(contents):
             '---', '---------', '------',  '----'
         ]
     )
+    return df
 
 
 def convert_to_float(x):
