@@ -15,6 +15,7 @@ def get_component(columns, min_date, max_date, default_end_date,
     max_date -- The maximum date allowed to pick with the datepicker
     default_end_date -- The default end date for the datepicker. The
         default start date is the `min_date`.
+    default_column -- The default column used for the histogram
     """
 
     return html.Div([

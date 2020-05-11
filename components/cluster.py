@@ -168,7 +168,7 @@ def callback_wrapper(n_clicks, threshold, start_date, end_date):
         return "Select dates"
     print("Computing clusters...")
     start_date = dt.strptime(start_date,  "%Y-%m-%d")
-    end_date = dt.strptime(end_date,  "%Y-%m-%d")
+    end_date = dt.strptime(end_date,  "%Y-%m-%d") + datetime.timedelta(days=1)
 
     session_id = session.get_session_id()
     data = get_data(session_id)
@@ -198,7 +198,9 @@ def get_figures(edges_np, df, th=1e-5):
     th -- Threshold for computing the weak edges.
    """
     edges = []
-    for e in edges_np[1:]:
+    for e in edges_np:
+        if e[0] == e[1]:
+            continue
         edges.append((e[0], e[1],  {"w": e[2]}))
 
     G = nx.DiGraph()
@@ -348,7 +350,7 @@ Mag: {:.2f} <br> Time: {}""".format(
     min_date = min(Xe)
     fig.update_layout(
         title={
-            "text": "From {} to {} ".format(max_date, min_date),
+            "text": "From {} to {} ".format(min_date, max_date),
             "x": 0.5
         },
         xaxis_title="Time",

@@ -164,6 +164,11 @@ class EarthquakeData:
         ybins = pd.Series(ybins, name=y_axis_name)
         return z, xbins, ybins
 
+    def get_default_timedelta(self):
+        """Return the default timedelta for each catalog.
+        """
+        return timedelta(weeks=1)
+
 
 class OtaniemiEarthquakeData(EarthquakeData):
     """Internal representation of the Otaniemi catalog data.
@@ -292,6 +297,9 @@ class BaselEarthquakeData(EarthquakeData):
 
     def get_initial_zoom(self):
         return 13
+
+    def get_default_timedelta(self):
+        return timedelta(weeks=4)
 
 
 class FMEarthquakeData(EarthquakeData):

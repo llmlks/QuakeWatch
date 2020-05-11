@@ -124,7 +124,18 @@ def get_location_uncertainty_layer(eq_data, visible):
                 color='black',
                 fillOpacity=0,
                 dashArray='5, 5',
-                weight=1.5
+                weight=1.5,
+                children=[dl.Popup(
+                    dcc.Markdown(
+                        list(map(
+                            lambda x: '**{}**: {}  '.format(
+                                x.replace('[', r'\['), quake[x]
+                            ),
+                            quake.keys()
+                        ))
+                    ),
+                    className='earthquake-popup'
+                )]
             )
             for _, quake in reset_data.iterrows()
         ]
