@@ -11,6 +11,14 @@ To get started, please upload the catalog of your choice by clicking the upload 
 
 Once the data has been uploaded, the available features include a map view, a scatter plot view, and a clustering view. Each of the features includes a set of configurations to control them. With the exception of the clustering view, changes in the settings only take effect after submitting them by clicking on the "Apply" button on each page.
 
+**Generic parser**: You can also use another catalog type, not based on an existing catalog. The file needs to be uploaded as a .txt file, and the file structure should be as follows
+
+The overall format is
+```
+id,year,month,day,hour,minute,second,depth,magnitude,latitude,longitude
+```
+No header should be added to the file. Each event is on its own row, and the values are separated by commas. The ID field does not need to be numeric, but all of the other fields only accept numbers.
+
 ##### Map
 
 The map can be configured with the following settings:
