@@ -42,6 +42,9 @@ def compute_edges(data):
     ids = data.get_eventids().values
     dates = data.get_datetimes()
 
+    if dates.dtype == 'object':
+        dates = dates.astype('datetime64[ns]')
+
     vals = np.zeros((5, len(dates)))
     vals[0, :] = dates
     vals[1, :] = ids
@@ -98,6 +101,8 @@ def get_component(session_id):
    """
     data = get_data(session_id)
     mindate, maxdate = data.get_daterange()
+    mindate = max(pd.Timestamp.min, mindate)
+
     if maxdate - mindate <= datetime.timedelta(days=1):
         maxdate = maxdate + datetime.timedelta(days=1)
     items = []
@@ -163,7 +168,7 @@ def callback_wrapper(n_clicks, threshold, start_date, end_date):
         return "Select dates"
     print("Computing clusters...")
     start_date = dt.strptime(start_date,  "%Y-%m-%d")
-    end_date = dt.strptime(end_date,  "%Y-%m-%d")
+    end_date = dt.strptime(end_date,  "%Y-%m-%d") + datetime.timedelta(days=1)
 
     session_id = session.get_session_id()
     data = get_data(session_id)
@@ -193,7 +198,9 @@ def get_figures(edges_np, df, th=1e-5):
     th -- Threshold for computing the weak edges.
    """
     edges = []
-    for e in edges_np[1:]:
+    for e in edges_np:
+        if e[0] == e[1]:
+            continue
         edges.append((e[0], e[1],  {"w": e[2]}))
 
     G = nx.DiGraph()
@@ -237,7 +244,7 @@ def compute_pos(df, nodes):
     for n in nodes:
         row = df[df["EVENTID"] == int(n)]
         x = row["DateTime"].values[0]
-        x = dt.fromtimestamp(x//10**9)
+        x = dt(1970, 1, 1) + datetime.timedelta(seconds=x//10**9)
         y = row["MAGNITUDE"].values[0]
         lat = row["LATITUDE"].values[0]
         lon = row["LONGITUDE"].values[0]

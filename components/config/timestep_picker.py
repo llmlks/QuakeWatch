@@ -21,6 +21,8 @@ def get_component():
               {'label': 'Hours', 'value': 60*60},
               {'label': 'Days', 'value': 24*60*60},
               {'label': 'Weeks', 'value': 7*24*60*60},
+              {'label': 'Months', 'value': 30*7*24*60*60},
+              {'label': 'Years', 'value': 365*24*60*60},
             ],
             value=DEFAULT_TIMESTEP
         )

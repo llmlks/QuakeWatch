@@ -8,6 +8,7 @@ class CatalogTypes(Enum):
     CSV_EXT = '.csv'
     DAT_EXT = '.dat'
     TXT_EXT = '.txt'
+    FEN_EXT = '.FEN'
 
 
 def is_california_data(catalog_type):

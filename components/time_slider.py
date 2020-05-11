@@ -1,5 +1,5 @@
 from math import ceil
-import datetime
+from datetime import timedelta
 
 import dash
 import dash_core_components as dcc
@@ -11,7 +11,8 @@ from dash.exceptions import PreventUpdate
 from app import app
 
 
-def get_component(min_time, max_time, time_step, interval_seconds=None):
+def get_component(min_time, max_time, time_step, interval_seconds=None,
+                  requested_time=None):
     """Return the time slider component.
 
     The number of steps is calculated based on the argument values.
@@ -22,11 +23,19 @@ def get_component(min_time, max_time, time_step, interval_seconds=None):
     time_step -- The time step as seconds. One slider step represents
         a time window of this size.
     interval_seconds -- The update frequency of the time slider in seconds
+    requested_time -- A datetime object containing the requested time of
+        the time slider. The slider will be set as close to the
+        requested time as possible.
+
     """
     seconds = (max_time - min_time).total_seconds()
     steps = ceil(seconds / time_step)
     if interval_seconds is None:
         interval_seconds = 2
+
+    slider_value = get_initial_value(min_time, max_time, time_step,
+                                     requested_time)
+    slider_time = min_time + timedelta(seconds=slider_value * time_step)
 
     return html.Div([
         html.Div(
@@ -73,11 +82,11 @@ def get_component(min_time, max_time, time_step, interval_seconds=None):
             id='time-slider',
             min=0,
             max=steps-1,
-            value=0,
+            value=slider_value,
             step=1
         ),
         html.Div(
-            [get_time_string(min_time, time_step)],
+            [get_time_string(slider_time, time_step)],
             id='time-slider-value-container'
         ),
         dcc.Interval(
@@ -89,6 +98,33 @@ def get_component(min_time, max_time, time_step, interval_seconds=None):
     ])
 
 
+def get_initial_value(min_time, max_time, time_step, requested_time):
+    """Return the initial value of the time slider.
+
+    The value will be set so that the slider time is as close to the
+    requested time as possible.
+
+    Keyword arguments:
+    min_time -- A datetime object representing the start of the time frame
+    max_time -- A datetime object representing the end of the time frame
+    time_step -- The time step as seconds. One slider step represents
+        a time window of this size.
+    requested_time -- A datetime object containing the requested time of
+        the time slider.
+    """
+    if requested_time is None or requested_time < min_time:
+        return 0
+
+    requested_end_time = requested_time + timedelta(seconds=time_step)
+    if requested_end_time > max_time:
+        seconds = (max_time - timedelta(seconds=time_step)
+                   - min_time).total_seconds()
+    else:
+        seconds = (requested_time - min_time).total_seconds()
+
+    return int(round(seconds / time_step))
+
+
 def get_time_string(time, timestep):
     """Return a string representation of the given datetime
     object with end time calculated using the timestep.
@@ -98,7 +134,7 @@ def get_time_string(time, timestep):
     timestep -- The time step as seconds. One slider step represents
         a time window of this size.
     """
-    end_time = time + datetime.timedelta(seconds=timestep)
+    end_time = time + timedelta(seconds=timestep)
     return '{}.{}.{} {}:{}:{} - {}.{}.{} {}:{}:{}'.format(
         str(time.day).zfill(2),
         str(time.month).zfill(2),
