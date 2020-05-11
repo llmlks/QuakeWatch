@@ -1,16 +1,16 @@
-This application is meant for visualising and analysing earthquake catalogs. The supported catalog types are   
+This application is meant for visualising and analysing earthquake catalogs. The supported catalog types, with the respective file extension in brackets, are
 
 <ul>
-  <li><a href="https://scedc.caltech.edu/research-tools/QTMcatalog.html" target="_blank">The QTM seismicity catalogs (SCEDC)</a></li>
-  <li><a href="https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html" target="_blank">The focal mechanism catalogs (SCEDC)</a></li>
-  <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468" target="_blank">Basel seismicity catalog</a></li>
-  <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a></li>
-  <li><a href="https://www.seismo.helsinki.fi/bulletin/list/catalog/Scandia_updated.html" target="_blank">Fennoscandian Earthquake Catalog</a></li>
+  <li><a href="https://scedc.caltech.edu/research-tools/QTMcatalog.html" target="_blank">The QTM seismicity catalogs (SCEDC)</a> (.hypo)</li>
+  <li><a href="https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html" target="_blank">The focal mechanism catalogs (SCEDC)</a> (.scedc)</li>
+  <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468" target="_blank">Basel seismicity catalog</a> (.dat)</li>
+  <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a> (.csv)</li>
+  <li><a href="https://www.seismo.helsinki.fi/bulletin/list/catalog/Scandia_updated.html" target="_blank">Fennoscandian Earthquake Catalog</a> (.FEN)</li>
 </ul>
 
 To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it. Optionally, you can use the sample dataset by clicking on the button below the upload area. The sample catalog is the 2018 Focal Mechanism Catalog from SCEDC.
 
-Once the data has been uploaded, the available features include a map view, a scatter plot view, and a clustering view. Each of the features includes a set of configurations to control them. With the exception of the clustering view, changes in the settings only take effect after submitting them by clicking on the "Apply" button on each page.
+Once the data has been uploaded, the available features include a map view, a scatter plot view, and a clustering view. Each of the features includes a set of configurations to control them. Changes in the settings only take effect after submitting them by clicking on the "Apply" button on each page.
 
 ##### Map
 
@@ -22,7 +22,7 @@ The map can be configured with the following settings:
 * **Template ID** restricts the visible earthquakes to those that have the defined template. The other configurations are still valid, thus the earthquakes are only shown from the selected time range. If the earthquakes should be visible at the same time, the option **Show earthquakes cumulatively** can be used, together with setting the time slider below the map at the right. This will display all the events with the same template ID in the selected time range. This configuration is available only for the catalogs that contain information about the events' template IDs.
 * **Update frequency** sets the update frequency of the "Play" feature in seconds. Default value is 2 seconds. **NB**: a very small value may cause the "Play" feature to lag.
 * **Visualize location uncertainties** toggles visualizing the uncertainties in location for each earthquake marker on and off. If the catalog contains no information about location uncertainties, a default range of 500 m is used. The uncertainties are related to the location of the hypocenter, the size of the marker is not taken into account. Note that for the FENCAT data, the uncertainties are boundaries, not exact values. Furthermore, for that data set, both a missing value and the value '?' are interpreted in the same way for this feature; the radius of the location boundary is zero.
-* **Show fault lines** toggles the Southern California fault lines on and off. Only available for the two SCEDC catalogs. **NB**: slows down the application, not recommended with the play-feature.
+* **Show fault lines** toggles the Southern California fault lines on and off. Only available for the two SCEDC catalogs. Source for the fault lines is [Southern California Earthquake Center](https://www.scec.org/research/cfm) **NB**: slows down the application, not recommended with the play-feature.
 * **Show earthquakes cumulatively** controls whether the visible earthquakes consist only of those that occurred within the selected time slot, or whether all earthquakes from the start of the time range until the end of the selected time slot are visible.
 * **Opacity decrease rate** is available for configuration when the **Show earthquakes cumulatively** is selected. When displaying the earthquakes cumulatively, the opacity of the earthquake markers is computed as a logarithm of time. Thus, the larger the time difference between the the end of the current time slot and the time of occurrence, the more transparent the marker. The rate of the decrease can be controlled by selecting the value and unit of time in which the opacity decreases.
 

@@ -372,7 +372,7 @@ class FENCATEarthquakeData(EarthquakeData):
     """
 
     def __init__(self, data):
-        EarthquakeData.__init__(self, CatalogTypes.HTML_EXT, data)
+        EarthquakeData.__init__(self, CatalogTypes.FEN_EXT, data)
 
         if 'DateTime' in data.columns:
             self.dates = data['DateTime'].apply(
@@ -437,14 +437,16 @@ class FENCATEarthquakeData(EarthquakeData):
     def filter_by_template_id(self, template):
         return None
 
+    def get_default_timedelta(self):
+        return timedelta(weeks=52*200)
+
 
 EXTENSIONS = {
     CatalogTypes.CSV_EXT: OtaniemiEarthquakeData,
     CatalogTypes.DAT_EXT: BaselEarthquakeData,
     CatalogTypes.HYPO_EXT: QTMEarthquakeData,
     CatalogTypes.SCEDC_EXT: FMEarthquakeData,
-    CatalogTypes.HTML_EXT: FENCATEarthquakeData,
-    CatalogTypes.TXT_EXT: FENCATEarthquakeData
+    CatalogTypes.FEN_EXT: FENCATEarthquakeData
 }
 
 

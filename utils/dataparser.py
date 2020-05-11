@@ -13,8 +13,7 @@ PARSERS = {
     CatalogTypes.SCEDC_EXT: fm_parse,
     CatalogTypes.CSV_EXT: otaniemi_parse,
     CatalogTypes.DAT_EXT: basel_parse,
-    CatalogTypes.HTML_EXT: fencat_parse,
-    CatalogTypes.TXT_EXT: fencat_parse
+    CatalogTypes.FEN_EXT: fencat_parse
 }
 
 
