@@ -32,6 +32,8 @@ def get_layout(session_id):
     eq_data = earthquake_data.get_earthquake_data(session_id)
     if eq_data.data.shape[0] != 0:
         start_date, end_date = eq_data.get_daterange()
+        start_date = start_date.replace(hour=0, minute=0, second=0,
+                                        microsecond=0)
         default_end_date = start_date + eq_data.get_default_timedelta()
 
         filtered_data = filter_data(eq_data, start_date, DEFAULT_TIMESTEP, 0)
@@ -74,7 +76,8 @@ def get_layout(session_id):
                     california_data,
                     templates
                 ))
-            ])
+            ]),
+            html.Div(id='current_slider_time', style={'display': 'none'})
         ])
 
     return 'No uploaded data found'
@@ -190,9 +193,11 @@ def update_map(slider_value, apply_clicks, start_date, end_date,
      State('date-pick', 'end_date'),
      State('timestep-value', 'value'),
      State('timestep-unit', 'value'),
-     State('interval-seconds', 'value')])
+     State('interval-seconds', 'value'),
+     State('current_slider_time', 'children')])
 def update_time_slider(apply_clicks, start_date, end_date,
-                       timestep_value, timestep_seconds, interval_seconds):
+                       timestep_value, timestep_seconds, interval_seconds,
+                       current_time):
     """Update the time slider based on the configuration.
 
     This is a callback function invoked by changes to the configuration.
@@ -206,6 +211,7 @@ def update_time_slider(apply_clicks, start_date, end_date,
     timestep_seconds -- The number of seconds the selected time unit is
         equal to
     interval_seconds -- The update frequency of the time slider in seconds
+    current_time -- String containing the current slider time
     """
     if apply_clicks is None:
         raise PreventUpdate
@@ -214,13 +220,18 @@ def update_time_slider(apply_clicks, start_date, end_date,
     start_date = get_datetime_from_str(start_date)
     end_date = get_datetime_from_str(end_date) + timedelta(days=1)
 
+    if current_time is not None:
+        current_time = datetime.strptime(current_time, r'%Y-%m-%dT%H:%M:%S')
+
     return time_slider.get_component(
-        start_date, end_date, timestep, interval_seconds
+        start_date, end_date, timestep, interval_seconds,
+        current_time
     )
 
 
 @app.callback(
-    Output('time-slider-value-container', 'children'),
+    [Output('time-slider-value-container', 'children'),
+     Output('current_slider_time', 'children')],
     [Input('time-slider', 'value')],
     [State('date-pick', 'start_date'),
      State('timestep-value', 'value'),
@@ -229,10 +240,9 @@ def update_time_slider(apply_clicks, start_date, end_date,
 def update_time_slider_value(slider_value, start_date, timestep_value,
                              timestep_seconds, constant_start_time):
     """Update the time slider value to represent the selected date and
-    time.
+    time, as well as a hidden div that keeps track of the current slider time.
 
-    This is a callback function invoked by changes to either the time slider
-    or the configuration.
+    This is a callback function invoked by a change to the time slider.
 
     Keyword arguments:
     slider_value -- Current value of the time slider
@@ -253,4 +263,4 @@ def update_time_slider_value(slider_value, start_date, timestep_value,
         ).total_seconds()
         slider_time = start_date
 
-    return time_slider.get_time_string(slider_time, timestep)
+    return time_slider.get_time_string(slider_time, timestep), slider_time
