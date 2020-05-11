@@ -70,8 +70,7 @@ For each graph, the event with the highest magnitude is labeled as the **mainsho
 
 Different clusters can be compared easily by selecting a time range in each of the two tabs. **NB**: The clustering takes quite a while, especially with large amounts of data.
 
-When using the clustering feature with FENCAT data, please note that earthquakes that occurred before the year 
-1678 cannot be processed. This mean that about 27 earthquakes are left out. The issue is caused by datetime formatting, which doesn't allow for dates that far in the past.
+When using the clustering feature with FENCAT data, please note that earthquakes that occurred before the year 1678 cannot be processed. This mean that about 27 earthquakes are left out. The issue is caused by datetime formatting, which doesn't allow for dates that far in the past.
 
 ##### Data
 
