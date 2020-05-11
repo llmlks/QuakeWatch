@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import dash_core_components as dcc
 import dash_html_components as html
 
@@ -23,7 +25,7 @@ def get_component(min_date, max_date, default_end_date, id="date-pick"):
         dcc.DatePickerRange(
             id=id,
             min_date_allowed=min_date,
-            max_date_allowed=max_date,
+            max_date_allowed=max_date.date() + timedelta(days=1),
             start_date=start_date,
             end_date=end_date,
             display_format='DD.MM.YYYY'
