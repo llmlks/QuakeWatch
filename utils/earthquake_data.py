@@ -13,6 +13,14 @@ from utils.dateutils import get_datetime
 TEMP_FILE_DF = './uploaded_df_%s.temp'
 TEMP_FILE_EXT = './uploaded_ext_%s.temp'
 PROJECTION = Proj(init='epsg:3879')
+LOCATION_UNCERTAINTY = {
+    ' ': 0,
+    'A': 0.2,
+    'B': 1.0,
+    'C': 1.5,
+    '?': 0
+}
+DIRECTIONS = np.array([(0, 1), (0, -1), (1, 0), (-1, 0)])
 
 
 class EarthquakeData:
@@ -359,11 +367,86 @@ class QTMEarthquakeData(EarthquakeData):
         )
 
 
+class FENCATEarthquakeData(EarthquakeData):
+    """Internal representation of the FENCAT catalog data.
+    """
+
+    def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.FEN_EXT, data)
+
+        if 'DateTime' in data.columns:
+            self.dates = data['DateTime'].apply(
+                lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f')
+            )
+        else:
+            self.dates = data.agg(
+                lambda x: get_datetime(
+                    x['YEAR'],
+                    int(self.get_number(x['MONTH'])),
+                    int(self.get_number(x['DAY'])),
+                    int(self.get_number(x['HOUR'])),
+                    int(self.get_number(x['MINUTE'])),
+                    self.get_number(x['SECOND'])
+                ), axis=1)
+            self.dates.rename('DateTime', inplace=True)
+            self.data = self.data.assign(DateTime=self.dates.apply(
+                lambda x: x.strftime('%Y-%m-%d %H:%M:%S.%f')
+            ))
+
+    def get_number(self, x, default=1):
+        if np.isnan(x):
+            return default
+        return x
+
+    def get_eventids(self):
+        return self.data['ID']
+
+    def get_templateids(self):
+        return None
+
+    def get_map_center(self):
+        return [60.193, 24.84]
+
+    def get_initial_zoom(self):
+        return 4
+
+    def get_location_uncertainties(self):
+        errors = self.data['LOCATION UNCERTAINTY'].apply(
+            lambda x: LOCATION_UNCERTAINTY[x]
+        ).to_numpy()
+
+        error_coordinates = np.array([
+            list(zip(
+                self.data['LATITUDE'].to_numpy() + direction[0] * errors,
+                self.data['LONGITUDE'].to_numpy() + direction[1] * errors,
+            ))
+            for direction in DIRECTIONS
+        ])
+
+        error_coordinates = error_coordinates.reshape(
+            error_coordinates.size // 2, 2
+        )
+
+        return error_coordinates
+
+    def filter_by_dates(self, datemin, datemax):
+        return FENCATEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return None
+
+    def get_default_timedelta(self):
+        return timedelta(weeks=52*200)
+
+
 EXTENSIONS = {
     CatalogTypes.CSV_EXT: OtaniemiEarthquakeData,
     CatalogTypes.DAT_EXT: BaselEarthquakeData,
     CatalogTypes.HYPO_EXT: QTMEarthquakeData,
-    CatalogTypes.SCEDC_EXT: FMEarthquakeData
+    CatalogTypes.SCEDC_EXT: FMEarthquakeData,
+    CatalogTypes.FEN_EXT: FENCATEarthquakeData
 }
 
 

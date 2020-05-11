@@ -42,6 +42,9 @@ def compute_edges(data):
     ids = data.get_eventids().values
     dates = data.get_datetimes()
 
+    if dates.dtype == 'object':
+        dates = dates.astype('datetime64[ns]')
+
     vals = np.zeros((5, len(dates)))
     vals[0, :] = dates
     vals[1, :] = ids
@@ -98,6 +101,8 @@ def get_component(session_id):
    """
     data = get_data(session_id)
     mindate, maxdate = data.get_daterange()
+    mindate = max(pd.Timestamp.min, mindate)
+
     if maxdate - mindate <= datetime.timedelta(days=1):
         maxdate = maxdate + datetime.timedelta(days=1)
     items = []
@@ -239,7 +244,7 @@ def compute_pos(df, nodes):
     for n in nodes:
         row = df[df["EVENTID"] == int(n)]
         x = row["DateTime"].values[0]
-        x = dt.fromtimestamp(x//10**9)
+        x = dt(1970, 1, 1) + datetime.timedelta(seconds=x//10**9)
         y = row["MAGNITUDE"].values[0]
         lat = row["LATITUDE"].values[0]
         lon = row["LONGITUDE"].values[0]
