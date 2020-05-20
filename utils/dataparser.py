@@ -12,9 +12,10 @@ from utils.catalog_types import CatalogTypes
 PARSERS = {
     CatalogTypes.HYPO_EXT: qtm_parse,
     CatalogTypes.SCEDC_EXT: fm_parse,
-    CatalogTypes.CSV_EXT: otaniemi_parse,
+    CatalogTypes.OTA_EXT: otaniemi_parse,
     CatalogTypes.DAT_EXT: basel_parse,
     CatalogTypes.TXT_EXT: generic_parse,
+    CatalogTypes.CSV_EXT: generic_parse,
     CatalogTypes.FEN_EXT: fencat_parse
 }
 

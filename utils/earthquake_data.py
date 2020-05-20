@@ -200,7 +200,7 @@ class OtaniemiEarthquakeData(EarthquakeData):
             lambda x: float(str(x).replace(',', '.'))
         )
 
-        EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
+        EarthquakeData.__init__(self, CatalogTypes.OTA_EXT, data)
 
         self.dates = data['TIME_UTC'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
@@ -484,11 +484,12 @@ class FENCATEarthquakeData(EarthquakeData):
 
 
 EXTENSIONS = {
-    CatalogTypes.CSV_EXT: OtaniemiEarthquakeData,
+    CatalogTypes.OTA_EXT: OtaniemiEarthquakeData,
     CatalogTypes.DAT_EXT: BaselEarthquakeData,
     CatalogTypes.HYPO_EXT: QTMEarthquakeData,
     CatalogTypes.SCEDC_EXT: FMEarthquakeData,
     CatalogTypes.TXT_EXT: GenericEarthquakeData,
+    CatalogTypes.CSV_EXT: GenericEarthquakeData,
     CatalogTypes.FEN_EXT: FENCATEarthquakeData
 }
 
