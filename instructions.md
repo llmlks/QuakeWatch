@@ -18,7 +18,7 @@ The overall format is
 ```
 id,year,month,day,hour,minute,second,depth,magnitude,latitude,longitude
 ```
-No header should be added to the file. Each event is on its own row, and the values are separated by commas. Note that dot (.) should be used for floating point numbers. The ID field does not need to be numeric, but all of the other fields only accept numbers. Latitude and longitude are expected to be floating point numbers.
+No header should be added to the file. Each event is on its own row, and the values are separated by commas. Note that dot (.) should be used for floating point numbers. The ID field does not need to be numeric, but all of the other fields only accept numbers. Latitude and longitude are expected to be floating point numbers, thus following the signed degrees format.
 
 In general, missing values will not cause the upload to fail, but depending on the missing values, some of the features might not work as intended. For example, clustering uses time and location information as well as magnitude. If there are missing values without explicit empty cells for them (for example a row only containing `year,month` instead of `,year,month,,,,,,,,`), the application may not work at all. 
 
