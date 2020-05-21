@@ -37,7 +37,7 @@ def get_layout(session_id):
 
     x_axis = filtered_data.get_datetimes()
     y_axis = filtered_data.get_depths()
-    if CatalogTypes(filtered_data.catalog_type) == CatalogTypes.CSV_EXT:
+    if CatalogTypes(filtered_data.catalog_type) == CatalogTypes.OTA_EXT:
         y_axis = -y_axis
     event_ids = filtered_data.get_eventids()
     color = 'red'

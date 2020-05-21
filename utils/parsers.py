@@ -82,6 +82,23 @@ def basel_parse(contents):
     return df
 
 
+def generic_parse(contents):
+    """Return a dataframe containing the parsed catalog.
+
+    Keyword arguments:
+    contents -- Decoded contents of the uploaded file
+    """
+    df = pd.read_table(
+        io.StringIO(contents),
+        sep=',',
+        names=[
+            'ID', 'YEAR', 'MONTH', 'DAY', 'HOUR', 'MINUTE', 'SECOND',
+            'DEPTH', 'MAGNITUDE', 'LATITUDE', 'LONGITUDE'
+        ]
+    )
+    return df
+
+
 def fencat_parse(contents):
     """Return a dataframe containing the parsed FENCAT catalog.
 

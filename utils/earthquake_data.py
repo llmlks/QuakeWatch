@@ -200,7 +200,7 @@ class OtaniemiEarthquakeData(EarthquakeData):
             lambda x: float(str(x).replace(',', '.'))
         )
 
-        EarthquakeData.__init__(self, CatalogTypes.CSV_EXT, data)
+        EarthquakeData.__init__(self, CatalogTypes.OTA_EXT, data)
 
         self.dates = data['TIME_UTC'].apply(
             lambda x: datetime.strptime(x, r'%Y-%m-%dT%H:%M:%S.%fZ')
@@ -367,6 +367,51 @@ class QTMEarthquakeData(EarthquakeData):
         )
 
 
+class GenericEarthquakeData(EarthquakeData):
+    """Internal representation of a generic catalog.
+    """
+
+    def __init__(self, data):
+        EarthquakeData.__init__(self, CatalogTypes.TXT_EXT, data)
+        if 'DateTime' in data.columns:
+            self.dates = data['DateTime']
+        else:
+            self.dates = data.agg(
+                lambda x: get_datetime(
+                    int(x['YEAR']),
+                    int(x['MONTH']),
+                    int(x['DAY']),
+                    int(x['HOUR']),
+                    int(x['MINUTE']),
+                    x['SECOND']
+                ), axis=1)
+            self.dates.rename('DateTime', inplace=True)
+            self.data = self.data.assign(DateTime=self.dates)
+
+    def get_eventids(self):
+        return self.data['ID']
+
+    def get_depths(self):
+        return self.data['DEPTH']
+
+    def get_templateids(self):
+        return None
+
+    def filter_by_dates(self, datemin, datemax):
+        return GenericEarthquakeData(
+            self.data[(self.dates <= datemax) & (self.dates >= datemin)]
+        )
+
+    def filter_by_template_id(self, template):
+        return None
+
+    def get_map_center(self):
+        return [60.193, 24.84]
+
+    def get_initial_zoom(self):
+        return 4
+
+
 class FENCATEarthquakeData(EarthquakeData):
     """Internal representation of the FENCAT catalog data.
     """
@@ -397,9 +442,6 @@ class FENCATEarthquakeData(EarthquakeData):
         if np.isnan(x):
             return default
         return x
-
-    def get_eventids(self):
-        return self.data['ID']
 
     def get_templateids(self):
         return None
@@ -442,10 +484,12 @@ class FENCATEarthquakeData(EarthquakeData):
 
 
 EXTENSIONS = {
-    CatalogTypes.CSV_EXT: OtaniemiEarthquakeData,
+    CatalogTypes.OTA_EXT: OtaniemiEarthquakeData,
     CatalogTypes.DAT_EXT: BaselEarthquakeData,
     CatalogTypes.HYPO_EXT: QTMEarthquakeData,
     CatalogTypes.SCEDC_EXT: FMEarthquakeData,
+    CatalogTypes.TXT_EXT: GenericEarthquakeData,
+    CatalogTypes.CSV_EXT: GenericEarthquakeData,
     CatalogTypes.FEN_EXT: FENCATEarthquakeData
 }
 

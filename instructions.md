@@ -4,13 +4,23 @@ This application is meant for visualising and analysing earthquake catalogs. The
   <li><a href="https://scedc.caltech.edu/research-tools/QTMcatalog.html" target="_blank">The QTM seismicity catalogs (SCEDC)</a> (.hypo)</li>
   <li><a href="https://scedc.caltech.edu/research-tools/alt-2011-yang-hauksson-shearer.html" target="_blank">The focal mechanism catalogs (SCEDC)</a> (.scedc)</li>
   <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2019JB017468" target="_blank">Basel seismicity catalog</a> (.dat)</li>
-  <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a> (.csv)</li>
+  <li><a href="https://advances.sciencemag.org/content/5/5/eaav7224" target="_blank">Otaniemi seismicity catalog</a> (.OTA)</li>
   <li><a href="https://www.seismo.helsinki.fi/bulletin/list/catalog/Scandia_updated.html" target="_blank">Fennoscandian Earthquake Catalog</a> (.FEN)</li>
 </ul>
 
 To get started, please upload the catalog of your choice by clicking the upload area above, or by dragging the file onto it. Optionally, you can use the sample dataset by clicking on the button below the upload area. The sample catalog is the 2018 Focal Mechanism Catalog from SCEDC.
 
 Once the data has been uploaded, the available features include a map view, a scatter plot view, and a clustering view. Each of the features includes a set of configurations to control them. Changes in the settings only take effect after submitting them by clicking on the "Apply" button on each page.
+
+**Generic parser**: You can also use another catalog type, not based on an existing catalog. The file needs to be uploaded as a .txt or a .csv file, and the file structure should be as follows
+
+The overall format is
+```
+id,year,month,day,hour,minute,second,depth,magnitude,latitude,longitude
+```
+No header should be added to the file. Each event is on its own row, and the values are separated by commas. Note that dot (.) should be used for floating point numbers. The ID field does not need to be numeric, but all of the other fields only accept numbers. Latitude and longitude are expected to be floating point numbers, thus following the signed degrees format.
+
+In general, missing values will not cause the upload to fail, but depending on the missing values, some of the features might not work as intended. For example, clustering uses time and location information as well as magnitude. If there are missing values without explicit empty cells for them (for example a row only containing `year,month` instead of `,year,month,,,,,,,,`), the application may not work at all. 
 
 ##### Map
 
